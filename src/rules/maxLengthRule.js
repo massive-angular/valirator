@@ -1,11 +1,11 @@
-import { registerRule } from '../core';
+import { registerRule, isDefined } from '../core';
 
 export function maxLengthRule(value, maxLength) {
-  if (value) {
-    return value.length <= maxLength;
+  if (!isDefined(value)) {
+    return true;
   }
 
-  return true;
+  return value.length <= maxLength;
 }
 
 registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');

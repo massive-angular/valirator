@@ -1,7 +1,11 @@
-import { registerRule, isString } from '../core';
+import { registerRule, isDefined, isString } from '../core';
 
 export function patternRule(value, pattern) {
-  pattern = isString(value)
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  pattern = isString(pattern)
     ? new RegExp(pattern)
     : pattern;
 

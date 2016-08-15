@@ -2564,6 +2564,10 @@ var require$$1$14 = Object.freeze({
 	  return isType(obj, '[object Boolean]');
 	}
 
+	function isDefined(obj) {
+	  return !(obj === undefined || obj === null);
+	}
+
 	function noop() {}
 
 	function getObjectOverride(context, prop) {
@@ -2906,12 +2910,20 @@ var require$$1$14 = Object.freeze({
 	}();
 
 	function allowEmptyRule(value, allowEmpty) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  return !!value || !!allowEmpty && value === '';
 	}
 
 	registerRule('allowEmpty', allowEmptyRule, 'must not be empty');
 
 	function divisibleByRule(value, divisibleBy) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  var multiplier = Math.max((value - Math.floor(value)).toString().length - 2, (divisibleBy - Math.floor(divisibleBy)).toString().length - 2);
 
 	  multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
@@ -2922,7 +2934,11 @@ var require$$1$14 = Object.freeze({
 	registerRule('divisibleBy', divisibleByRule, 'must be divisible by %{expected}');
 
 	function enumRule(value, e) {
-	  return e && e.indexOf(value) !== -1;
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
+	  return isArray(e) && e.indexOf(value) !== -1;
 	}
 
 	registerRule('enum', enumRule, 'must be present in given enumerator');
@@ -2951,6 +2967,10 @@ var require$$1$14 = Object.freeze({
 	};
 
 	function formatRule(value, format) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  if (!FORMATS[format]) {
 	    throw new Error('Unknown format "' + format + '"');
 	  }
@@ -2961,71 +2981,91 @@ var require$$1$14 = Object.freeze({
 	registerRule('format', formatRule, 'is not a valid %{expected}');
 
 	function maxRule(value, max) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  return value <= max;
 	}
 
 	registerRule('max', maxRule, 'must be less than or equal to %{expected}');
 
 	function maxItemsRule(value, minItems) {
-	  if (Array.isArray(value)) {
-	    return value.length <= minItems;
+	  if (!isDefined(value)) {
+	    return true;
 	  }
 
-	  return true;
+	  return isArray(value) && value.length <= minItems;
 	}
 
 	registerRule('maxItems', maxItemsRule, 'must contain less than %{expected} items');
 
 	function maxLengthRule(value, maxLength) {
-	  if (value) {
-	    return value.length <= maxLength;
+	  if (!isDefined(value)) {
+	    return true;
 	  }
 
-	  return true;
+	  return value.length <= maxLength;
 	}
 
 	registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');
 
 	function exclusiveMaxRule(value, exclusiveMax) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  return value < exclusiveMax;
 	}
 
 	registerRule('exclusiveMax', exclusiveMaxRule, 'must be less than %{expected}');
 
 	function minRule(value, min) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  return value >= min;
 	}
 
 	registerRule('min', minRule, 'must be greater than or equal to %{expected}');
 
 	function minItemsRule(value, minItems) {
-	  if (Array.isArray(value)) {
-	    return value.length >= minItems;
+	  if (!isDefined(value)) {
+	    return true;
 	  }
 
-	  return true;
+	  return isArray(value) && value.length >= minItems;
 	}
 
 	registerRule('minItems', minItemsRule, 'must contain more than %{expected} items');
 
 	function minLengthRule(value, minLength) {
-	  if (value) {
-	    return value.length >= minLength;
+	  if (!isDefined(value)) {
+	    return true;
 	  }
 
-	  return true;
+	  return value.length >= minLength;
 	}
 
 	registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');
 
 	function exclusiveMinRule(value, exclusiveMin) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  return value > exclusiveMin;
 	}
 
 	registerRule('exclusiveMin', exclusiveMinRule, 'must be greater than %{expected}');
 
 	function patternRule(value, pattern) {
-	  pattern = isString(value) ? new RegExp(pattern) : pattern;
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
+	  pattern = isString(pattern) ? new RegExp(pattern) : pattern;
 
 	  return pattern.test(value);
 	}
@@ -3033,12 +3073,16 @@ var require$$1$14 = Object.freeze({
 	registerRule('pattern', patternRule, 'invalid input');
 
 	function requiredRule(value, required) {
-	  return !!value || !required;
+	  if (!required) {
+	    return true;
+	  }
+
+	  return isDefined(value);
 	}
 
 	registerRule('required', requiredRule, 'is required');
 
-	function typeRule(value, type) {
+	function checkValueType(value, type) {
 	  switch (type) {
 	    case 'boolean':
 	      return isBoolean(value);
@@ -3061,6 +3105,22 @@ var require$$1$14 = Object.freeze({
 	    default:
 	      return true;
 	  }
+	}
+
+	function typeRule(value, type) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
+	  var types = type;
+
+	  if (!Array.isArray(type)) {
+	    types = [type];
+	  }
+
+	  return types.some(function (type) {
+	    return checkValueType(value, type);
+	  });
 	}
 
 	registerRule('type', typeRule, 'must be of %{expected} type');
@@ -3087,6 +3147,10 @@ var require$$1$14 = Object.freeze({
 	var _JSON$stringify = interopDefault(stringify);
 
 	function uniqueItemsRule(value, uniqueItems) {
+	  if (!isDefined(value)) {
+	    return true;
+	  }
+
 	  if (!uniqueItems) {
 	    return true;
 	  }
@@ -3115,6 +3179,7 @@ var require$$1$14 = Object.freeze({
 	exports.isDate = isDate;
 	exports.isNumber = isNumber;
 	exports.isBoolean = isBoolean;
+	exports.isDefined = isDefined;
 	exports.noop = noop;
 	exports.getObjectOverride = getObjectOverride;
 	exports.formatMessage = formatMessage;

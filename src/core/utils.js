@@ -30,6 +30,10 @@ export function isBoolean(obj) {
   return isType(obj, '[object Boolean]');
 }
 
+export function isDefined(obj) {
+  return !(obj === undefined || obj === null);
+}
+
 export function noop() {
 }
 

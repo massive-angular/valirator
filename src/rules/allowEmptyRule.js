@@ -1,6 +1,10 @@
-import { registerRule } from '../core';
+import { registerRule, isDefined } from '../core';
 
 export function allowEmptyRule(value, allowEmpty) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
   return !!value || (!!allowEmpty && value === '');
 }
 

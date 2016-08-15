@@ -275,7 +275,7 @@ describe('rules', () => {
     });
 
     it('should not be string', () => {
-      const result = typeRule(null, 'string');
+      const result = typeRule(123, 'string');
 
       expect(result).toBe(false);
     });

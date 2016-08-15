@@ -1,6 +1,10 @@
-import { registerRule } from '../core';
+import { registerRule, isDefined } from '../core';
 
 export function divisibleByRule(value, divisibleBy) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
   let multiplier = Math.max((value - Math.floor(value)).toString().length - 2, (divisibleBy - Math.floor(divisibleBy)).toString().length - 2);
 
   multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
