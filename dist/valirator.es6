@@ -3155,15 +3155,6 @@ var checkRule = function () {
 	  };
 	}();
 
-function allowEmptyRule(value, allowEmpty) {	  if (!isDefined(value)) {
-	    return true;
-	  }
-
-	  return !!value || !!allowEmpty && value === '';
-	}
-
-	registerRule('allowEmpty', allowEmptyRule, 'must not be empty');
-
 function divisibleByRule(value, divisibleBy) {	  if (!isDefined(value)) {
 	    return true;
 	  }
@@ -3305,8 +3296,26 @@ function patternRule(value, pattern) {	  if (!isDefined(value)) {
 
 	registerRule('pattern', patternRule, 'invalid input');
 
-function requiredRule(value, required) {	  if (!required) {
+function requiredRule(value, required) {	  if (!!value) {
 	    return true;
+	  }
+
+	  if (isBoolean(required)) {
+	    return !required;
+	  }
+
+	  if (isObject(required)) {
+	    var allowEmpty = required.allowEmpty;
+	    var allowZero = required.allowZero;
+
+
+	    if (isBoolean(allowEmpty)) {
+	      return allowEmpty && value === '';
+	    }
+
+	    if (isBoolean(allowZero)) {
+	      return allowZero && value === 0;
+	    }
 	  }
 
 	  return isDefined(value);
@@ -3405,5 +3414,5 @@ function uniqueItemsRule(value, uniqueItems) {	  if (!isDefined(value)) {
 
 	registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, formatMessage, registerRule, hasRule, getRule, validate, allowEmptyRule, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, formatMessage, registerRule, hasRule, getRule, validate, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map

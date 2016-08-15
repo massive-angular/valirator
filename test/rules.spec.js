@@ -1,28 +1,6 @@
 import * as valirator from '../dist/valirator';
 
 describe('rules', () => {
-  describe('allowEmptyRule', () => {
-    const { allowEmptyRule } = valirator;
-
-    it('should allow empty value', () => {
-      const result = allowEmptyRule('', true);
-
-      expect(result).toBe(true);
-    });
-
-    it('should disallow empty value', () => {
-      const result = allowEmptyRule('', false);
-
-      expect(result).toBe(false);
-    });
-
-    it('should pass validation', () => {
-      const result = allowEmptyRule('value', false);
-
-      expect(result).toBe(true);
-    });
-  });
-
   describe('divisibleByRule', () => {
     const { divisibleByRule } = valirator;
 
@@ -232,6 +210,38 @@ describe('rules', () => {
       const result = requiredRule(null, false);
 
       expect(result).toBe(true);
+    });
+
+    it('should allow empty', () => {
+      const result = requiredRule('', {
+        allowEmpty: true
+      });
+
+      expect(result).toBe(true);
+    });
+
+    it('should not allow empty', () => {
+      const result = requiredRule('', {
+        allowEmpty: false
+      });
+
+      expect(result).toBe(false);
+    });
+
+    it('should allow zero', () => {
+      const result = requiredRule(0, {
+        allowZero: true
+      });
+
+      expect(result).toBe(true);
+    });
+
+    it('should not allow zero', () => {
+      const result = requiredRule(0, {
+        allowZero: false
+      });
+
+      expect(result).toBe(false);
     });
 
     it('should pass validation', () => {

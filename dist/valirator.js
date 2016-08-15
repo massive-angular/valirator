@@ -2909,16 +2909,6 @@ var require$$1$14 = Object.freeze({
 	  };
 	}();
 
-	function allowEmptyRule(value, allowEmpty) {
-	  if (!isDefined(value)) {
-	    return true;
-	  }
-
-	  return !!value || !!allowEmpty && value === '';
-	}
-
-	registerRule('allowEmpty', allowEmptyRule, 'must not be empty');
-
 	function divisibleByRule(value, divisibleBy) {
 	  if (!isDefined(value)) {
 	    return true;
@@ -3073,8 +3063,26 @@ var require$$1$14 = Object.freeze({
 	registerRule('pattern', patternRule, 'invalid input');
 
 	function requiredRule(value, required) {
-	  if (!required) {
+	  if (!!value) {
 	    return true;
+	  }
+
+	  if (isBoolean(required)) {
+	    return !required;
+	  }
+
+	  if (isObject(required)) {
+	    var allowEmpty = required.allowEmpty;
+	    var allowZero = required.allowZero;
+
+
+	    if (isBoolean(allowEmpty)) {
+	      return allowEmpty && value === '';
+	    }
+
+	    if (isBoolean(allowZero)) {
+	      return allowZero && value === 0;
+	    }
 	  }
 
 	  return isDefined(value);
@@ -3187,7 +3195,6 @@ var require$$1$14 = Object.freeze({
 	exports.hasRule = hasRule;
 	exports.getRule = getRule;
 	exports.validate = validate;
-	exports.allowEmptyRule = allowEmptyRule;
 	exports.divisibleByRule = divisibleByRule;
 	exports.enumRule = enumRule;
 	exports.formatRule = formatRule;
