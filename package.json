@@ -9,7 +9,7 @@
     "build": "node_modules/.bin/rollup -c",
     "test": "node_modules/.bin/karma start",
     "start": "concurrently 'npm run build -- -w' 'npm run test'",
-    "prepublish": "npm run lint && rm -rf dist && npm run build"
+    "prepublish": "npm run lint && npm run test -- --single-run && rm -rf dist && npm run build"
   },
   "dependencies": {
     "babel-runtime": "^6.11.6"

@@ -3063,7 +3063,7 @@ var require$$1$14 = Object.freeze({
 	registerRule('pattern', patternRule, 'invalid input');
 
 	function requiredRule(value, required) {
-	  if (!!value) {
+	  if (value) {
 	    return true;
 	  }
 

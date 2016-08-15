@@ -3296,7 +3296,7 @@ function patternRule(value, pattern) {	  if (!isDefined(value)) {
 
 	registerRule('pattern', patternRule, 'invalid input');
 
-function requiredRule(value, required) {	  if (!!value) {
+function requiredRule(value, required) {	  if (value) {
 	    return true;
 	  }
 
