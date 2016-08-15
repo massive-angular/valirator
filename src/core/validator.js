@@ -26,9 +26,13 @@ async function checkRule(obj, property, schema, schemaRules, schemaMessages, err
     if (isObject(actual)) {
       await validateSchema(actual, subSchemaProperties, schemaRules, schemaMessages, errors);
     } else if (isArray(actual)) {
-      actual.map(async (item, i) => {
-        return await validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, errors[i] || (errors[i] = {}));
-      });
+      const ln = actual.length;
+
+      for (let i = 0; i < ln; i++) {
+        const item = actual[i];
+
+        await validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, errors[i] || (errors[i] = {}));
+      }
     }
   }
 
