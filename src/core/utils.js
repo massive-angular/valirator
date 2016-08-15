@@ -22,6 +22,14 @@ export function isDate(obj) {
   return isType(obj, '[object Date]');
 }
 
+export function isNumber(obj) {
+  return isType(obj, '[object Number]') && !isNaN(obj);
+}
+
+export function isBoolean(obj) {
+  return isType(obj, '[object Boolean]');
+}
+
 export function noop() {
 }
 

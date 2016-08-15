@@ -198,7 +198,7 @@ describe('valirator', () => {
         properties: {
           FirstName: {
             rules: {
-              minimum: 6,
+              min: 6,
               myRule: 2
             }
           }
@@ -211,7 +211,7 @@ describe('valirator', () => {
 
       validate(obj, schema)
         .then(errors => {
-          expect(errors.FirstName.minimum).toBeDefined();
+          expect(errors.FirstName.min).toBeDefined();
           expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
 
           done();
@@ -235,7 +235,7 @@ describe('valirator', () => {
         properties: {
           FirstName: {
             rules: {
-              minimum: 6,
+              min: 6,
               myRule: 2
             }
           }
@@ -248,7 +248,7 @@ describe('valirator', () => {
 
       validate(obj, schema)
         .then(errors => {
-          expect(errors.FirstName.minimum).toBeDefined();
+          expect(errors.FirstName.min).toBeDefined();
           expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
 
           done();
@@ -274,7 +274,7 @@ describe('valirator', () => {
         properties: {
           FirstName: {
             rules: {
-              minimum: 6,
+              min: 6,
               myRule: 2
             }
           }
@@ -287,7 +287,7 @@ describe('valirator', () => {
 
       validate(obj, schema)
         .then(errors => {
-          expect(errors.FirstName.minimum).toBeDefined();
+          expect(errors.FirstName.min).toBeDefined();
           expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
 
           done();
