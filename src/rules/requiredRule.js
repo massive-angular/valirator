@@ -1,7 +1,7 @@
 import { registerRule, isDefined, isBoolean, isObject } from '../core';
 
 export function requiredRule(value, required) {
-  if (!!value) {
+  if (value) {
     return true;
   }
 
