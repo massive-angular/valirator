@@ -2931,6 +2931,20 @@ var rulesHolder = {};
 	function getRule(name) {	  return rulesHolder[name] || {};
 	}
 
+var classCallCheck = createCommonjsModule(function (module, exports) {
+	"use strict";
+
+	exports.__esModule = true;
+
+	exports.default = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+	});
+
+var _classCallCheck = interopDefault(classCallCheck);
+
 var checkRule = function () {
 	  var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(obj, property, schema, schemaRules, schemaMessages, errors, rule) {
 	    var _getRule, defaultRule, defaultMessage, actual, expected, schemaRule, schemaMessage, isValid, subSchemaProperties, ln, i, item;
@@ -3124,7 +3138,8 @@ var checkRule = function () {
 	  };
 	}();
 
-	var validate = function () {	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(obj, schema) {
+	var validate = function () {
+	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(schema, obj) {
 	    var _schema$rules, schemaRules, _schema$messages, schemaMessages, schemaProperties;
 
 	    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
@@ -3154,6 +3169,11 @@ var checkRule = function () {
 	    return _ref4.apply(this, arguments);
 	  };
 	}();
+
+	var ValidationSchema = function ValidationSchema(schema) {	  _classCallCheck(this, ValidationSchema);
+
+	  this.validate = validate.bind(this, schema);
+	};
 
 function divisibleByRule(value, divisibleBy) {	  if (!isDefined(value)) {
 	    return true;
@@ -3414,5 +3434,5 @@ function uniqueItemsRule(value, uniqueItems) {	  if (!isDefined(value)) {
 
 	registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, formatMessage, registerRule, hasRule, getRule, validate, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, formatMessage, registerRule, hasRule, getRule, validate, ValidationSchema, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map

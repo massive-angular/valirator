@@ -67,7 +67,7 @@ async function validateSchema(obj, schemaProperties, schemaRules, schemaMessages
   return errors;
 }
 
-export async function validate(obj, schema) {
+export async function validate(schema, obj) {
   const {
     rules: schemaRules = {},
     messages: schemaMessages = {},
@@ -75,4 +75,10 @@ export async function validate(obj, schema) {
   } = schema;
 
   return await validateSchema(obj, schemaProperties || schema, schemaRules, schemaMessages, {});
+}
+
+export class ValidationSchema {
+  constructor(schema) {
+    this.validate = validate.bind(this, schema);
+  }
 }

@@ -2,7 +2,7 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	(factory((global.valirator = global.valirator || {})));
-}(this, function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
 	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}
 
@@ -2684,6 +2684,20 @@ var require$$1$14 = Object.freeze({
 	  return rulesHolder[name] || {};
 	}
 
+	var classCallCheck = createCommonjsModule(function (module, exports) {
+	"use strict";
+
+	exports.__esModule = true;
+
+	exports.default = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+	});
+
+	var _classCallCheck = interopDefault(classCallCheck);
+
 	var checkRule = function () {
 	  var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(obj, property, schema, schemaRules, schemaMessages, errors, rule) {
 	    var _getRule, defaultRule, defaultMessage, actual, expected, schemaRule, schemaMessage, isValid, subSchemaProperties, ln, i, item;
@@ -2878,7 +2892,7 @@ var require$$1$14 = Object.freeze({
 	}();
 
 	var validate = function () {
-	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(obj, schema) {
+	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(schema, obj) {
 	    var _schema$rules, schemaRules, _schema$messages, schemaMessages, schemaProperties;
 
 	    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
@@ -2908,6 +2922,12 @@ var require$$1$14 = Object.freeze({
 	    return _ref4.apply(this, arguments);
 	  };
 	}();
+
+	var ValidationSchema = function ValidationSchema(schema) {
+	  _classCallCheck(this, ValidationSchema);
+
+	  this.validate = validate.bind(this, schema);
+	};
 
 	function divisibleByRule(value, divisibleBy) {
 	  if (!isDefined(value)) {
@@ -3195,6 +3215,7 @@ var require$$1$14 = Object.freeze({
 	exports.hasRule = hasRule;
 	exports.getRule = getRule;
 	exports.validate = validate;
+	exports.ValidationSchema = ValidationSchema;
 	exports.divisibleByRule = divisibleByRule;
 	exports.enumRule = enumRule;
 	exports.formatRule = formatRule;
@@ -3213,5 +3234,5 @@ var require$$1$14 = Object.freeze({
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=valirator.js.map

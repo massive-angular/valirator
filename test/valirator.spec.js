@@ -1,4 +1,4 @@
-import { registerRule, hasRule, formatMessage, validate } from '../dist/valirator';
+import { registerRule, hasRule, formatMessage, validate, ValidationSchema } from '../dist/valirator';
 
 describe('valirator', () => {
   describe('registerRule', () => {
@@ -42,6 +42,10 @@ describe('valirator', () => {
 
   describe('validate', () => {
     it('should validate required rule', (done) => {
+      const obj = {
+        FirstName: null
+      };
+
       const schema = {
         properties: {
           FirstName: {
@@ -52,11 +56,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        FirstName: null
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.required).toBeDefined();
 
@@ -65,6 +65,10 @@ describe('valirator', () => {
     });
 
     it('should override default global message', (done) => {
+      const obj = {
+        FirstName: null
+      };
+
       const schema = {
         messages: {
           required: 'Field is required'
@@ -78,11 +82,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        FirstName: null
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.required).toBe('Field is required');
 
@@ -91,6 +91,10 @@ describe('valirator', () => {
     });
 
     it('should override default required rule (allow empty, for example)', (done) => {
+      const obj = {
+        FirstName: ''
+      };
+
       const schema = {
         rules: {
           required: (value) => {
@@ -106,11 +110,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        FirstName: ''
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.required).not.toBeDefined();
 
@@ -119,6 +119,12 @@ describe('valirator', () => {
     });
 
     it('should support nested schemas', (done) => {
+      const obj = {
+        Person: {
+          FirstName: null
+        }
+      };
+
       const schema = {
         properties: {
           Person: {
@@ -136,13 +142,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        Person: {
-          FirstName: null
-        }
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.Person.FirstName.required).toBeDefined();
 
@@ -151,6 +151,16 @@ describe('valirator', () => {
     });
 
     it('should support array schemas', (done) => {
+      const obj = {
+        Persons: [{
+          FirstName: 'John'
+        },{
+          FirstName: null
+        }, {
+          FirstName: 'Bob'
+        }]
+      };
+
       const schema = {
         properties: {
           Persons: {
@@ -168,17 +178,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        Persons: [{
-          FirstName: 'John'
-        },{
-          FirstName: null
-        }, {
-          FirstName: 'Bob'
-        }]
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.Persons[0].FirstName.required).not.toBeDefined();
           expect(errors.Persons[1].FirstName.required).toBeDefined();
@@ -189,6 +189,10 @@ describe('valirator', () => {
     });
 
     it('should support custom rule', (done) => {
+      const obj = {
+        FirstName: 2
+      };
+
       const schema = {
         rules: {
           myRule: (actual, expected) => {
@@ -208,11 +212,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        FirstName: 2
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.min).toBeDefined();
           expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
@@ -222,6 +222,10 @@ describe('valirator', () => {
     });
 
     it('should support async rule', (done) => {
+      const obj = {
+        FirstName: 2
+      };
+
       const schema = {
         rules: {
           myRule: (actual, expected) => {
@@ -245,11 +249,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        FirstName: 2
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.min).toBeDefined();
           expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
@@ -259,6 +259,10 @@ describe('valirator', () => {
     });
 
     it('should support async message', (done) => {
+      const obj = {
+        FirstName: 2
+      };
+
       const schema = {
         rules: {
           myRule: (actual, expected) => {
@@ -284,11 +288,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        FirstName: 2
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.min).toBeDefined();
           expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
@@ -298,14 +298,14 @@ describe('valirator', () => {
     });
 
     it('should not fail on empty schema', (done) => {
-      const schema = {
-      };
-
       const obj = {
         FirstName: 2
       };
 
-      validate(obj, schema)
+      const schema = {
+      };
+
+      validate(schema, obj)
         .then(errors => {
           expect(errors).toEqual({});
 
@@ -314,6 +314,9 @@ describe('valirator', () => {
     });
 
     it('should not fail on empty obj', (done) => {
+      const obj = {
+      };
+
       const schema = {
         properties: {
           FirstName: {
@@ -324,10 +327,7 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.required).toBeDefined();
 
@@ -336,6 +336,10 @@ describe('valirator', () => {
     });
 
     it('should support high level schema', (done) => {
+      const obj = {
+        FirstName: null
+      };
+
       const schema = {
         FirstName: {
           rules: {
@@ -344,13 +348,50 @@ describe('valirator', () => {
         }
       };
 
-      const obj = {
-        FirstName: null
-      };
-
-      validate(obj, schema)
+      validate(schema, obj)
         .then(errors => {
           expect(errors.FirstName.required).toBeDefined();
+
+          done();
+        });
+    });
+  });
+
+  describe('ValidationSchema', () => {
+    it('should support ValidationSchema for multiple validations', (done) => {
+      const obj = {
+        FirstName: 2
+      };
+
+      const schema = new ValidationSchema({
+        rules: {
+          myRule: (actual, expected) => {
+            return actual === expected * 2;
+          }
+        },
+        messages: {
+          myRule: (actual, expected) => {
+            return new Promise((resolve) => {
+              setTimeout(() => {
+                resolve(`${actual} !== ${expected} * 2`);
+              }, 1000);
+            });
+          }
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              min: 6,
+              myRule: 2
+            }
+          }
+        }
+      });
+
+      schema.validate(obj)
+        .then(errors => {
+          expect(errors.FirstName.min).toBeDefined();
+          expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
 
           done();
         });
