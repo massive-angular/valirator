@@ -71,7 +71,7 @@ describe('rules', () => {
     });
 
     it('should throw error for unknown format', () => {
-      expect(() => formatRule('email@example.com', 'email2')).toThrow(new Error('Unknown format "email2"'));
+      expect(() => formatRule('email@example.com', 'email2')).toThrow();
     });
   });
 
