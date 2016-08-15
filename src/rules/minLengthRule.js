@@ -1,7 +1,11 @@
 import { registerRule } from '../core';
 
 export function minLengthRule(value, minLength) {
-  return value && value.length >= minLength;
+  if (value) {
+    return value.length >= minLength;
+  }
+
+  return true;
 }
 
 registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');

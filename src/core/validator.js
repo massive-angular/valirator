@@ -12,7 +12,7 @@ async function checkRule(obj, property, schema, schemaRules, schemaMessages, err
   const schemaRule = getObjectOverride(schemaRules, rule) || schemaRules[rule];
   const schemaMessage = getObjectOverride(schemaMessages, rule) || schemaMessages[rule];
 
-  const isValid = await (isFunction(schemaRule) ? schemaRule : defaultRule || noop)(actual, expected, property, obj, schema, defaultRule);
+  const isValid = await (isFunction(schemaRule) ? schemaRule : (defaultRule || noop))(actual, expected, property, obj, schema, defaultRule);
 
   if (isValid !== true) {
     errors[rule] = await formatMessage(schemaMessage || defaultMessage, actual, expected, property, obj, rule);
@@ -71,8 +71,8 @@ export async function validate(obj, schema) {
   const {
     rules: schemaRules = {},
     messages: schemaMessages = {},
-    properties: schemaProperties = {},
+    properties: schemaProperties,
   } = schema;
 
-  return await validateSchema(obj, schemaProperties, schemaRules, schemaMessages, {});
+  return await validateSchema(obj, schemaProperties || schema, schemaRules, schemaMessages, {});
 }

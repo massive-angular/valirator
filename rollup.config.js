@@ -32,11 +32,11 @@ export default {
   targets: [{
     dest: pkg['main'],
     format: 'umd',
-    sourceMap: 'inline',
+    sourceMap: true,
     moduleName: 'valirator'
   }, {
     dest: pkg['jsnext:main'],
     format: 'es',
-    sourceMap: 'inline'
+    sourceMap: true
   }]
 };

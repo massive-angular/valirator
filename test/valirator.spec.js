@@ -170,6 +170,8 @@ describe('valirator', () => {
 
       const obj = {
         Persons: [{
+          FirstName: 'John'
+        },{
           FirstName: null
         }, {
           FirstName: 'Bob'
@@ -178,8 +180,9 @@ describe('valirator', () => {
 
       validate(obj, schema)
         .then(errors => {
-          expect(errors.Persons[0].FirstName.required).toBeDefined();
-          expect(errors.Persons[1].FirstName.required).not.toBeDefined();
+          expect(errors.Persons[0].FirstName.required).not.toBeDefined();
+          expect(errors.Persons[1].FirstName.required).toBeDefined();
+          expect(errors.Persons[2].FirstName.required).not.toBeDefined();
 
           done();
         });
@@ -289,6 +292,65 @@ describe('valirator', () => {
         .then(errors => {
           expect(errors.FirstName.min).toBeDefined();
           expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
+
+          done();
+        });
+    });
+
+    it('should not fail on empty schema', (done) => {
+      const schema = {
+      };
+
+      const obj = {
+        FirstName: 2
+      };
+
+      validate(obj, schema)
+        .then(errors => {
+          expect(errors).toEqual({});
+
+          done();
+        });
+    });
+
+    it('should not fail on empty obj', (done) => {
+      const schema = {
+        properties: {
+          FirstName: {
+            rules: {
+              required: true
+            }
+          }
+        }
+      };
+
+      const obj = {
+      };
+
+      validate(obj, schema)
+        .then(errors => {
+          expect(errors.FirstName.required).toBeDefined();
+
+          done();
+        });
+    });
+
+    it('should support high level schema', (done) => {
+      const schema = {
+        FirstName: {
+          rules: {
+            required: true
+          }
+        }
+      };
+
+      const obj = {
+        FirstName: null
+      };
+
+      validate(obj, schema)
+        .then(errors => {
+          expect(errors.FirstName.required).toBeDefined();
 
           done();
         });
