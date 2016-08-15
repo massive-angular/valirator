@@ -1,7 +1,7 @@
 {
   "name": "valirator",
   "version": "1.0.1",
-  "description": "Powerful javascript validation tool",
+  "description": "Powerful javascript by schema validation tool",
   "main": "dist/valirator.js",
   "jsnext:main": "dist/valirator.es6",
   "scripts": {
