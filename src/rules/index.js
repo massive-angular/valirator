@@ -1,6 +1,7 @@
 export * from './allowEmptyRule';
 export * from './divisibleByRule';
 export * from './enumRule';
+export * from './formatRule';
 export * from './maxRule';
 export * from './maxItemsRule';
 export * from './maxLengthRule';

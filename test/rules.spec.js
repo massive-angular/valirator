@@ -55,6 +55,26 @@ describe('rules', () => {
     });
   });
 
+  describe('formatRule', () => {
+    const { formatRule } = valirator;
+
+    it('should respect email format', () => {
+      const result = formatRule('email@example.com', 'email');
+
+      expect(result).toBe(true);
+    });
+
+    it('should not respect email format', () => {
+      const result = formatRule('email@example@com.com', 'email');
+
+      expect(result).toBe(false);
+    });
+
+    it('should throw error for unknown format', () => {
+      expect(() => formatRule('email@example.com', 'email2')).toThrow(new Error('Unknown format "email2"'));
+    });
+  });
+
   describe('maxRule', () => {
     const { maxRule } = valirator;
 
