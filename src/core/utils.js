@@ -31,7 +31,7 @@ export function isBoolean(obj) {
 }
 
 export function isDefined(obj) {
-  return !(obj === undefined || obj === null);
+  return !(obj === undefined || obj === null || obj === '');
 }
 
 export function noop() {

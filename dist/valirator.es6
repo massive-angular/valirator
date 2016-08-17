@@ -2810,7 +2810,7 @@ function isType(obj, typeStr) {
 	}
 
 	function isDefined(obj) {
-	  return !(obj === undefined || obj === null);
+	  return !(obj === undefined || obj === null || obj === '');
 	}
 
 	function noop() {}

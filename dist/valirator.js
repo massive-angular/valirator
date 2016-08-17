@@ -2565,7 +2565,7 @@ var require$$1$14 = Object.freeze({
 	}
 
 	function isDefined(obj) {
-	  return !(obj === undefined || obj === null);
+	  return !(obj === undefined || obj === null || obj === '');
 	}
 
 	function noop() {}
