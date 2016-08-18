@@ -100,11 +100,6 @@ export class ValidationResult {
       isValid() {
         return !this.hasErrors();
       },
-      getErrors() {
-        return {
-          ...errors
-        };
-      },
       hasErrors() {
         return Object
           .keys(errors)
@@ -126,6 +121,11 @@ export class ValidationResult {
 
             return types.includes(key);
           });
+      },
+      getErrors() {
+        return {
+          ...errors
+        };
       },
       getErrorsAsArray(...exclude) {
         return Object
