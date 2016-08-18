@@ -636,5 +636,248 @@ describe('valirator', () => {
           done();
         });
     });
+
+    it('should be fast', (done) => {
+      console.time('ValidationSchema -> should be fast');
+      const obj = {
+        "Id": "9131",
+        "AccountId": "1",
+        "UserId": null,
+        "FirstName": "Test",
+        "LastName": "Test",
+        "Line1": "15625 Alton Pkwy",
+        "Line2": "Suite 200",
+        "City": "Irvine",
+        "State": "CA",
+        "Zip": "92620",
+        "Country": "US",
+        "Phone": "+1-2345678901",
+        "Phone2": "2342342341",
+        "Company": "Test",
+        "Email": "test@example.com",
+        "Type": "primary"
+      };
+
+      const schema = new ValidationSchema({
+        messages: {
+          required: 'validation.required'
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 45,
+              pattern: /^[a-zA-Z0-9]+$/
+            },
+            messages: {
+              pattern: 'validation.firstName.pattern'
+            }
+          },
+          LastName: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 45,
+              pattern: /^[a-zA-Z0-9]+$/
+            },
+            messages: {
+              pattern: 'validation.firstName.pattern'
+            }
+          },
+          Email: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 50,
+              format: 'email'
+            },
+            messages: {
+              format: 'validation.email.format'
+            }
+          },
+          Phone: {
+            rules: {
+              type: 'string',
+              required: true
+            }
+          },
+          Line1: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 100
+            }
+          },
+          Line2: {
+            rules: {
+              type: 'string',
+              maxLength: 100
+            }
+          },
+          Country: {
+            rules: {
+              type: 'string',
+              required: true
+            }
+          },
+          State: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 50
+            }
+          },
+          City: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 50
+            }
+          },
+          Zip: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 15
+            }
+          }
+        }
+      });
+
+      schema.validate(obj)
+        .then(errors => {
+          console.timeEnd('ValidationSchema -> should be fast');
+
+          done();
+        });
+    });
+
+    it('should be fast with array', (done) => {
+      console.time('ValidationSchema -> should be fast with array');
+      const obj = {
+        "Id": "1",
+        "Name": "CalAmp Account",
+        "ParentAccount": "0",
+        "SolomonId": "GAC22222222",
+        "CreditTerms": "COD",
+        "SalesTerritory": "US West",
+        "Language": "english",
+        "PartnerBranding": "calamp",
+        "CreditPurchaseAuthorized": "0",
+        "ActivationDate": null,
+        "DeactivationDate": null,
+        "IsDisabled": "no",
+        "IsMarkedArchive": "no",
+        "CanViewSubaccounts": "1",
+        "PartnerLogo": "calamp_logo_slogan_1_125px.jpg",
+        "ShowPoweredByLogo": "1",
+        "AllowNewDeviceUseFromParent": "0",
+        "CanViewAirtimeStore": "1",
+        "CanViewHardwareStore": "0",
+        "LastChangeDate": "2016-08-12 05:37:24",
+        "AllowCommandAutoRetry": "1",
+        "SkipInstallProcess": "0",
+        "AllowAirtimeAutoRenew": "1",
+        "InvoiceAccount": "0",
+        "EmailNotificationOnInstall": "1",
+        "MandatoryInstallOdometer": "0",
+        "RenewalPlanId": "4",
+        "RenewalPlanPrice": null,
+        "EnableLocationValidationReport": "1",
+        "ParentName": "N/A",
+        "MaxScheduleActions": 12,
+        "is_cac_account": false,
+        "CustomUserAttributeDefinitions": [],
+        "CustomVehicleAttributeDefinitions": [],
+        "AirTimePlan": [
+          {
+            "RenewalPlanSKU": "rp1111",
+            "RenewalPlanPrice": "33.33"
+          },
+          {
+            "RenewalPlanSKU": "rp2222",
+            "RenewalPlanPrice": "444.44"
+          },
+          {
+            "RenewalPlanSKU": "aa",
+            "RenewalPlanPrice": ""
+          },
+          {
+            "RenewalPlanSKU": "",
+            "RenewalPlanPrice": "aa"
+          },
+          {
+            "RenewalPlanSKU": "",
+            "RenewalPlanPrice": ""
+          }
+        ]
+      };
+
+      const airTimePlanRowRequired = (actual, expected, property, { RenewalPlanSKU, RenewalPlanPrice }, schema, defaultRule) => {
+        let isRequired = {
+          allowEmpty: true
+        };
+
+        if (RenewalPlanSKU || RenewalPlanPrice) {
+          isRequired = true
+        }
+
+        return defaultRule(actual, isRequired)
+      };
+
+      const schema = new ValidationSchema({
+        messages: {
+          required: 'validation.required'
+        },
+        properties: {
+          Name: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 64
+            }
+          },
+          Language: {
+            rules: {
+              type: 'string',
+              required: true
+            }
+          },
+          AirTimePlan: {
+            rules: {
+              required: true
+            },
+            properties: {
+              RenewalPlanSKU: {
+                rules: {
+                  required: airTimePlanRowRequired,
+                  pattern: /^RP|rp[0-9]{4}$/
+                },
+                messages: {
+                  pattern: 'validation.renewalPlanSKU.pattern'
+                }
+              },
+              RenewalPlanPrice: {
+                rules: {
+                  required: airTimePlanRowRequired,
+                  pattern: /^[0-9]+\.?[0-9]{2}$/
+                },
+                messages: {
+                  pattern: 'validation.renewalPlanPrice.pattern'
+                }
+              }
+            }
+          }
+        }
+      });
+
+      schema.validate(obj)
+        .then(errors => {
+          console.timeEnd('ValidationSchema -> should be fast with array');
+
+          done();
+        });
+    });
   });
 });
