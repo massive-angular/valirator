@@ -3459,6 +3459,12 @@ var validateRule = function () {
 	  _classCallCheck(this, ValidationResult);
 
 	  return _extends$1({}, this, errors, {
+	    isValid: function isValid() {
+	      return !this.hasErrors();
+	    },
+	    getErrors: function getErrors() {
+	      return _extends$1({}, errors);
+	    },
 	    hasErrors: function hasErrors() {
 	      return _Object$keys(errors).some(function (key) {
 	        if (errors[key].hasErrors) {
@@ -3467,9 +3473,6 @@ var validateRule = function () {
 
 	        return errors[key];
 	      });
-	    },
-	    isValid: function isValid() {
-	      return !this.hasErrors();
 	    },
 	    hasErrorsOfTypes: function hasErrorsOfTypes() {
 	      for (var _len = arguments.length, types = Array(_len), _key = 0; _key < _len; _key++) {

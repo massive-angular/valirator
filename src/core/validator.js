@@ -97,6 +97,14 @@ export class ValidationResult {
     return {
       ...this,
       ...errors,
+      isValid() {
+        return !this.hasErrors();
+      },
+      getErrors() {
+        return {
+          ...errors
+        };
+      },
       hasErrors() {
         return Object
           .keys(errors)
@@ -107,9 +115,6 @@ export class ValidationResult {
 
             return errors[key];
           });
-      },
-      isValid() {
-        return !this.hasErrors();
       },
       hasErrorsOfTypes(...types) {
         return Object
