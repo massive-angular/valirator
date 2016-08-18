@@ -2945,9 +2945,9 @@ var classCallCheck = createCommonjsModule(function (module, exports) {
 
 var _classCallCheck = interopDefault(classCallCheck);
 
-var checkRule = function () {
-	  var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(obj, property, schema, schemaRules, schemaMessages, errors, rule) {
-	    var _getRule, defaultRule, defaultMessage, actual, expected, schemaRule, schemaMessage, isValid;
+var validateRule = function () {
+	  var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(rule, expected, value, message, rules, messages, property, obj, schema) {
+	    var _getRule, defaultRule, defaultMessage, overriddenRule, overriddenMessage, isValid;
 
 	    return _regeneratorRuntime.wrap(function _callee$(_context) {
 	      while (1) {
@@ -2956,31 +2956,26 @@ var checkRule = function () {
 	            _getRule = getRule(rule);
 	            defaultRule = _getRule.check;
 	            defaultMessage = _getRule.message;
-	            actual = obj[property];
-	            expected = schemaRules[rule];
-	            schemaRule = getObjectOverride(schemaRules, rule) || schemaRules[rule];
-	            schemaMessage = getObjectOverride(schemaMessages, rule) || schemaMessages[rule];
-	            _context.next = 9;
-	            return (isFunction(schemaRule) ? schemaRule : defaultRule || noop)(actual, expected, property, obj, schema, defaultRule);
+	            overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
+	            overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
+	            _context.next = 7;
+	            return (isFunction(overriddenRule) ? overriddenRule : defaultRule || noop)(value, expected, property, obj, schema, defaultRule);
 
-	          case 9:
+	          case 7:
 	            isValid = _context.sent;
 
 	            if (!(isValid !== true)) {
-	              _context.next = 14;
+	              _context.next = 12;
 	              break;
 	            }
 
-	            _context.next = 13;
-	            return formatMessage(schemaMessage || defaultMessage, actual, expected, property, obj, rule);
+	            _context.next = 11;
+	            return formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
 
-	          case 13:
-	            errors[rule] = _context.sent;
+	          case 11:
+	            return _context.abrupt('return', _context.sent);
 
-	          case 14:
-	            return _context.abrupt('return', errors);
-
-	          case 15:
+	          case 12:
 	          case 'end':
 	            return _context.stop();
 	        }
@@ -2988,103 +2983,55 @@ var checkRule = function () {
 	    }, _callee, this);
 	  }));
 
-	  return function checkRule(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+	  return function validateRule(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {
 	    return _ref.apply(this, arguments);
 	  };
 	}();
 
-	var checkProperty = function () {
-	  var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(obj, schema, schemaRules, schemaMessages, errors, property) {
-	    var _schema$property, _schema$property$rule, propertyRules, _schema$property$mess, propertyMessages, propertyErrors, rule, subSchemaProperties, actual, ln, i, item, itemErrors;
-
+	var validateValue = function () {
+	  var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(value, rules, messages, property, obj, schema) {
+	    var errors, rule, expected, message, result;
 	    return _regeneratorRuntime.wrap(function _callee2$(_context2) {
 	      while (1) {
 	        switch (_context2.prev = _context2.next) {
 	          case 0:
-	            _schema$property = schema[property];
-	            _schema$property$rule = _schema$property.rules;
-	            propertyRules = _schema$property$rule === undefined ? {} : _schema$property$rule;
-	            _schema$property$mess = _schema$property.messages;
-	            propertyMessages = _schema$property$mess === undefined ? {} : _schema$property$mess;
+	            errors = {};
+	            _context2.t0 = _regeneratorRuntime.keys(rules);
 
-
-	            propertyRules.__proto__ = schemaRules;
-	            propertyMessages.__proto__ = schemaMessages;
-
-	            propertyErrors = errors[property] || (errors[property] = {});
-	            _context2.t0 = _regeneratorRuntime.keys(propertyRules);
-
-	          case 9:
+	          case 2:
 	            if ((_context2.t1 = _context2.t0()).done) {
-	              _context2.next = 16;
+	              _context2.next = 13;
 	              break;
 	            }
 
 	            rule = _context2.t1.value;
 
-	            if (!propertyRules.hasOwnProperty(rule)) {
-	              _context2.next = 14;
+	            if (!rules.hasOwnProperty(rule)) {
+	              _context2.next = 11;
 	              break;
 	            }
 
-	            _context2.next = 14;
-	            return checkRule(obj, property, schema, propertyRules, propertyMessages, propertyErrors, rule);
-
-	          case 14:
+	            expected = rules[rule];
+	            message = messages[rule];
 	            _context2.next = 9;
+	            return validateRule(rule, expected, value, message, rules, messages, property, obj, schema);
+
+	          case 9:
+	            result = _context2.sent;
+
+
+	            if (result) {
+	              errors[rule] = result;
+	            }
+
+	          case 11:
+	            _context2.next = 2;
 	            break;
 
-	          case 16:
-	            subSchemaProperties = schema[property].properties;
-
-	            if (!subSchemaProperties) {
-	              _context2.next = 35;
-	              break;
-	            }
-
-	            actual = obj[property];
-
-	            if (!isObject(actual)) {
-	              _context2.next = 24;
-	              break;
-	            }
-
-	            _context2.next = 22;
-	            return validateSchema(actual, subSchemaProperties, schemaRules, schemaMessages, propertyErrors);
-
-	          case 22:
-	            _context2.next = 35;
-	            break;
-
-	          case 24:
-	            if (!isArray(actual)) {
-	              _context2.next = 35;
-	              break;
-	            }
-
-	            ln = actual.length;
-	            i = 0;
-
-	          case 27:
-	            if (!(i < ln)) {
-	              _context2.next = 35;
-	              break;
-	            }
-
-	            item = actual[i];
-	            itemErrors = propertyErrors[i] || (propertyErrors[i] = {});
-	            _context2.next = 32;
-	            return validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, itemErrors);
-
-	          case 32:
-	            i++;
-	            _context2.next = 27;
-	            break;
-
-	          case 35:
+	          case 13:
 	            return _context2.abrupt('return', errors);
 
-	          case 36:
+	          case 14:
 	          case 'end':
 	            return _context2.stop();
 	        }
@@ -3092,44 +3039,86 @@ var checkRule = function () {
 	    }, _callee2, this);
 	  }));
 
-	  return function checkProperty(_x8, _x9, _x10, _x11, _x12, _x13) {
+	  return function validateValue(_x10, _x11, _x12, _x13, _x14, _x15) {
 	    return _ref2.apply(this, arguments);
 	  };
 	}();
 
-	var validateSchema = function () {
-	  var _ref3 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(obj, schemaProperties, schemaRules, schemaMessages, errors) {
-	    var property;
+	var validateProperty = function () {
+	  var _ref3 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(property, obj, schemaProperties, schemaRules, schemaMessages, errors) {
+	    var _schemaProperties$pro, _schemaProperties$pro2, propertyRules, _schemaProperties$pro3, propertyMessages, propertyProperties, value, propertyErrors, ln, i, item, itemErrors;
+
 	    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
 	      while (1) {
 	        switch (_context3.prev = _context3.next) {
 	          case 0:
-	            _context3.t0 = _regeneratorRuntime.keys(schemaProperties);
+	            _schemaProperties$pro = schemaProperties[property];
+	            _schemaProperties$pro2 = _schemaProperties$pro.rules;
+	            propertyRules = _schemaProperties$pro2 === undefined ? {} : _schemaProperties$pro2;
+	            _schemaProperties$pro3 = _schemaProperties$pro.messages;
+	            propertyMessages = _schemaProperties$pro3 === undefined ? {} : _schemaProperties$pro3;
+	            propertyProperties = _schemaProperties$pro.properties;
 
-	          case 1:
-	            if ((_context3.t1 = _context3.t0()).done) {
-	              _context3.next = 8;
+
+	            propertyRules.__proto__ = schemaRules;
+	            propertyMessages.__proto__ = schemaMessages;
+
+	            value = obj[property];
+	            _context3.next = 11;
+	            return validateValue(value, propertyRules, propertyMessages, property, obj, schemaProperties);
+
+	          case 11:
+	            propertyErrors = _context3.sent;
+
+	            if (!propertyProperties) {
+	              _context3.next = 29;
 	              break;
 	            }
 
-	            property = _context3.t1.value;
-
-	            if (!schemaProperties.hasOwnProperty(property)) {
-	              _context3.next = 6;
+	            if (!isObject(value)) {
+	              _context3.next = 18;
 	              break;
 	            }
 
-	            _context3.next = 6;
-	            return checkProperty(obj, schemaProperties, schemaRules, schemaMessages, errors, property);
+	            _context3.next = 16;
+	            return validateObject(value, propertyProperties, schemaRules, schemaMessages, propertyErrors);
 
-	          case 6:
-	            _context3.next = 1;
+	          case 16:
+	            _context3.next = 29;
 	            break;
 
-	          case 8:
+	          case 18:
+	            if (!isArray(value)) {
+	              _context3.next = 29;
+	              break;
+	            }
+
+	            ln = value.length;
+	            i = 0;
+
+	          case 21:
+	            if (!(i < ln)) {
+	              _context3.next = 29;
+	              break;
+	            }
+
+	            item = value[i];
+	            itemErrors = propertyErrors[i] || (propertyErrors[i] = {});
+	            _context3.next = 26;
+	            return validateObject(item, propertyProperties, schemaRules, schemaMessages, itemErrors);
+
+	          case 26:
+	            i++;
+	            _context3.next = 21;
+	            break;
+
+	          case 29:
+
+	            errors[property] = propertyErrors;
+
 	            return _context3.abrupt('return', errors);
 
-	          case 9:
+	          case 31:
 	          case 'end':
 	            return _context3.stop();
 	        }
@@ -3137,31 +3126,44 @@ var checkRule = function () {
 	    }, _callee3, this);
 	  }));
 
-	  return function validateSchema(_x14, _x15, _x16, _x17, _x18) {
+	  return function validateProperty(_x16, _x17, _x18, _x19, _x20, _x21) {
 	    return _ref3.apply(this, arguments);
 	  };
 	}();
 
-	var validate = function () {
-	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(schema, obj) {
-	    var _schema$rules, schemaRules, _schema$messages, schemaMessages, schemaProperties;
-
+	var validateObject = function () {
+	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(obj, schemaProperties, schemaRules, schemaMessages, errors) {
+	    var property;
 	    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
 	      while (1) {
 	        switch (_context4.prev = _context4.next) {
 	          case 0:
-	            _schema$rules = schema.rules;
-	            schemaRules = _schema$rules === undefined ? {} : _schema$rules;
-	            _schema$messages = schema.messages;
-	            schemaMessages = _schema$messages === undefined ? {} : _schema$messages;
-	            schemaProperties = schema.properties;
-	            _context4.next = 7;
-	            return validateSchema(obj, schemaProperties || schema, schemaRules, schemaMessages, {});
+	            _context4.t0 = _regeneratorRuntime.keys(schemaProperties);
 
-	          case 7:
-	            return _context4.abrupt('return', _context4.sent);
+	          case 1:
+	            if ((_context4.t1 = _context4.t0()).done) {
+	              _context4.next = 8;
+	              break;
+	            }
+
+	            property = _context4.t1.value;
+
+	            if (!schemaProperties.hasOwnProperty(property)) {
+	              _context4.next = 6;
+	              break;
+	            }
+
+	            _context4.next = 6;
+	            return validateProperty(property, obj, schemaProperties, schemaRules, schemaMessages, errors);
+
+	          case 6:
+	            _context4.next = 1;
+	            break;
 
 	          case 8:
+	            return _context4.abrupt('return', errors);
+
+	          case 9:
 	          case 'end':
 	            return _context4.stop();
 	        }
@@ -3169,8 +3171,40 @@ var checkRule = function () {
 	    }, _callee4, this);
 	  }));
 
-	  return function validate(_x19, _x20) {
+	  return function validateObject(_x22, _x23, _x24, _x25, _x26) {
 	    return _ref4.apply(this, arguments);
+	  };
+	}();
+
+	var validate = function () {
+	  var _ref5 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee5(schema, obj) {
+	    var _schema$rules, schemaRules, _schema$messages, schemaMessages, schemaProperties;
+
+	    return _regeneratorRuntime.wrap(function _callee5$(_context5) {
+	      while (1) {
+	        switch (_context5.prev = _context5.next) {
+	          case 0:
+	            _schema$rules = schema.rules;
+	            schemaRules = _schema$rules === undefined ? {} : _schema$rules;
+	            _schema$messages = schema.messages;
+	            schemaMessages = _schema$messages === undefined ? {} : _schema$messages;
+	            schemaProperties = schema.properties;
+	            _context5.next = 7;
+	            return validateObject(obj, schemaProperties || schema, schemaRules, schemaMessages, {});
+
+	          case 7:
+	            return _context5.abrupt('return', _context5.sent);
+
+	          case 8:
+	          case 'end':
+	            return _context5.stop();
+	        }
+	      }
+	    }, _callee5, this);
+	  }));
+
+	  return function validate(_x27, _x28) {
+	    return _ref5.apply(this, arguments);
 	  };
 	}();
 
@@ -3438,5 +3472,5 @@ function uniqueItemsRule(value, uniqueItems) {	  if (!isDefined(value)) {
 
 	registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, formatMessage, registerRule, hasRule, getRule, validate, ValidationSchema, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, formatMessage, registerRule, hasRule, getRule, validateRule, validateValue, validateProperty, validateObject, validate, ValidationSchema, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map

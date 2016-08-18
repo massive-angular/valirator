@@ -1,60 +1,34 @@
 import { getRule } from './rules';
 import { isFunction, isObject, isArray, noop, getObjectOverride, formatMessage } from './utils';
 
-async function checkRule(obj, property, schema, schemaRules, schemaMessages, errors, rule) {
+export async function validateRule(rule, expected, value, message, rules, messages, property, obj, schema) {
   const {
     check: defaultRule,
     message: defaultMessage
   } = getRule(rule);
 
-  const actual = obj[property];
-  const expected = schemaRules[rule];
-  const schemaRule = getObjectOverride(schemaRules, rule) || schemaRules[rule];
-  const schemaMessage = getObjectOverride(schemaMessages, rule) || schemaMessages[rule];
+  const overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
+  const overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
 
-  const isValid = await (isFunction(schemaRule) ? schemaRule : (defaultRule || noop))(actual, expected, property, obj, schema, defaultRule);
+  const isValid = await (isFunction(overriddenRule) ? overriddenRule : (defaultRule || noop))(value, expected, property, obj, schema, defaultRule);
 
   if (isValid !== true) {
-    errors[rule] = await formatMessage(schemaMessage || defaultMessage, actual, expected, property, obj, rule);
+    return await formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
   }
-
-  return errors;
 }
 
-async function checkProperty(obj, schema, schemaRules, schemaMessages, errors, property) {
-  const {
-    rules: propertyRules = {},
-    messages: propertyMessages = {}
-  } = schema[property];
+export async function validateValue(value, rules, messages, property, obj, schema) {
+  let errors = {};
 
-  propertyRules.__proto__ = schemaRules;
-  propertyMessages.__proto__ = schemaMessages;
+  for (const rule in rules) {
+    if (rules.hasOwnProperty(rule)) {
+      const expected = rules[rule];
+      const message = messages[rule];
 
-  const propertyErrors = errors[property] || (errors[property] = {});
+      const result = await validateRule(rule, expected, value, message, rules, messages, property, obj, schema);
 
-  for (const rule in propertyRules) {
-    if (propertyRules.hasOwnProperty(rule)) {
-      await checkRule(obj, property, schema, propertyRules, propertyMessages, propertyErrors, rule);
-    }
-  }
-
-  const {
-    properties: subSchemaProperties
-  }  = schema[property];
-
-  if (subSchemaProperties) {
-    const actual = obj[property];
-
-    if (isObject(actual)) {
-      await validateSchema(actual, subSchemaProperties, schemaRules, schemaMessages, propertyErrors);
-    } else if (isArray(actual)) {
-      const ln = actual.length;
-
-      for (let i = 0; i < ln; i++) {
-        const item = actual[i];
-        const itemErrors = propertyErrors[i] || (propertyErrors[i] = {});
-
-        await validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, itemErrors);
+      if (result) {
+        errors[rule] = result;
       }
     }
   }
@@ -62,10 +36,44 @@ async function checkProperty(obj, schema, schemaRules, schemaMessages, errors, p
   return errors;
 }
 
-async function validateSchema(obj, schemaProperties, schemaRules, schemaMessages, errors) {
+export async function validateProperty(property, obj, schemaProperties, schemaRules, schemaMessages, errors) {
+  const {
+    rules: propertyRules = {},
+    messages: propertyMessages = {},
+    properties: propertyProperties
+  } = schemaProperties[property];
+
+  propertyRules.__proto__ = schemaRules;
+  propertyMessages.__proto__ = schemaMessages;
+
+  const value = obj[property];
+
+  const propertyErrors = await validateValue(value, propertyRules, propertyMessages, property, obj, schemaProperties);
+
+  if (propertyProperties) {
+    if (isObject(value)) {
+      await validateObject(value, propertyProperties, schemaRules, schemaMessages, propertyErrors);
+    } else if (isArray(value)) {
+      const ln = value.length;
+
+      for (let i = 0; i < ln; i++) {
+        const item = value[i];
+        const itemErrors = propertyErrors[i] || (propertyErrors[i] = {});
+
+        await validateObject(item, propertyProperties, schemaRules, schemaMessages, itemErrors);
+      }
+    }
+  }
+
+  errors[property] = propertyErrors;
+
+  return errors;
+}
+
+export async function validateObject(obj, schemaProperties, schemaRules, schemaMessages, errors) {
   for (const property in schemaProperties) {
     if (schemaProperties.hasOwnProperty(property)) {
-      await checkProperty(obj, schemaProperties, schemaRules, schemaMessages, errors, property);
+      await validateProperty(property, obj, schemaProperties, schemaRules, schemaMessages, errors);
     }
   }
 
@@ -79,7 +87,7 @@ export async function validate(schema, obj) {
     properties: schemaProperties,
   } = schema;
 
-  return await validateSchema(obj, schemaProperties || schema, schemaRules, schemaMessages, {});
+  return await validateObject(obj, schemaProperties || schema, schemaRules, schemaMessages, {});
 }
 
 export class ValidationSchema {
