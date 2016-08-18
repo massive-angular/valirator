@@ -33,7 +33,7 @@ export async function validateValue(value, rules = {}, messages = {}, property, 
     }
   }
 
-  return errors;
+  return new ValidationResult(errors);
 }
 
 export async function validateProperty(property, obj, properties = {}, rules = {}, messages = {}) {
@@ -48,21 +48,26 @@ export async function validateProperty(property, obj, properties = {}, rules = {
 
   const value = obj[property];
 
-  let propertyErrors = {};
-
-  if (isArray(value)) {
-    const ln = value.length;
-
-    for (let i = 0; i < ln; i++) {
-      propertyErrors[i] = await validateObject(value[i], propertyProperties, rules, messages);
+  if (propertyProperties) {
+    if (isArray(value)) {
+      return await validateArray(value, propertyProperties, rules, messages);
+    } else if (isObject(value)) {
+      return await validateObject(value, propertyProperties, rules, messages);
     }
-  } else if (isObject(value)) {
-    propertyErrors = await validateObject(value, propertyProperties, rules, messages);
   } else {
-    propertyErrors = await validateValue(value, propertyRules, propertyMessages, property, obj, properties)
+    return validateValue(value, propertyRules, propertyMessages, property, obj, properties)
+  }
+}
+
+export async function validateArray(array, properties, rules = {}, messages = {}) {
+  let errors = {};
+  const ln = array.length;
+
+  for (let i = 0; i < ln; i++) {
+    errors[i] = await validateObject(array[i], properties, rules, messages);
   }
 
-  return propertyErrors;
+  return new ValidationResult(errors);
 }
 
 export async function validateObject(obj, properties, rules = {}, messages = {}) {
@@ -70,11 +75,7 @@ export async function validateObject(obj, properties, rules = {}, messages = {})
 
   for (const property in properties) {
     if (properties.hasOwnProperty(property)) {
-      const propertyErrors = await validateProperty(property, obj, properties, rules, messages);
-
-      if (propertyErrors && Object.keys(propertyErrors).length > 0) {
-        errors[property] = propertyErrors;
-      }
+      errors[property] = await validateProperty(property, obj, properties, rules, messages);
     }
   }
 
@@ -93,33 +94,44 @@ export async function validate(schema, obj) {
 
 export class ValidationResult {
   constructor(errors) {
-    this._errors = errors;
-  }
-
-  hasErrors() {
-    return Object.keys(this._errors).length > 0;
-  }
-
-  isValid() {
-    return !this.hasErrors();
-  }
-
-  getErrors() {
     return {
-      ...this._errors
+      ...this,
+      ...errors,
+      hasErrors() {
+        return Object
+          .keys(errors)
+          .some(key => {
+            if (errors[key].hasErrors) {
+              return errors[key].hasErrors();
+            }
+
+            return errors[key];
+          });
+      },
+      isValid() {
+        return !this.hasErrors();
+      },
+      hasErrorsOfTypes(...types) {
+        return Object
+          .keys(errors)
+          .some(key => {
+            if (errors[key].hasErrorsOfTypes) {
+              return errors[key].hasErrorsOfTypes(...types);
+            }
+
+            return types.includes(key);
+          });
+      },
+      getErrorsAsArray(...exclude) {
+        return Object
+          .keys(errors)
+          .filter(key => !exclude.includes(key))
+          .map(key => errors[key]);
+      },
+      getFirstError(...exclude) {
+        return this.getErrorsAsArray(exclude)[0];
+      }
     };
-  }
-
-  getErrorsFor(property) {
-    return {
-      ...this._errors[property] || {}
-    };
-  }
-
-  getErrorsAsArrayFor(property) {
-    const errors = this.getErrorsFor(property);
-
-    return Object.keys(this._errors).map(key => errors[key]);
   }
 }
 

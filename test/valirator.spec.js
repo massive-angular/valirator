@@ -81,7 +81,7 @@ describe('valirator', () => {
       validate(schema, obj)
         .then(errors => {
           expect(errors.hasErrors()).toBe(true);
-          expect(errors.getErrorsFor('FirstName').required).toBeDefined();
+          expect(errors.FirstName.required).toBeDefined();
 
           done();
         });
@@ -107,7 +107,7 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.getErrorsFor('FirstName').required).toBe('Field is required');
+          expect(errors.FirstName.required).toBe('Field is required');
 
           done();
         });
@@ -135,7 +135,7 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.hasErrors()).toBe(false);
+          expect(errors.FirstName.hasErrors()).toBe(false);
 
           done();
         });
@@ -168,8 +168,7 @@ describe('valirator', () => {
       validate(schema, obj)
         .then(errors => {
           expect(errors.hasErrors()).toBe(true);
-          console.log(errors.getErrorsFor('Person'));
-          expect(errors.getErrorsFor('Person').getErrorsFor('FirstName').required).toBeDefined();
+          expect(errors.Person.FirstName.required).toBeDefined();
 
           done();
         });
@@ -202,9 +201,9 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.Persons[0].hasErrors()).toBe(false);
-          expect(errors.Persons[1].hasErrors()).toBe(true);
-          expect(errors.Persons[2].hasErrors()).toBe(false);
+          expect(errors.Persons[0].FirstName.hasErrors()).toBe(false);
+          expect(errors.Persons[1].FirstName.hasErrors()).toBe(true);
+          expect(errors.Persons[2].FirstName.hasErrors()).toBe(false);
 
           done();
         });
@@ -328,7 +327,6 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          console.log(Object.keys(errors));
           expect(errors.hasErrors()).toBe(false);
 
           done();
@@ -371,7 +369,7 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.getErrorsFor('FirstName').required).toBeDefined();
+          expect(errors.FirstName.required).toBeDefined();
 
           done();
         });
