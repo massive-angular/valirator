@@ -2989,7 +2989,12 @@ var validateRule = function () {
 	}();
 
 	var validateValue = function () {
-	  var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(value, rules, messages, property, obj, schema) {
+	  var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(value) {
+	    var rules = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	    var messages = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	    var property = arguments[3];
+	    var obj = arguments[4];
+	    var schema = arguments[5];
 	    var errors, rule, expected, message, result;
 	    return _regeneratorRuntime.wrap(function _callee2$(_context2) {
 	      while (1) {
@@ -3045,7 +3050,12 @@ var validateRule = function () {
 	}();
 
 	var validateProperty = function () {
-	  var _ref3 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(property, obj, properties, rules, messages, errors) {
+	  var _ref3 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(property, obj) {
+	    var properties = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	    var rules = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+	    var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+	    var errors = arguments.length <= 5 || arguments[5] === undefined ? {} : arguments[5];
+
 	    var _properties$property, _properties$property$, propertyRules, _properties$property$2, propertyMessages, propertyProperties, value, propertyErrors, ln, i, item, itemErrors;
 
 	    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -3126,13 +3136,16 @@ var validateRule = function () {
 	    }, _callee3, this);
 	  }));
 
-	  return function validateProperty(_x16, _x17, _x18, _x19, _x20, _x21) {
+	  return function validateProperty(_x18, _x19, _x20, _x21, _x22, _x23) {
 	    return _ref3.apply(this, arguments);
 	  };
 	}();
 
 	var validateObject = function () {
-	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(obj, properties, rules, messages, errors) {
+	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(obj, properties) {
+	    var rules = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	    var messages = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+	    var errors = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 	    var property;
 	    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
 	      while (1) {
@@ -3171,7 +3184,7 @@ var validateRule = function () {
 	    }, _callee4, this);
 	  }));
 
-	  return function validateObject(_x22, _x23, _x24, _x25, _x26) {
+	  return function validateObject(_x28, _x29, _x30, _x31, _x32) {
 	    return _ref4.apply(this, arguments);
 	  };
 	}();
@@ -3200,7 +3213,7 @@ var validateRule = function () {
 	    }, _callee5, this);
 	  }));
 
-	  return function validate(_x27, _x28) {
+	  return function validate(_x36, _x37) {
 	    return _ref5.apply(this, arguments);
 	  };
 	}();

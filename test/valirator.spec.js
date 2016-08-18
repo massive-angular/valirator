@@ -1,4 +1,4 @@
-import { registerRule, hasRule, formatMessage, validate, ValidationSchema } from '../dist/valirator';
+import { registerRule, hasRule, formatMessage, validate, validateRule, validateValue, validateObject, ValidationSchema } from '../dist/valirator';
 
 describe('valirator', () => {
   describe('registerRule', () => {
@@ -12,7 +12,7 @@ describe('valirator', () => {
   describe('formatMessage', () => {
     it('should format text', (done) => {
       formatMessage('%{actual} === %{expected}', 5, 5)
-        .then(formattedMessage  => {
+        .then(formattedMessage => {
           expect(formattedMessage).toBe('5 === 5');
 
           done();
@@ -37,6 +37,28 @@ describe('valirator', () => {
 
           done();
         })
+    });
+  });
+
+  describe('validateRule', () => {
+    it('should validate separate rule', (done) => {
+      validateRule('required', true, null)
+        .then(error => {
+          expect(error).toBeDefined();
+
+          done();
+        });
+    });
+  });
+
+  describe('validateValue', () => {
+    it('should validate separate value with list of rules', (done) => {
+      validateValue('John', { required: true, minLength: 5 })
+        .then(errors => {
+          expect(errors).toBeDefined();
+
+          done();
+        });
     });
   });
 
@@ -154,7 +176,7 @@ describe('valirator', () => {
       const obj = {
         Persons: [{
           FirstName: 'John'
-        },{
+        }, {
           FirstName: null
         }, {
           FirstName: 'Bob'
@@ -299,8 +321,7 @@ describe('valirator', () => {
         FirstName: 2
       };
 
-      const schema = {
-      };
+      const schema = {};
 
       validate(schema, obj)
         .then(errors => {
@@ -311,8 +332,7 @@ describe('valirator', () => {
     });
 
     it('should not fail on empty obj', (done) => {
-      const obj = {
-      };
+      const obj = {};
 
       const schema = {
         properties: {

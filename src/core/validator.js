@@ -17,7 +17,7 @@ export async function validateRule(rule, expected, value, message, rules, messag
   }
 }
 
-export async function validateValue(value, rules, messages, property, obj, schema) {
+export async function validateValue(value, rules = {}, messages = {}, property, obj, schema) {
   let errors = {};
 
   for (const rule in rules) {
@@ -36,7 +36,7 @@ export async function validateValue(value, rules, messages, property, obj, schem
   return errors;
 }
 
-export async function validateProperty(property, obj, properties, rules, messages, errors) {
+export async function validateProperty(property, obj, properties = {}, rules = {}, messages = {}, errors = {}) {
   const {
     rules: propertyRules = {},
     messages: propertyMessages = {},
@@ -70,7 +70,7 @@ export async function validateProperty(property, obj, properties, rules, message
   return errors;
 }
 
-export async function validateObject(obj, properties, rules, messages, errors) {
+export async function validateObject(obj, properties, rules = {}, messages = {}, errors = {}) {
   for (const property in properties) {
     if (properties.hasOwnProperty(property)) {
       await validateProperty(property, obj, properties, rules, messages, errors);
