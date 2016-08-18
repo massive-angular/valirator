@@ -48,20 +48,18 @@ export async function validateProperty(property, obj, properties = {}, rules = {
 
   const value = obj[property];
 
-  let propertyErrors = await validateValue(value, propertyRules, propertyMessages, property, obj, properties);
+  let propertyErrors = {};
 
-  if (propertyProperties) {
-    if (isObject(value)) {
-      propertyErrors[property] = await validateObject(value, propertyProperties, rules, messages);
-    } else if (isArray(value)) {
-      const ln = value.length;
+  if (isArray(value)) {
+    const ln = value.length;
 
-      for (let i = 0; i < ln; i++) {
-        const item = value[i];
-
-        propertyErrors[i] = await validateObject(item, propertyProperties, rules, messages);
-      }
+    for (let i = 0; i < ln; i++) {
+      propertyErrors[i] = await validateObject(value[i], propertyProperties, rules, messages);
     }
+  } else if (isObject(value)) {
+    propertyErrors = await validateObject(value, propertyProperties, rules, messages);
+  } else {
+    propertyErrors = await validateValue(value, propertyRules, propertyMessages, property, obj, properties)
   }
 
   return propertyErrors;

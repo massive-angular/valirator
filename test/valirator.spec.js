@@ -81,7 +81,7 @@ describe('valirator', () => {
       validate(schema, obj)
         .then(errors => {
           expect(errors.hasErrors()).toBe(true);
-          expect(errors.FirstName.required).toBeDefined();
+          expect(errors.getErrorsFor('FirstName').required).toBeDefined();
 
           done();
         });
@@ -107,7 +107,7 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.FirstName.required).toBe('Field is required');
+          expect(errors.getErrorsFor('FirstName').required).toBe('Field is required');
 
           done();
         });
@@ -167,7 +167,9 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.Person.FirstName.required).toBeDefined();
+          expect(errors.hasErrors()).toBe(true);
+          console.log(errors.getErrorsFor('Person'));
+          expect(errors.getErrorsFor('Person').getErrorsFor('FirstName').required).toBeDefined();
 
           done();
         });
@@ -369,7 +371,7 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.FirstName.required).toBeDefined();
+          expect(errors.getErrorsFor('FirstName').required).toBeDefined();
 
           done();
         });

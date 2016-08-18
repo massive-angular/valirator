@@ -3303,7 +3303,7 @@ var validateRule = function () {
 	    var rules = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	    var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
-	    var _properties$property, _properties$property$, propertyRules, _properties$property$2, propertyMessages, propertyProperties, value, propertyErrors, ln, i, item;
+	    var _properties$property, _properties$property$, propertyRules, _properties$property$2, propertyMessages, propertyProperties, value, propertyErrors, ln, i;
 
 	    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
 	      while (1) {
@@ -3321,61 +3321,62 @@ var validateRule = function () {
 	            propertyMessages.__proto__ = messages;
 
 	            value = obj[property];
-	            _context3.next = 11;
-	            return validateValue(value, propertyRules, propertyMessages, property, obj, properties);
+	            propertyErrors = {};
 
-	          case 11:
-	            propertyErrors = _context3.sent;
-
-	            if (!propertyProperties) {
-	              _context3.next = 30;
-	              break;
-	            }
-
-	            if (!isObject(value)) {
-	              _context3.next = 19;
-	              break;
-	            }
-
-	            _context3.next = 16;
-	            return validateObject(value, propertyProperties, rules, messages);
-
-	          case 16:
-	            propertyErrors[property] = _context3.sent;
-	            _context3.next = 30;
-	            break;
-
-	          case 19:
 	            if (!isArray(value)) {
-	              _context3.next = 30;
+	              _context3.next = 22;
 	              break;
 	            }
 
 	            ln = value.length;
 	            i = 0;
 
-	          case 22:
+	          case 13:
 	            if (!(i < ln)) {
-	              _context3.next = 30;
+	              _context3.next = 20;
 	              break;
 	            }
 
-	            item = value[i];
-	            _context3.next = 26;
-	            return validateObject(item, propertyProperties, rules, messages);
+	            _context3.next = 16;
+	            return validateObject(value[i], propertyProperties, rules, messages);
 
-	          case 26:
+	          case 16:
 	            propertyErrors[i] = _context3.sent;
 
-	          case 27:
+	          case 17:
 	            i++;
-	            _context3.next = 22;
+	            _context3.next = 13;
 	            break;
 
+	          case 20:
+	            _context3.next = 31;
+	            break;
+
+	          case 22:
+	            if (!isObject(value)) {
+	              _context3.next = 28;
+	              break;
+	            }
+
+	            _context3.next = 25;
+	            return validateObject(value, propertyProperties, rules, messages);
+
+	          case 25:
+	            propertyErrors = _context3.sent;
+	            _context3.next = 31;
+	            break;
+
+	          case 28:
+	            _context3.next = 30;
+	            return validateValue(value, propertyRules, propertyMessages, property, obj, properties);
+
 	          case 30:
-	            return _context3.abrupt('return', propertyErrors);
+	            propertyErrors = _context3.sent;
 
 	          case 31:
+	            return _context3.abrupt('return', propertyErrors);
+
+	          case 32:
 	          case 'end':
 	            return _context3.stop();
 	        }
