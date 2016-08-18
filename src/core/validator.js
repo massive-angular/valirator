@@ -18,24 +18,6 @@ async function checkRule(obj, property, schema, schemaRules, schemaMessages, err
     errors[rule] = await formatMessage(schemaMessage || defaultMessage, actual, expected, property, obj, rule);
   }
 
-  const {
-    properties: subSchemaProperties
-  }  = schema[property];
-
-  if (subSchemaProperties) {
-    if (isObject(actual)) {
-      await validateSchema(actual, subSchemaProperties, schemaRules, schemaMessages, errors);
-    } else if (isArray(actual)) {
-      const ln = actual.length;
-
-      for (let i = 0; i < ln; i++) {
-        const item = actual[i];
-
-        await validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, errors[i] || (errors[i] = {}));
-      }
-    }
-  }
-
   return errors;
 }
 
@@ -48,9 +30,32 @@ async function checkProperty(obj, schema, schemaRules, schemaMessages, errors, p
   propertyRules.__proto__ = schemaRules;
   propertyMessages.__proto__ = schemaMessages;
 
+  const propertyErrors = errors[property] || (errors[property] = {});
+
   for (const rule in propertyRules) {
     if (propertyRules.hasOwnProperty(rule)) {
-      await checkRule(obj, property, schema, propertyRules, propertyMessages, errors[property] || (errors[property] = {}), rule);
+      await checkRule(obj, property, schema, propertyRules, propertyMessages, propertyErrors, rule);
+    }
+  }
+
+  const {
+    properties: subSchemaProperties
+  }  = schema[property];
+
+  if (subSchemaProperties) {
+    const actual = obj[property];
+
+    if (isObject(actual)) {
+      await validateSchema(actual, subSchemaProperties, schemaRules, schemaMessages, propertyErrors);
+    } else if (isArray(actual)) {
+      const ln = actual.length;
+
+      for (let i = 0; i < ln; i++) {
+        const item = actual[i];
+        const itemErrors = propertyErrors[i] || (propertyErrors[i] = {});
+
+        await validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, itemErrors);
+      }
     }
   }
 

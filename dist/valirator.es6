@@ -2947,7 +2947,7 @@ var _classCallCheck = interopDefault(classCallCheck);
 
 var checkRule = function () {
 	  var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(obj, property, schema, schemaRules, schemaMessages, errors, rule) {
-	    var _getRule, defaultRule, defaultMessage, actual, expected, schemaRule, schemaMessage, isValid, subSchemaProperties, ln, i, item;
+	    var _getRule, defaultRule, defaultMessage, actual, expected, schemaRule, schemaMessage, isValid;
 
 	    return _regeneratorRuntime.wrap(function _callee$(_context) {
 	      while (1) {
@@ -2978,53 +2978,9 @@ var checkRule = function () {
 	            errors[rule] = _context.sent;
 
 	          case 14:
-	            subSchemaProperties = schema[property].properties;
-
-	            if (!subSchemaProperties) {
-	              _context.next = 31;
-	              break;
-	            }
-
-	            if (!isObject(actual)) {
-	              _context.next = 21;
-	              break;
-	            }
-
-	            _context.next = 19;
-	            return validateSchema(actual, subSchemaProperties, schemaRules, schemaMessages, errors);
-
-	          case 19:
-	            _context.next = 31;
-	            break;
-
-	          case 21:
-	            if (!isArray(actual)) {
-	              _context.next = 31;
-	              break;
-	            }
-
-	            ln = actual.length;
-	            i = 0;
-
-	          case 24:
-	            if (!(i < ln)) {
-	              _context.next = 31;
-	              break;
-	            }
-
-	            item = actual[i];
-	            _context.next = 28;
-	            return validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, errors[i] || (errors[i] = {}));
-
-	          case 28:
-	            i++;
-	            _context.next = 24;
-	            break;
-
-	          case 31:
 	            return _context.abrupt('return', errors);
 
-	          case 32:
+	          case 15:
 	          case 'end':
 	            return _context.stop();
 	        }
@@ -3039,7 +2995,7 @@ var checkRule = function () {
 
 	var checkProperty = function () {
 	  var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(obj, schema, schemaRules, schemaMessages, errors, property) {
-	    var _schema$property, _schema$property$rule, propertyRules, _schema$property$mess, propertyMessages, rule;
+	    var _schema$property, _schema$property$rule, propertyRules, _schema$property$mess, propertyMessages, propertyErrors, rule, subSchemaProperties, actual, ln, i, item, itemErrors;
 
 	    return _regeneratorRuntime.wrap(function _callee2$(_context2) {
 	      while (1) {
@@ -3055,32 +3011,80 @@ var checkRule = function () {
 	            propertyRules.__proto__ = schemaRules;
 	            propertyMessages.__proto__ = schemaMessages;
 
+	            propertyErrors = errors[property] || (errors[property] = {});
 	            _context2.t0 = _regeneratorRuntime.keys(propertyRules);
 
-	          case 8:
+	          case 9:
 	            if ((_context2.t1 = _context2.t0()).done) {
-	              _context2.next = 15;
+	              _context2.next = 16;
 	              break;
 	            }
 
 	            rule = _context2.t1.value;
 
 	            if (!propertyRules.hasOwnProperty(rule)) {
-	              _context2.next = 13;
+	              _context2.next = 14;
 	              break;
 	            }
 
-	            _context2.next = 13;
-	            return checkRule(obj, property, schema, propertyRules, propertyMessages, errors[property] || (errors[property] = {}), rule);
+	            _context2.next = 14;
+	            return checkRule(obj, property, schema, propertyRules, propertyMessages, propertyErrors, rule);
 
-	          case 13:
-	            _context2.next = 8;
+	          case 14:
+	            _context2.next = 9;
 	            break;
 
-	          case 15:
+	          case 16:
+	            subSchemaProperties = schema[property].properties;
+
+	            if (!subSchemaProperties) {
+	              _context2.next = 35;
+	              break;
+	            }
+
+	            actual = obj[property];
+
+	            if (!isObject(actual)) {
+	              _context2.next = 24;
+	              break;
+	            }
+
+	            _context2.next = 22;
+	            return validateSchema(actual, subSchemaProperties, schemaRules, schemaMessages, propertyErrors);
+
+	          case 22:
+	            _context2.next = 35;
+	            break;
+
+	          case 24:
+	            if (!isArray(actual)) {
+	              _context2.next = 35;
+	              break;
+	            }
+
+	            ln = actual.length;
+	            i = 0;
+
+	          case 27:
+	            if (!(i < ln)) {
+	              _context2.next = 35;
+	              break;
+	            }
+
+	            item = actual[i];
+	            itemErrors = propertyErrors[i] || (propertyErrors[i] = {});
+	            _context2.next = 32;
+	            return validateSchema(item, subSchemaProperties, schemaRules, schemaMessages, itemErrors);
+
+	          case 32:
+	            i++;
+	            _context2.next = 27;
+	            break;
+
+	          case 35:
 	            return _context2.abrupt('return', errors);
 
-	          case 16:
+	          case 36:
 	          case 'end':
 	            return _context2.stop();
 	        }
