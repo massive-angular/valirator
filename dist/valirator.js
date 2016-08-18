@@ -1531,14 +1531,14 @@ var require$$0$9 = Object.freeze({
 	var _toObject$1 = interopDefault(_toObject);
 
 
-	var require$$1$13 = Object.freeze({
+	var require$$2$6 = Object.freeze({
 	  default: _toObject$1
 	});
 
 	var _objectGpo = createCommonjsModule(function (module) {
 	// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 	var has         = interopDefault(require$$2$4)
-	  , toObject    = interopDefault(require$$1$13)
+	  , toObject    = interopDefault(require$$2$6)
 	  , IE_PROTO    = interopDefault(require$$0$13)('IE_PROTO')
 	  , ObjectProto = Object.prototype;
 
@@ -2007,7 +2007,7 @@ var require$$0$9 = Object.freeze({
 	var set = _task.set;
 	var clear = _task.clear;
 
-var require$$1$14 = Object.freeze({
+var require$$1$13 = Object.freeze({
 	  default: _task$1,
 	  set: set,
 	  clear: clear
@@ -2015,7 +2015,7 @@ var require$$1$14 = Object.freeze({
 
 	var _microtask = createCommonjsModule(function (module) {
 	var global    = interopDefault(require$$4)
-	  , macrotask = interopDefault(require$$1$14).set
+	  , macrotask = interopDefault(require$$1$13).set
 	  , Observer  = global.MutationObserver || global.WebKitMutationObserver
 	  , process   = global.process
 	  , Promise   = global.Promise
@@ -2128,7 +2128,7 @@ var require$$1$14 = Object.freeze({
 	var _setSpecies$1 = interopDefault(_setSpecies);
 
 
-	var require$$2$6 = Object.freeze({
+	var require$$2$7 = Object.freeze({
 	  default: _setSpecies$1
 	});
 
@@ -2175,7 +2175,7 @@ var require$$1$14 = Object.freeze({
 	  , anInstance         = interopDefault(require$$10)
 	  , forOf              = interopDefault(require$$9)
 	  , speciesConstructor = interopDefault(require$$8)
-	  , task               = interopDefault(require$$1$14).set
+	  , task               = interopDefault(require$$1$13).set
 	  , microtask          = interopDefault(require$$6)()
 	  , PROMISE            = 'Promise'
 	  , TypeError          = global.TypeError
@@ -2395,7 +2395,7 @@ var require$$1$14 = Object.freeze({
 
 	$export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
 	interopDefault(require$$3$3)($Promise, PROMISE);
-	interopDefault(require$$2$6)(PROMISE);
+	interopDefault(require$$2$7)(PROMISE);
 	Wrapper = interopDefault(require$$0$7)[PROMISE];
 
 	// statics
@@ -2650,15 +2650,20 @@ var require$$1$14 = Object.freeze({
 	var defineProperty$2 = interopDefault(defineProperty$1);
 
 
-	var require$$0$18 = Object.freeze({
+	var require$$0$19 = Object.freeze({
 	  default: defineProperty$2
 	});
 
 	var defineProperty = createCommonjsModule(function (module) {
-	module.exports = { "default": interopDefault(require$$0$18), __esModule: true };
+	module.exports = { "default": interopDefault(require$$0$19), __esModule: true };
 	});
 
 	var _Object$defineProperty = interopDefault(defineProperty);
+
+
+	var require$$0$18 = Object.freeze({
+		default: _Object$defineProperty
+	});
 
 	var rulesHolder = {};
 
@@ -2684,6 +2689,132 @@ var require$$1$14 = Object.freeze({
 	  return rulesHolder[name] || {};
 	}
 
+	var _objectGops = createCommonjsModule(function (module, exports) {
+	exports.f = Object.getOwnPropertySymbols;
+	});
+
+	var _objectGops$1 = interopDefault(_objectGops);
+	var f$1 = _objectGops.f;
+
+var require$$4$7 = Object.freeze({
+		default: _objectGops$1,
+		f: f$1
+	});
+
+	var _objectPie = createCommonjsModule(function (module, exports) {
+	exports.f = {}.propertyIsEnumerable;
+	});
+
+	var _objectPie$1 = interopDefault(_objectPie);
+	var f$2 = _objectPie.f;
+
+var require$$3$7 = Object.freeze({
+		default: _objectPie$1,
+		f: f$2
+	});
+
+	var _objectAssign = createCommonjsModule(function (module) {
+	'use strict';
+	// 19.1.2.1 Object.assign(target, source, ...)
+	var getKeys  = interopDefault(require$$1$5)
+	  , gOPS     = interopDefault(require$$4$7)
+	  , pIE      = interopDefault(require$$3$7)
+	  , toObject = interopDefault(require$$2$6)
+	  , IObject  = interopDefault(require$$1$8)
+	  , $assign  = Object.assign;
+
+	// should work with symbols and should have deterministic property order (V8 bug)
+	module.exports = !$assign || interopDefault(require$$0$10)(function(){
+	  var A = {}
+	    , B = {}
+	    , S = Symbol()
+	    , K = 'abcdefghijklmnopqrst';
+	  A[S] = 7;
+	  K.split('').forEach(function(k){ B[k] = k; });
+	  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+	}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
+	  var T     = toObject(target)
+	    , aLen  = arguments.length
+	    , index = 1
+	    , getSymbols = gOPS.f
+	    , isEnum     = pIE.f;
+	  while(aLen > index){
+	    var S      = IObject(arguments[index++])
+	      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
+	      , length = keys.length
+	      , j      = 0
+	      , key;
+	    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
+	  } return T;
+	} : $assign;
+	});
+
+	var _objectAssign$1 = interopDefault(_objectAssign);
+
+
+	var require$$0$22 = Object.freeze({
+	  default: _objectAssign$1
+	});
+
+	var es6_object_assign = createCommonjsModule(function (module) {
+	// 19.1.3.1 Object.assign(target, source)
+	var $export = interopDefault(require$$2);
+
+	$export($export.S + $export.F, 'Object', {assign: interopDefault(require$$0$22)});
+	});
+
+	interopDefault(es6_object_assign);
+
+	var assign$2 = createCommonjsModule(function (module) {
+	module.exports = interopDefault(require$$0$7).Object.assign;
+	});
+
+	var assign$3 = interopDefault(assign$2);
+
+
+	var require$$0$21 = Object.freeze({
+		default: assign$3
+	});
+
+	var assign = createCommonjsModule(function (module) {
+	module.exports = { "default": interopDefault(require$$0$21), __esModule: true };
+	});
+
+	var assign$1 = interopDefault(assign);
+
+
+	var require$$0$20 = Object.freeze({
+		default: assign$1
+	});
+
+	var _extends = createCommonjsModule(function (module, exports) {
+	"use strict";
+
+	exports.__esModule = true;
+
+	var _assign = interopDefault(require$$0$20);
+
+	var _assign2 = _interopRequireDefault(_assign);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _assign2.default || function (target) {
+	  for (var i = 1; i < arguments.length; i++) {
+	    var source = arguments[i];
+
+	    for (var key in source) {
+	      if (Object.prototype.hasOwnProperty.call(source, key)) {
+	        target[key] = source[key];
+	      }
+	    }
+	  }
+
+	  return target;
+	};
+	});
+
+	var _extends$1 = interopDefault(_extends);
+
 	var classCallCheck = createCommonjsModule(function (module, exports) {
 	"use strict";
 
@@ -2697,6 +2828,89 @@ var require$$1$14 = Object.freeze({
 	});
 
 	var _classCallCheck = interopDefault(classCallCheck);
+
+	var createClass = createCommonjsModule(function (module, exports) {
+	"use strict";
+
+	exports.__esModule = true;
+
+	var _defineProperty = interopDefault(require$$0$18);
+
+	var _defineProperty2 = _interopRequireDefault(_defineProperty);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];
+	      descriptor.enumerable = descriptor.enumerable || false;
+	      descriptor.configurable = true;
+	      if ("value" in descriptor) descriptor.writable = true;
+	      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
+	    }
+	  }
+
+	  return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	    if (staticProps) defineProperties(Constructor, staticProps);
+	    return Constructor;
+	  };
+	}();
+	});
+
+	var _createClass = interopDefault(createClass);
+
+	var _objectSap = createCommonjsModule(function (module) {
+	// most Object methods by ES6 should accept primitives
+	var $export = interopDefault(require$$2)
+	  , core    = interopDefault(require$$0$7)
+	  , fails   = interopDefault(require$$0$10);
+	module.exports = function(KEY, exec){
+	  var fn  = (core.Object || {})[KEY] || Object[KEY]
+	    , exp = {};
+	  exp[KEY] = exec(fn);
+	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
+	};
+	});
+
+	var _objectSap$1 = interopDefault(_objectSap);
+
+
+	var require$$0$24 = Object.freeze({
+	  default: _objectSap$1
+	});
+
+	var es6_object_keys = createCommonjsModule(function (module) {
+	// 19.1.2.14 Object.keys(O)
+	var toObject = interopDefault(require$$2$6)
+	  , $keys    = interopDefault(require$$1$5);
+
+	interopDefault(require$$0$24)('keys', function(){
+	  return function keys(it){
+	    return $keys(toObject(it));
+	  };
+	});
+	});
+
+	interopDefault(es6_object_keys);
+
+	var keys$1 = createCommonjsModule(function (module) {
+	module.exports = interopDefault(require$$0$7).Object.keys;
+	});
+
+	var keys$2 = interopDefault(keys$1);
+
+
+	var require$$0$23 = Object.freeze({
+		default: keys$2
+	});
+
+	var keys = createCommonjsModule(function (module) {
+	module.exports = { "default": interopDefault(require$$0$23), __esModule: true };
+	});
+
+	var _Object$keys = interopDefault(keys);
 
 	var validateRule = function () {
 	  var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(rule, expected, value, message, rules, messages, property, obj, schema) {
@@ -2807,9 +3021,8 @@ var require$$1$14 = Object.freeze({
 	    var properties = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	    var rules = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	    var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-	    var errors = arguments.length <= 5 || arguments[5] === undefined ? {} : arguments[5];
 
-	    var _properties$property, _properties$property$, propertyRules, _properties$property$2, propertyMessages, propertyProperties, value, propertyErrors, ln, i, item, itemErrors;
+	    var _properties$property, _properties$property$, propertyRules, _properties$property$2, propertyMessages, propertyProperties, value, propertyErrors, ln, i, item;
 
 	    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
 	      while (1) {
@@ -2834,52 +3047,52 @@ var require$$1$14 = Object.freeze({
 	            propertyErrors = _context3.sent;
 
 	            if (!propertyProperties) {
-	              _context3.next = 29;
+	              _context3.next = 30;
 	              break;
 	            }
 
 	            if (!isObject(value)) {
-	              _context3.next = 18;
+	              _context3.next = 19;
 	              break;
 	            }
 
 	            _context3.next = 16;
-	            return validateObject(value, propertyProperties, rules, messages, propertyErrors);
+	            return validateObject(value, propertyProperties, rules, messages);
 
 	          case 16:
-	            _context3.next = 29;
+	            propertyErrors[property] = _context3.sent;
+	            _context3.next = 30;
 	            break;
 
-	          case 18:
+	          case 19:
 	            if (!isArray(value)) {
-	              _context3.next = 29;
+	              _context3.next = 30;
 	              break;
 	            }
 
 	            ln = value.length;
 	            i = 0;
 
-	          case 21:
+	          case 22:
 	            if (!(i < ln)) {
-	              _context3.next = 29;
+	              _context3.next = 30;
 	              break;
 	            }
 
 	            item = value[i];
-	            itemErrors = propertyErrors[i] || (propertyErrors[i] = {});
 	            _context3.next = 26;
-	            return validateObject(item, propertyProperties, rules, messages, itemErrors);
+	            return validateObject(item, propertyProperties, rules, messages);
 
 	          case 26:
+	            propertyErrors[i] = _context3.sent;
+
+	          case 27:
 	            i++;
-	            _context3.next = 21;
+	            _context3.next = 22;
 	            break;
 
-	          case 29:
-
-	            errors[property] = propertyErrors;
-
-	            return _context3.abrupt('return', errors);
+	          case 30:
+	            return _context3.abrupt('return', propertyErrors);
 
 	          case 31:
 	          case 'end':
@@ -2889,7 +3102,7 @@ var require$$1$14 = Object.freeze({
 	    }, _callee3, this);
 	  }));
 
-	  return function validateProperty(_x18, _x19, _x20, _x21, _x22, _x23) {
+	  return function validateProperty(_x18, _x19, _x20, _x21, _x22) {
 	    return _ref3.apply(this, arguments);
 	  };
 	}();
@@ -2898,38 +3111,46 @@ var require$$1$14 = Object.freeze({
 	  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(obj, properties) {
 	    var rules = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	    var messages = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-	    var errors = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-	    var property;
+	    var errors, property, propertyErrors;
 	    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
 	      while (1) {
 	        switch (_context4.prev = _context4.next) {
 	          case 0:
+	            errors = {};
 	            _context4.t0 = _regeneratorRuntime.keys(properties);
 
-	          case 1:
+	          case 2:
 	            if ((_context4.t1 = _context4.t0()).done) {
-	              _context4.next = 8;
+	              _context4.next = 11;
 	              break;
 	            }
 
 	            property = _context4.t1.value;
 
 	            if (!properties.hasOwnProperty(property)) {
-	              _context4.next = 6;
+	              _context4.next = 9;
 	              break;
 	            }
 
-	            _context4.next = 6;
-	            return validateProperty(property, obj, properties, rules, messages, errors);
+	            _context4.next = 7;
+	            return validateProperty(property, obj, properties, rules, messages);
 
-	          case 6:
-	            _context4.next = 1;
-	            break;
+	          case 7:
+	            propertyErrors = _context4.sent;
 
-	          case 8:
-	            return _context4.abrupt('return', errors);
+
+	            if (propertyErrors && _Object$keys(propertyErrors).length > 0) {
+	              errors[property] = propertyErrors;
+	            }
 
 	          case 9:
+	            _context4.next = 2;
+	            break;
+
+	          case 11:
+	            return _context4.abrupt('return', new ValidationResult(errors));
+
+	          case 12:
 	          case 'end':
 	            return _context4.stop();
 	        }
@@ -2937,7 +3158,7 @@ var require$$1$14 = Object.freeze({
 	    }, _callee4, this);
 	  }));
 
-	  return function validateObject(_x28, _x29, _x30, _x31, _x32) {
+	  return function validateObject(_x26, _x27, _x28, _x29) {
 	    return _ref4.apply(this, arguments);
 	  };
 	}();
@@ -2953,7 +3174,7 @@ var require$$1$14 = Object.freeze({
 	            messages = schema.messages;
 	            properties = schema.properties;
 	            _context5.next = 5;
-	            return validateObject(obj, properties || schema, rules, messages, {});
+	            return validateObject(obj, properties || schema, rules, messages);
 
 	          case 5:
 	            return _context5.abrupt('return', _context5.sent);
@@ -2966,9 +3187,50 @@ var require$$1$14 = Object.freeze({
 	    }, _callee5, this);
 	  }));
 
-	  return function validate(_x36, _x37) {
+	  return function validate(_x32, _x33) {
 	    return _ref5.apply(this, arguments);
 	  };
+	}();
+
+	var ValidationResult = function () {
+	  function ValidationResult(errors) {
+	    _classCallCheck(this, ValidationResult);
+
+	    this._errors = errors;
+	  }
+
+	  _createClass(ValidationResult, [{
+	    key: 'hasErrors',
+	    value: function hasErrors() {
+	      return _Object$keys(this._errors).length > 0;
+	    }
+	  }, {
+	    key: 'isValid',
+	    value: function isValid() {
+	      return !this.hasErrors();
+	    }
+	  }, {
+	    key: 'getErrors',
+	    value: function getErrors() {
+	      return _extends$1({}, this._errors);
+	    }
+	  }, {
+	    key: 'getErrorsFor',
+	    value: function getErrorsFor(property) {
+	      return _extends$1({}, this._errors[property] || {});
+	    }
+	  }, {
+	    key: 'getErrorsAsArrayFor',
+	    value: function getErrorsAsArrayFor(property) {
+	      var errors = this.getErrorsFor(property);
+
+	      return _Object$keys(this._errors).map(function (key) {
+	        return errors[key];
+	      });
+	    }
+	  }]);
+
+	  return ValidationResult;
 	}();
 
 	var ValidationSchema = function ValidationSchema(schema) {
@@ -3212,12 +3474,12 @@ var require$$1$14 = Object.freeze({
 	var stringify$2 = interopDefault(stringify$1);
 
 
-	var require$$0$19 = Object.freeze({
+	var require$$0$25 = Object.freeze({
 	  default: stringify$2
 	});
 
 	var stringify = createCommonjsModule(function (module) {
-	module.exports = { "default": interopDefault(require$$0$19), __esModule: true };
+	module.exports = { "default": interopDefault(require$$0$25), __esModule: true };
 	});
 
 	var _JSON$stringify = interopDefault(stringify);
@@ -3267,6 +3529,7 @@ var require$$1$14 = Object.freeze({
 	exports.validateProperty = validateProperty;
 	exports.validateObject = validateObject;
 	exports.validate = validate;
+	exports.ValidationResult = ValidationResult;
 	exports.ValidationSchema = ValidationSchema;
 	exports.divisibleByRule = divisibleByRule;
 	exports.enumRule = enumRule;
