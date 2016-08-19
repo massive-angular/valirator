@@ -166,10 +166,10 @@ export class ValidationResult {
         return this._invokeActionFor(property, 'getErrorsAsArray', ...exclude);
       },
       getFirstError(...exclude) {
-        return this.getErrorsAsArray(exclude)[0];
+        return (this.getErrorsAsArray(exclude) || [])[0];
       },
       getFirstErrorFor(property, ...exclude) {
-        return this.getErrorsAsArrayFor(property, ...exclude)[0];
+        return (this.getErrorsAsArrayFor(property, ...exclude) || [])[0];
       }
     };
   }
