@@ -101,7 +101,7 @@ export async function validate(schema, obj) {
 }
 
 export class ValidationResult {
-  constructor(errors) {
+  constructor(errors = {}) {
     return {
       ...this,
       ...errors,
