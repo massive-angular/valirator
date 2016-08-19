@@ -3,7 +3,6 @@ import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
 const pkg = require('./package.json');
-const external = Object.keys(pkg.dependencies);
 
 export default {
   entry: './src/valirator.js',
@@ -24,11 +23,9 @@ export default {
     }),
     babel({
       runtimeHelpers: true,
-      externalHelpers: true,
       exclude: 'node_modules/**'
     })
   ],
-  external: external,
   targets: [{
     dest: pkg['main'],
     format: 'umd',

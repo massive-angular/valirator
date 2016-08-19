@@ -128,7 +128,7 @@ export class ValidationResult {
         return Object
           .keys(errors)
           .some(key => {
-            if (types.includes(key)) {
+            if (types.indexOf(key) !== -1) {
               return true;
             }
 
@@ -147,7 +147,7 @@ export class ValidationResult {
       getErrorsAsArray(...exclude) {
         return Object
           .keys(errors)
-          .filter(key => !exclude.includes(key))
+          .filter(key => exclude.indexOf(key) === -1)
           .map(key => errors[key]);
       },
       getFirstError(...exclude) {
