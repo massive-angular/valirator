@@ -3301,7 +3301,7 @@ var ValidationResult = function ValidationResult() {
 
   _classCallCheck(this, ValidationResult);
 
-  return _extends$1({}, this, errors, errors.__proto__, {
+  return _extends$1({}, this, errors.__proto__, errors, {
     _invokeActionFor: function _invokeActionFor(property, action) {
       var _errors$property;
 
