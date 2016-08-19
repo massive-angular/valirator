@@ -48,15 +48,23 @@ export async function validateProperty(property, obj, properties = {}, rules = {
 
   const value = obj[property];
 
+  const valueValidationResult = await validateValue(value, propertyRules, propertyMessages, property, obj, properties);
+
+  let errors = valueValidationResult.getErrors();
+
   if (propertyProperties) {
     if (isArray(value)) {
-      return await validateArray(value, propertyProperties, rules, messages);
+      const arrayValidationResult = await validateArray(value, propertyProperties, rules, messages);
+
+      errors.__proto__ = arrayValidationResult.getErrors();
     } else if (isObject(value)) {
-      return await validateObject(value, propertyProperties, rules, messages);
+      const objectValidationResult = await validateObject(value, propertyProperties, rules, messages);
+
+      errors.__proto__ = objectValidationResult.getErrors();
     }
-  } else {
-    return validateValue(value, propertyRules, propertyMessages, property, obj, properties)
   }
+
+  return new ValidationResult(errors);
 }
 
 export async function validateArray(array, properties, rules = {}, messages = {}) {
@@ -97,6 +105,7 @@ export class ValidationResult {
     return {
       ...this,
       ...errors,
+      ...errors.__proto__,
       isValid() {
         return !this.hasErrors();
       },
@@ -104,22 +113,30 @@ export class ValidationResult {
         return Object
           .keys(errors)
           .some(key => {
+            if (errors[key]) {
+              return true;
+            }
+
             if (errors[key].hasErrors) {
               return errors[key].hasErrors();
             }
 
-            return errors[key];
+            return false;
           });
       },
       hasErrorsOfTypes(...types) {
         return Object
           .keys(errors)
           .some(key => {
+            if (types.includes(key)) {
+              return true;
+            }
+
             if (errors[key].hasErrorsOfTypes) {
               return errors[key].hasErrorsOfTypes(...types);
             }
 
-            return types.includes(key);
+            return false;
           });
       },
       getErrors() {

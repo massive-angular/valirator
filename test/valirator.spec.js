@@ -209,6 +209,45 @@ describe('valirator', () => {
         });
     });
 
+    it('should support array validation and schemas as well', (done) => {
+      const obj = {
+        Persons: [{
+          FirstName: 'John'
+        }, {
+          FirstName: null
+        }, {
+          FirstName: 'Bob'
+        }]
+      };
+
+      const schema = {
+        properties: {
+          Persons: {
+            rules: {
+              minLength: 5
+            },
+            properties: {
+              FirstName: {
+                rules: {
+                  required: true
+                }
+              }
+            }
+          }
+        }
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.Persons.hasErrorsOfTypes('minLength')).toBe(true);
+          expect(errors.Persons[0].FirstName.hasErrors()).toBe(false);
+          expect(errors.Persons[1].FirstName.hasErrors()).toBe(true);
+          expect(errors.Persons[2].FirstName.hasErrors()).toBe(false);
+
+          done();
+        });
+    });
+
     it('should support custom rule', (done) => {
       const obj = {
         FirstName: 2

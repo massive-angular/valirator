@@ -1,7 +1,4 @@
 {
   "parser": "babel-eslint",
-  "extends": "eslint:recommended",
-  "globals": {
-    "Proxy": true
-  }
+  "extends": "eslint:recommended"
 }
