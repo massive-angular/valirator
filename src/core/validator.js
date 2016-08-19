@@ -113,11 +113,10 @@ export class ValidationResult {
         return !this.hasErrors();
       },
       hasErrors() {
-        let keys = Object.keys(errors);
-
-        if (!keys.length) {
-          keys = Object.keys(errors.__proto__);
-        }
+        const keys = [
+          ...Object.keys(errors.__proto__),
+          ...Object.keys(errors)
+        ];
 
         return keys.some(key => {
           if (errors[key].hasErrors) {
@@ -131,11 +130,10 @@ export class ValidationResult {
         return this._invokeActionFor(property, 'hasErrors');
       },
       hasErrorsOfTypes(...types) {
-        let keys = Object.keys(errors);
-
-        if (!keys.length) {
-          keys = Object.keys(errors.__proto__);
-        }
+        const keys = [
+          ...Object.keys(errors.__proto__),
+          ...Object.keys(errors)
+        ];
 
         return keys.some(key => {
           if (types.indexOf(key) !== -1) {

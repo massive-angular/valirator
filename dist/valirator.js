@@ -875,7 +875,7 @@ module.exports = function(fn, that, length){
 var _ctx$1 = interopDefault(_ctx);
 
 
-var require$$5 = Object.freeze({
+var require$$8 = Object.freeze({
   default: _ctx$1
 });
 
@@ -920,13 +920,13 @@ module.exports = function(exec){
 var _fails$1 = interopDefault(_fails);
 
 
-var require$$0$10 = Object.freeze({
+var require$$0$9 = Object.freeze({
   default: _fails$1
 });
 
 var _descriptors = createCommonjsModule(function (module) {
 // Thank's IE8 for his funny defineProperty
-module.exports = !interopDefault(require$$0$10)(function(){
+module.exports = !interopDefault(require$$0$9)(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
 });
@@ -934,7 +934,7 @@ module.exports = !interopDefault(require$$0$10)(function(){
 var _descriptors$1 = interopDefault(_descriptors);
 
 
-var require$$1$3 = Object.freeze({
+var require$$1$4 = Object.freeze({
   default: _descriptors$1
 });
 
@@ -956,7 +956,7 @@ var require$$2$2 = Object.freeze({
 });
 
 var _ie8DomDefine = createCommonjsModule(function (module) {
-module.exports = !interopDefault(require$$1$3) && !interopDefault(require$$0$10)(function(){
+module.exports = !interopDefault(require$$1$4) && !interopDefault(require$$0$9)(function(){
   return Object.defineProperty(interopDefault(require$$2$2)('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
 });
@@ -986,17 +986,17 @@ module.exports = function(it, S){
 var _toPrimitive$1 = interopDefault(_toPrimitive);
 
 
-var require$$1$4 = Object.freeze({
+var require$$1$5 = Object.freeze({
   default: _toPrimitive$1
 });
 
 var _objectDp = createCommonjsModule(function (module, exports) {
 var anObject       = interopDefault(require$$2)
   , IE8_DOM_DEFINE = interopDefault(require$$2$1)
-  , toPrimitive    = interopDefault(require$$1$4)
+  , toPrimitive    = interopDefault(require$$1$5)
   , dP             = Object.defineProperty;
 
-exports.f = interopDefault(require$$1$3) ? Object.defineProperty : function defineProperty(O, P, Attributes){
+exports.f = interopDefault(require$$1$4) ? Object.defineProperty : function defineProperty(O, P, Attributes){
   anObject(O);
   P = toPrimitive(P, true);
   anObject(Attributes);
@@ -1012,7 +1012,7 @@ exports.f = interopDefault(require$$1$3) ? Object.defineProperty : function defi
 var _objectDp$1 = interopDefault(_objectDp);
 var f = _objectDp.f;
 
-var require$$0$9 = Object.freeze({
+var require$$1$3 = Object.freeze({
   default: _objectDp$1,
   f: f
 });
@@ -1031,14 +1031,14 @@ module.exports = function(bitmap, value){
 var _propertyDesc$1 = interopDefault(_propertyDesc);
 
 
-var require$$3 = Object.freeze({
+var require$$0$10 = Object.freeze({
   default: _propertyDesc$1
 });
 
 var _hide = createCommonjsModule(function (module) {
-var dP         = interopDefault(require$$0$9)
-  , createDesc = interopDefault(require$$3);
-module.exports = interopDefault(require$$1$3) ? function(object, key, value){
+var dP         = interopDefault(require$$1$3)
+  , createDesc = interopDefault(require$$0$10);
+module.exports = interopDefault(require$$1$4) ? function(object, key, value){
   return dP.f(object, key, createDesc(1, value));
 } : function(object, key, value){
   object[key] = value;
@@ -1056,7 +1056,7 @@ var require$$0$8 = Object.freeze({
 var _export = createCommonjsModule(function (module) {
 var global    = interopDefault(require$$4)
   , core      = interopDefault(require$$0$7)
-  , ctx       = interopDefault(require$$5)
+  , ctx       = interopDefault(require$$8)
   , hide      = interopDefault(require$$0$8)
   , PROTOTYPE = 'prototype';
 
@@ -1156,7 +1156,7 @@ module.exports = {};
 var _iterators$1 = interopDefault(_iterators);
 
 
-var require$$1$5 = Object.freeze({
+var require$$1$6 = Object.freeze({
 	default: _iterators$1
 });
 
@@ -1186,13 +1186,13 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
 var _iobject$1 = interopDefault(_iobject);
 
 
-var require$$1$8 = Object.freeze({
+var require$$1$9 = Object.freeze({
   default: _iobject$1
 });
 
 var _toIobject = createCommonjsModule(function (module) {
 // to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = interopDefault(require$$1$8)
+var IObject = interopDefault(require$$1$9)
   , defined = interopDefault(require$$0$5);
 module.exports = function(it){
   return IObject(defined(it));
@@ -1202,7 +1202,7 @@ module.exports = function(it){
 var _toIobject$1 = interopDefault(_toIobject);
 
 
-var require$$1$7 = Object.freeze({
+var require$$1$8 = Object.freeze({
   default: _toIobject$1
 });
 
@@ -1218,7 +1218,7 @@ module.exports = function(it){
 var _toLength$1 = interopDefault(_toLength);
 
 
-var require$$1$10 = Object.freeze({
+var require$$3$1 = Object.freeze({
   default: _toLength$1
 });
 
@@ -1242,8 +1242,8 @@ var require$$0$12 = Object.freeze({
 var _arrayIncludes = createCommonjsModule(function (module) {
 // false -> Array#indexOf
 // true  -> Array#includes
-var toIObject = interopDefault(require$$1$7)
-  , toLength  = interopDefault(require$$1$10)
+var toIObject = interopDefault(require$$1$8)
+  , toLength  = interopDefault(require$$3$1)
   , toIndex   = interopDefault(require$$0$12);
 module.exports = function(IS_INCLUDES){
   return function($this, el, fromIndex){
@@ -1266,7 +1266,7 @@ module.exports = function(IS_INCLUDES){
 var _arrayIncludes$1 = interopDefault(_arrayIncludes);
 
 
-var require$$1$9 = Object.freeze({
+var require$$1$10 = Object.freeze({
   default: _arrayIncludes$1
 });
 
@@ -1318,8 +1318,8 @@ var require$$0$13 = Object.freeze({
 
 var _objectKeysInternal = createCommonjsModule(function (module) {
 var has          = interopDefault(require$$2$3)
-  , toIObject    = interopDefault(require$$1$7)
-  , arrayIndexOf = interopDefault(require$$1$9)(false)
+  , toIObject    = interopDefault(require$$1$8)
+  , arrayIndexOf = interopDefault(require$$1$10)(false)
   , IE_PROTO     = interopDefault(require$$0$13)('IE_PROTO');
 
 module.exports = function(object, names){
@@ -1339,7 +1339,7 @@ module.exports = function(object, names){
 var _objectKeysInternal$1 = interopDefault(_objectKeysInternal);
 
 
-var require$$1$6 = Object.freeze({
+var require$$1$7 = Object.freeze({
   default: _objectKeysInternal$1
 });
 
@@ -1359,7 +1359,7 @@ var require$$0$14 = Object.freeze({
 
 var _objectKeys = createCommonjsModule(function (module) {
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys       = interopDefault(require$$1$6)
+var $keys       = interopDefault(require$$1$7)
   , enumBugKeys = interopDefault(require$$0$14);
 
 module.exports = Object.keys || function keys(O){
@@ -1370,16 +1370,16 @@ module.exports = Object.keys || function keys(O){
 var _objectKeys$1 = interopDefault(_objectKeys);
 
 
-var require$$5$1 = Object.freeze({
+var require$$5 = Object.freeze({
   default: _objectKeys$1
 });
 
 var _objectDps = createCommonjsModule(function (module) {
-var dP       = interopDefault(require$$0$9)
+var dP       = interopDefault(require$$1$3)
   , anObject = interopDefault(require$$2)
-  , getKeys  = interopDefault(require$$5$1);
+  , getKeys  = interopDefault(require$$5);
 
-module.exports = interopDefault(require$$1$3) ? Object.defineProperties : function defineProperties(O, Properties){
+module.exports = interopDefault(require$$1$4) ? Object.defineProperties : function defineProperties(O, Properties){
   anObject(O);
   var keys   = getKeys(Properties)
     , length = keys.length
@@ -1481,7 +1481,7 @@ var require$$0$15 = Object.freeze({
 });
 
 var _setToStringTag = createCommonjsModule(function (module) {
-var def = interopDefault(require$$0$9).f
+var def = interopDefault(require$$1$3).f
   , has = interopDefault(require$$2$3)
   , TAG = interopDefault(require$$0$15)('toStringTag');
 
@@ -1500,7 +1500,7 @@ var require$$3$3 = Object.freeze({
 var _iterCreate = createCommonjsModule(function (module) {
 'use strict';
 var create         = interopDefault(require$$4$1)
-  , descriptor     = interopDefault(require$$3)
+  , descriptor     = interopDefault(require$$0$10)
   , setToStringTag = interopDefault(require$$3$3)
   , IteratorPrototype = {};
 
@@ -1516,7 +1516,7 @@ module.exports = function(Constructor, NAME, next){
 var _iterCreate$1 = interopDefault(_iterCreate);
 
 
-var require$$3$1 = Object.freeze({
+var require$$3 = Object.freeze({
   default: _iterCreate$1
 });
 
@@ -1565,8 +1565,8 @@ var LIBRARY        = interopDefault(require$$17)
   , redefine       = interopDefault(require$$7)
   , hide           = interopDefault(require$$0$8)
   , has            = interopDefault(require$$2$3)
-  , Iterators      = interopDefault(require$$1$5)
-  , $iterCreate    = interopDefault(require$$3$1)
+  , Iterators      = interopDefault(require$$1$6)
+  , $iterCreate    = interopDefault(require$$3)
   , setToStringTag = interopDefault(require$$3$3)
   , getPrototypeOf = interopDefault(require$$1$12)
   , ITERATOR       = interopDefault(require$$0$15)('iterator')
@@ -1688,8 +1688,8 @@ var es6_array_iterator = createCommonjsModule(function (module) {
 'use strict';
 var addToUnscopables = interopDefault(require$$4$3)
   , step             = interopDefault(require$$3$4)
-  , Iterators        = interopDefault(require$$1$5)
-  , toIObject        = interopDefault(require$$1$7);
+  , Iterators        = interopDefault(require$$1$6)
+  , toIObject        = interopDefault(require$$1$8);
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
@@ -1726,7 +1726,7 @@ interopDefault(es6_array_iterator);
 var web_dom_iterable = createCommonjsModule(function (module) {
 var global        = interopDefault(require$$4)
   , hide          = interopDefault(require$$0$8)
-  , Iterators     = interopDefault(require$$1$5)
+  , Iterators     = interopDefault(require$$1$6)
   , TO_STRING_TAG = interopDefault(require$$0$15)('toStringTag');
 
 for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
@@ -1806,13 +1806,13 @@ module.exports = function(iterator, fn, value, entries){
 var _iterCall$1 = interopDefault(_iterCall);
 
 
-var require$$4$4 = Object.freeze({
+var require$$5$1 = Object.freeze({
   default: _iterCall$1
 });
 
 var _isArrayIter = createCommonjsModule(function (module) {
 // check on default Array iterator
-var Iterators  = interopDefault(require$$1$5)
+var Iterators  = interopDefault(require$$1$6)
   , ITERATOR   = interopDefault(require$$0$15)('iterator')
   , ArrayProto = Array.prototype;
 
@@ -1824,14 +1824,14 @@ module.exports = function(it){
 var _isArrayIter$1 = interopDefault(_isArrayIter);
 
 
-var require$$3$6 = Object.freeze({
+var require$$4$4 = Object.freeze({
   default: _isArrayIter$1
 });
 
 var core_getIteratorMethod = createCommonjsModule(function (module) {
 var classof   = interopDefault(require$$3$5)
   , ITERATOR  = interopDefault(require$$0$15)('iterator')
-  , Iterators = interopDefault(require$$1$5);
+  , Iterators = interopDefault(require$$1$6);
 module.exports = interopDefault(require$$0$7).getIteratorMethod = function(it){
   if(it != undefined)return it[ITERATOR]
     || it['@@iterator']
@@ -1842,17 +1842,17 @@ module.exports = interopDefault(require$$0$7).getIteratorMethod = function(it){
 var core_getIteratorMethod$1 = interopDefault(core_getIteratorMethod);
 
 
-var require$$0$16 = Object.freeze({
+var require$$1$13 = Object.freeze({
   default: core_getIteratorMethod$1
 });
 
 var _forOf = createCommonjsModule(function (module) {
-var ctx         = interopDefault(require$$5)
-  , call        = interopDefault(require$$4$4)
-  , isArrayIter = interopDefault(require$$3$6)
+var ctx         = interopDefault(require$$8)
+  , call        = interopDefault(require$$5$1)
+  , isArrayIter = interopDefault(require$$4$4)
   , anObject    = interopDefault(require$$2)
-  , toLength    = interopDefault(require$$1$10)
-  , getIterFn   = interopDefault(require$$0$16)
+  , toLength    = interopDefault(require$$3$1)
+  , getIterFn   = interopDefault(require$$1$13)
   , BREAK       = {}
   , RETURN      = {};
 var exports = module.exports = function(iterable, entries, fn, that, ITERATOR){
@@ -1895,7 +1895,7 @@ module.exports = function(O, D){
 var _speciesConstructor$1 = interopDefault(_speciesConstructor);
 
 
-var require$$8 = Object.freeze({
+var require$$8$1 = Object.freeze({
   default: _speciesConstructor$1
 });
 
@@ -1926,7 +1926,7 @@ var require$$4$5 = Object.freeze({
 });
 
 var _task = createCommonjsModule(function (module) {
-var ctx                = interopDefault(require$$5)
+var ctx                = interopDefault(require$$8)
   , invoke             = interopDefault(require$$4$5)
   , html               = interopDefault(require$$3$2)
   , cel                = interopDefault(require$$2$2)
@@ -2007,7 +2007,7 @@ var _task$1 = interopDefault(_task);
 var set = _task.set;
 var clear = _task.clear;
 
-var require$$1$13 = Object.freeze({
+var require$$1$14 = Object.freeze({
   default: _task$1,
   set: set,
   clear: clear
@@ -2015,7 +2015,7 @@ var require$$1$13 = Object.freeze({
 
 var _microtask = createCommonjsModule(function (module) {
 var global    = interopDefault(require$$4)
-  , macrotask = interopDefault(require$$1$13).set
+  , macrotask = interopDefault(require$$1$14).set
   , Observer  = global.MutationObserver || global.WebKitMutationObserver
   , process   = global.process
   , Promise   = global.Promise
@@ -2112,8 +2112,8 @@ var _setSpecies = createCommonjsModule(function (module) {
 'use strict';
 var global      = interopDefault(require$$4)
   , core        = interopDefault(require$$0$7)
-  , dP          = interopDefault(require$$0$9)
-  , DESCRIPTORS = interopDefault(require$$1$3)
+  , dP          = interopDefault(require$$1$3)
+  , DESCRIPTORS = interopDefault(require$$1$4)
   , SPECIES     = interopDefault(require$$0$15)('species');
 
 module.exports = function(KEY){
@@ -2159,7 +2159,7 @@ module.exports = function(exec, skipClosing){
 var _iterDetect$1 = interopDefault(_iterDetect);
 
 
-var require$$0$17 = Object.freeze({
+var require$$0$16 = Object.freeze({
   default: _iterDetect$1
 });
 
@@ -2167,15 +2167,15 @@ var es6_promise = createCommonjsModule(function (module) {
 'use strict';
 var LIBRARY            = interopDefault(require$$17)
   , global             = interopDefault(require$$4)
-  , ctx                = interopDefault(require$$5)
+  , ctx                = interopDefault(require$$8)
   , classof            = interopDefault(require$$3$5)
   , $export            = interopDefault(require$$1$1)
   , isObject           = interopDefault(require$$12)
   , aFunction          = interopDefault(require$$1$2)
   , anInstance         = interopDefault(require$$10)
   , forOf              = interopDefault(require$$9)
-  , speciesConstructor = interopDefault(require$$8)
-  , task               = interopDefault(require$$1$13).set
+  , speciesConstructor = interopDefault(require$$8$1)
+  , task               = interopDefault(require$$1$14).set
   , microtask          = interopDefault(require$$6)()
   , PROMISE            = 'Promise'
   , TypeError          = global.TypeError
@@ -2419,7 +2419,7 @@ $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
     return capability.promise;
   }
 });
-$export($export.S + $export.F * !(USE_NATIVE && interopDefault(require$$0$17)(function(iter){
+$export($export.S + $export.F * !(USE_NATIVE && interopDefault(require$$0$16)(function(iter){
   $Promise.all(iter)['catch'](empty);
 })), PROMISE, {
   // 25.4.4.1 Promise.all(iterable)
@@ -2635,7 +2635,7 @@ var formatMessage = function () {
 var es6_object_defineProperty = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$1);
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-$export($export.S + $export.F * !interopDefault(require$$1$3), 'Object', {defineProperty: interopDefault(require$$0$9).f});
+$export($export.S + $export.F * !interopDefault(require$$1$4), 'Object', {defineProperty: interopDefault(require$$1$3).f});
 });
 
 interopDefault(es6_object_defineProperty);
@@ -2650,12 +2650,12 @@ module.exports = function defineProperty(it, key, desc){
 var defineProperty$2 = interopDefault(defineProperty$1);
 
 
-var require$$0$18 = Object.freeze({
+var require$$0$17 = Object.freeze({
   default: defineProperty$2
 });
 
 var defineProperty = createCommonjsModule(function (module) {
-module.exports = { "default": interopDefault(require$$0$18), __esModule: true };
+module.exports = { "default": interopDefault(require$$0$17), __esModule: true };
 });
 
 var _Object$defineProperty = interopDefault(defineProperty);
@@ -2688,7 +2688,7 @@ var _objectSap = createCommonjsModule(function (module) {
 // most Object methods by ES6 should accept primitives
 var $export = interopDefault(require$$1$1)
   , core    = interopDefault(require$$0$7)
-  , fails   = interopDefault(require$$0$10);
+  , fails   = interopDefault(require$$0$9);
 module.exports = function(KEY, exec){
   var fn  = (core.Object || {})[KEY] || Object[KEY]
     , exp = {};
@@ -2700,16 +2700,16 @@ module.exports = function(KEY, exec){
 var _objectSap$1 = interopDefault(_objectSap);
 
 
-var require$$0$20 = Object.freeze({
+var require$$0$19 = Object.freeze({
   default: _objectSap$1
 });
 
 var es6_object_keys = createCommonjsModule(function (module) {
 // 19.1.2.14 Object.keys(O)
 var toObject = interopDefault(require$$2$5)
-  , $keys    = interopDefault(require$$5$1);
+  , $keys    = interopDefault(require$$5);
 
-interopDefault(require$$0$20)('keys', function(){
+interopDefault(require$$0$19)('keys', function(){
   return function keys(it){
     return $keys(toObject(it));
   };
@@ -2725,15 +2725,123 @@ module.exports = interopDefault(require$$0$7).Object.keys;
 var keys$2 = interopDefault(keys$1);
 
 
-var require$$0$19 = Object.freeze({
+var require$$0$18 = Object.freeze({
 	default: keys$2
 });
 
 var keys = createCommonjsModule(function (module) {
-module.exports = { "default": interopDefault(require$$0$19), __esModule: true };
+module.exports = { "default": interopDefault(require$$0$18), __esModule: true };
 });
 
 var _Object$keys = interopDefault(keys);
+
+var _createProperty = createCommonjsModule(function (module) {
+'use strict';
+var $defineProperty = interopDefault(require$$1$3)
+  , createDesc      = interopDefault(require$$0$10);
+
+module.exports = function(object, index, value){
+  if(index in object)$defineProperty.f(object, index, createDesc(0, value));
+  else object[index] = value;
+};
+});
+
+var _createProperty$1 = interopDefault(_createProperty);
+
+
+var require$$2$7 = Object.freeze({
+  default: _createProperty$1
+});
+
+var es6_array_from = createCommonjsModule(function (module) {
+'use strict';
+var ctx            = interopDefault(require$$8)
+  , $export        = interopDefault(require$$1$1)
+  , toObject       = interopDefault(require$$2$5)
+  , call           = interopDefault(require$$5$1)
+  , isArrayIter    = interopDefault(require$$4$4)
+  , toLength       = interopDefault(require$$3$1)
+  , createProperty = interopDefault(require$$2$7)
+  , getIterFn      = interopDefault(require$$1$13);
+
+$export($export.S + $export.F * !interopDefault(require$$0$16)(function(iter){ Array.from(iter); }), 'Array', {
+  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
+  from: function from(arrayLike/*, mapfn = undefined, thisArg = undefined*/){
+    var O       = toObject(arrayLike)
+      , C       = typeof this == 'function' ? this : Array
+      , aLen    = arguments.length
+      , mapfn   = aLen > 1 ? arguments[1] : undefined
+      , mapping = mapfn !== undefined
+      , index   = 0
+      , iterFn  = getIterFn(O)
+      , length, result, step, iterator;
+    if(mapping)mapfn = ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
+    // if object isn't iterable or it's array with default iterator - use simple case
+    if(iterFn != undefined && !(C == Array && isArrayIter(iterFn))){
+      for(iterator = iterFn.call(O), result = new C; !(step = iterator.next()).done; index++){
+        createProperty(result, index, mapping ? call(iterator, mapfn, [step.value, index], true) : step.value);
+      }
+    } else {
+      length = toLength(O.length);
+      for(result = new C(length); length > index; index++){
+        createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
+      }
+    }
+    result.length = index;
+    return result;
+  }
+});
+});
+
+interopDefault(es6_array_from);
+
+var from$2 = createCommonjsModule(function (module) {
+module.exports = interopDefault(require$$0$7).Array.from;
+});
+
+var from$3 = interopDefault(from$2);
+
+
+var require$$0$21 = Object.freeze({
+	default: from$3
+});
+
+var from = createCommonjsModule(function (module) {
+module.exports = { "default": interopDefault(require$$0$21), __esModule: true };
+});
+
+var from$1 = interopDefault(from);
+
+
+var require$$0$20 = Object.freeze({
+	default: from$1
+});
+
+var toConsumableArray = createCommonjsModule(function (module, exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var _from = interopDefault(require$$0$20);
+
+var _from2 = _interopRequireDefault(_from);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  } else {
+    return (0, _from2.default)(arr);
+  }
+};
+});
+
+var _toConsumableArray = interopDefault(toConsumableArray);
 
 var _objectGops = createCommonjsModule(function (module, exports) {
 exports.f = Object.getOwnPropertySymbols;
@@ -2754,7 +2862,7 @@ exports.f = {}.propertyIsEnumerable;
 var _objectPie$1 = interopDefault(_objectPie);
 var f$2 = _objectPie.f;
 
-var require$$3$7 = Object.freeze({
+var require$$3$6 = Object.freeze({
 	default: _objectPie$1,
 	f: f$2
 });
@@ -2762,15 +2870,15 @@ var require$$3$7 = Object.freeze({
 var _objectAssign = createCommonjsModule(function (module) {
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
-var getKeys  = interopDefault(require$$5$1)
+var getKeys  = interopDefault(require$$5)
   , gOPS     = interopDefault(require$$4$7)
-  , pIE      = interopDefault(require$$3$7)
+  , pIE      = interopDefault(require$$3$6)
   , toObject = interopDefault(require$$2$5)
-  , IObject  = interopDefault(require$$1$8)
+  , IObject  = interopDefault(require$$1$9)
   , $assign  = Object.assign;
 
 // should work with symbols and should have deterministic property order (V8 bug)
-module.exports = !$assign || interopDefault(require$$0$10)(function(){
+module.exports = !$assign || interopDefault(require$$0$9)(function(){
   var A = {}
     , B = {}
     , S = Symbol()
@@ -2798,7 +2906,7 @@ module.exports = !$assign || interopDefault(require$$0$10)(function(){
 var _objectAssign$1 = interopDefault(_objectAssign);
 
 
-var require$$0$23 = Object.freeze({
+var require$$0$24 = Object.freeze({
   default: _objectAssign$1
 });
 
@@ -2806,7 +2914,7 @@ var es6_object_assign = createCommonjsModule(function (module) {
 // 19.1.3.1 Object.assign(target, source)
 var $export = interopDefault(require$$1$1);
 
-$export($export.S + $export.F, 'Object', {assign: interopDefault(require$$0$23)});
+$export($export.S + $export.F, 'Object', {assign: interopDefault(require$$0$24)});
 });
 
 interopDefault(es6_object_assign);
@@ -2818,18 +2926,18 @@ module.exports = interopDefault(require$$0$7).Object.assign;
 var assign$3 = interopDefault(assign$2);
 
 
-var require$$0$22 = Object.freeze({
+var require$$0$23 = Object.freeze({
 	default: assign$3
 });
 
 var assign = createCommonjsModule(function (module) {
-module.exports = { "default": interopDefault(require$$0$22), __esModule: true };
+module.exports = { "default": interopDefault(require$$0$23), __esModule: true };
 });
 
 var assign$1 = interopDefault(assign);
 
 
-var require$$0$21 = Object.freeze({
+var require$$0$22 = Object.freeze({
 	default: assign$1
 });
 
@@ -2838,7 +2946,7 @@ var _extends = createCommonjsModule(function (module, exports) {
 
 exports.__esModule = true;
 
-var _assign = interopDefault(require$$0$21);
+var _assign = interopDefault(require$$0$22);
 
 var _assign2 = _interopRequireDefault(_assign);
 
@@ -3207,11 +3315,7 @@ var ValidationResult = function ValidationResult() {
       return !this.hasErrors();
     },
     hasErrors: function hasErrors() {
-      var keys = _Object$keys(errors);
-
-      if (!keys.length) {
-        keys = _Object$keys(errors.__proto__);
-      }
+      var keys = [].concat(_toConsumableArray(_Object$keys(errors.__proto__)), _toConsumableArray(_Object$keys(errors)));
 
       return keys.some(function (key) {
         if (errors[key].hasErrors) {
@@ -3229,11 +3333,7 @@ var ValidationResult = function ValidationResult() {
         types[_key2] = arguments[_key2];
       }
 
-      var keys = _Object$keys(errors);
-
-      if (!keys.length) {
-        keys = _Object$keys(errors.__proto__);
-      }
+      var keys = [].concat(_toConsumableArray(_Object$keys(errors.__proto__)), _toConsumableArray(_Object$keys(errors)));
 
       return keys.some(function (key) {
         if (types.indexOf(key) !== -1) {
@@ -3538,12 +3638,12 @@ module.exports = function stringify(it){ // eslint-disable-line no-unused-vars
 var stringify$2 = interopDefault(stringify$1);
 
 
-var require$$0$24 = Object.freeze({
+var require$$0$25 = Object.freeze({
   default: stringify$2
 });
 
 var stringify = createCommonjsModule(function (module) {
-module.exports = { "default": interopDefault(require$$0$24), __esModule: true };
+module.exports = { "default": interopDefault(require$$0$25), __esModule: true };
 });
 
 var _JSON$stringify = interopDefault(stringify);
