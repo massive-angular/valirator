@@ -168,6 +168,8 @@ describe('valirator', () => {
       validate(schema, obj)
         .then(errors => {
           expect(errors.hasErrors()).toBe(true);
+          expect(errors.Person.hasErrors()).toBe(true);
+          expect(errors.Person.FirstName.hasErrors()).toBe(true);
           expect(errors.Person.FirstName.required).toBeDefined();
 
           done();
