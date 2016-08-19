@@ -106,6 +106,9 @@ export class ValidationResult {
       ...this,
       ...errors,
       ...errors.__proto__,
+      _invokeActionFor(property, action, ...args) {
+        return errors[property] && errors[property][action] && errors[property][action](...args);
+      },
       isValid() {
         return !this.hasErrors();
       },
@@ -124,6 +127,9 @@ export class ValidationResult {
             return false;
           });
       },
+      hasErrorsFor(property) {
+        return this._invokeActionFor(property, 'hasErrors');
+      },
       hasErrorsOfTypes(...types) {
         return Object
           .keys(errors)
@@ -139,10 +145,16 @@ export class ValidationResult {
             return false;
           });
       },
+      hasErrorsOfTypesFor(property, ...types) {
+        return this._invokeActionFor(property, 'hasErrorsOfTypes', ...types);
+      },
       getErrors() {
         return {
           ...errors
         };
+      },
+      getErrorsFor(property) {
+        return this._invokeActionFor(property, 'getErrors');
       },
       getErrorsAsArray(...exclude) {
         return Object
@@ -150,8 +162,14 @@ export class ValidationResult {
           .filter(key => exclude.indexOf(key) === -1)
           .map(key => errors[key]);
       },
+      getErrorsAsArrayFor(property, ...exclude) {
+        return this._invokeActionFor(property, 'getErrorsAsArray', ...exclude);
+      },
       getFirstError(...exclude) {
         return this.getErrorsAsArray(exclude)[0];
+      },
+      getFirstErrorFor(property, ...exclude) {
+        return this.getErrorsAsArrayFor(property, ...exclude)[0];
       }
     };
   }
