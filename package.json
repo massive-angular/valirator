@@ -4,6 +4,30 @@
   "description": "Powerful javascript by schema validation tool",
   "main": "dist/valirator.js",
   "jsnext:main": "dist/valirator.es6",
+  "contributors": [
+    "Alexandr Dascal <alexandr.dascal@gmail.com>",
+    "Slava Matvienco <slava.matvienco@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/massive-angular/valirator.git"
+  },
+  "keywords": [
+    "validator",
+    "validation",
+    "js validation",
+    "form validation",
+    "schema validation",
+    "json schema validation",
+    "massive",
+    "massive-angular",
+    "massive angular"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/massive-angular/valirator/issues"
+  },
+  "homepage": "https://github.com/massive-angular/valirator#readme",
   "scripts": {
     "lint": "node_modules/.bin/eslint src",
     "build": "node_modules/.bin/rollup -c",
