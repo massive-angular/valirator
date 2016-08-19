@@ -113,37 +113,41 @@ export class ValidationResult {
         return !this.hasErrors();
       },
       hasErrors() {
-        let keys = Object.keys(errors);
+        return Object
+            .keys(errors)
+            .some(key => {
+              return errors[key];
+            }) ||
+          Object
+            .keys(errors.__proto__)
+            .some(key => {
+              if (errors[key].hasErrors) {
+                return errors[key].hasErrors();
+              }
 
-        if (!keys.length) {
-          keys = Object.keys(errors.__proto__);
-        }
-
-        return keys.some(key => {
-            if (errors[key].hasErrors) {
-              return errors[key].hasErrors();
-            }
-
-            return errors[key];
-          });
+              return false;
+            });
       },
       hasErrorsFor(property) {
         return this._invokeActionFor(property, 'hasErrors');
       },
       hasErrorsOfTypes(...types) {
         return Object
-          .keys(errors)
-          .some(key => {
-            if (types.indexOf(key) !== -1) {
-              return true;
-            }
+            .keys(errors)
+            .some(key => {
+              if (types.indexOf(key) !== -1) {
+                return true;
+              }
+            }) ||
+          Object
+            .keys(errors.__proto__)
+            .some(key => {
+              if (errors[key].hasErrorsOfTypes) {
+                return errors[key].hasErrorsOfTypes(...types);
+              }
 
-            if (errors[key].hasErrorsOfTypes) {
-              return errors[key].hasErrorsOfTypes(...types);
-            }
-
-            return false;
-          });
+              return false;
+            });
       },
       hasErrorsOfTypesFor(property, ...types) {
         return this._invokeActionFor(property, 'hasErrorsOfTypes', ...types);

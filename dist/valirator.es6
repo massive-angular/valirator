@@ -3487,18 +3487,14 @@ var ValidationResult = function ValidationResult() {
       return !this.hasErrors();
     },
     hasErrors: function hasErrors() {
-      var keys = _Object$keys(errors);
-
-      if (!keys.length) {
-        keys = _Object$keys(errors.__proto__);
-      }
-
-      return keys.some(function (key) {
+      return _Object$keys(errors).some(function (key) {
+        return errors[key];
+      }) || _Object$keys(errors.__proto__).some(function (key) {
         if (errors[key].hasErrors) {
           return errors[key].hasErrors();
         }
 
-        return errors[key];
+        return false;
       });
     },
     hasErrorsFor: function hasErrorsFor(property) {
@@ -3513,7 +3509,7 @@ var ValidationResult = function ValidationResult() {
         if (types.indexOf(key) !== -1) {
           return true;
         }
-
+      }) || _Object$keys(errors.__proto__).some(function (key) {
         if (errors[key].hasErrorsOfTypes) {
           var _errors$key;
 
