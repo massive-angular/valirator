@@ -174,6 +174,41 @@ describe('valirator', () => {
         });
     });
 
+    it('should pass validation for nested schemas', (done) => {
+      const obj = {
+        Person: {
+          FirstName: 'John'
+        }
+      };
+
+      const schema = {
+        properties: {
+          Person: {
+            rules: {
+              required: true,
+            },
+            properties: {
+              FirstName: {
+                rules: {
+                  required: true
+                }
+              }
+            }
+          }
+        }
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.hasErrors()).toBe(false);
+          expect(errors.Person.hasErrors()).toBe(false);
+          expect(errors.Person.FirstName.hasErrors()).toBe(false);
+          expect(errors.Person.FirstName.required).not.toBeDefined();
+
+          done();
+        });
+    });
+
     it('should support array schemas', (done) => {
       const obj = {
         Persons: [{

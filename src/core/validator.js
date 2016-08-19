@@ -113,18 +113,18 @@ export class ValidationResult {
         return !this.hasErrors();
       },
       hasErrors() {
-        return Object
-          .keys(errors)
-          .some(key => {
-            if (errors[key]) {
-              return true;
-            }
+        let keys = Object.keys(errors);
 
+        if (!keys.length) {
+          keys = Object.keys(errors.__proto__);
+        }
+
+        return keys.some(key => {
             if (errors[key].hasErrors) {
               return errors[key].hasErrors();
             }
 
-            return false;
+            return errors[key];
           });
       },
       hasErrorsFor(property) {

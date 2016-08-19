@@ -3207,16 +3207,18 @@ var ValidationResult = function ValidationResult() {
       return !this.hasErrors();
     },
     hasErrors: function hasErrors() {
-      return _Object$keys(errors).some(function (key) {
-        if (errors[key]) {
-          return true;
-        }
+      var keys = _Object$keys(errors);
 
+      if (!keys.length) {
+        keys = _Object$keys(errors.__proto__);
+      }
+
+      return keys.some(function (key) {
         if (errors[key].hasErrors) {
           return errors[key].hasErrors();
         }
 
-        return false;
+        return errors[key];
       });
     },
     hasErrorsFor: function hasErrorsFor(property) {
@@ -3277,14 +3279,14 @@ var ValidationResult = function ValidationResult() {
         exclude[_key6] = arguments[_key6];
       }
 
-      return this.getErrorsAsArray(exclude)[0];
+      return (this.getErrorsAsArray(exclude) || [])[0];
     },
     getFirstErrorFor: function getFirstErrorFor(property) {
       for (var _len7 = arguments.length, exclude = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
         exclude[_key7 - 1] = arguments[_key7];
       }
 
-      return this.getErrorsAsArrayFor.apply(this, [property].concat(exclude))[0];
+      return (this.getErrorsAsArrayFor.apply(this, [property].concat(exclude)) || [])[0];
     }
   });
 };
