@@ -104,8 +104,8 @@ export class ValidationResult {
   constructor(errors = {}) {
     return {
       ...this,
-      ...errors,
       ...errors.__proto__,
+      ...errors,
       _invokeActionFor(property, action, ...args) {
         return errors[property] && errors[property][action] && errors[property][action](...args);
       },
