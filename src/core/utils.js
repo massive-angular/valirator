@@ -45,15 +45,29 @@ export function getObjectOverride(context, prop) {
   return isFunction(context[prop]) ? context[prop] : getObjectOverride(context.__proto__, prop);
 }
 
-export async function formatMessage(message = 'No default message for rule "%{rule}"', actual, expected, property, obj, rule) {
-  var lookup = {
-    actual,
-    expected,
-    property,
-    rule
-  };
+export function handlePromise(promise, resolve, reject) {
+  if (promise && promise.then) {
+    promise
+      .then(resolve)
+      .catch(reject);
+  } else {
+    resolve(promise);
+  }
+}
 
-  return isFunction(message)
-    ? await message(actual, expected, property, obj)
-    : message.replace(/%\{([a-z]+)\}/ig, function (_, match) { return lookup[match.toLowerCase()] || ''; });
+export function formatMessage(message = 'No default message for rule "%{rule}"', actual, expected, property, obj, rule) {
+  return new Promise((resolve, reject) => {
+    const lookup = {
+      actual,
+      expected,
+      property,
+      rule
+    };
+
+    const formattedMessage = isFunction(message)
+      ? message(actual, expected, property, obj)
+      : message.replace(/%\{([a-z]+)\}/ig, (_, match) => lookup[match.toLowerCase()] || '');
+
+    handlePromise(formattedMessage, resolve, reject);
+  });
 }
