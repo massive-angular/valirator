@@ -77,7 +77,7 @@ module.exports = function (config) {
     concurrency: Infinity
   };
 
-  if (process && process.ENV === 'test') {
+  if (process.env.NODE_ENV === 'testing') {
     configuration.singleRun = true;
     configuration.autoWatch = false;
     configuration.browsers = ['PhantomJS'];
