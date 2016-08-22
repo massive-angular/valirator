@@ -1,4 +1,7 @@
 {
   "parser": "babel-eslint",
-  "extends": "eslint:recommended"
+  "extends": "eslint:recommended",
+  "globals": {
+    "Promise": true
+  }
 }

@@ -1,7 +1,7 @@
 // Karma configuration
 
 module.exports = function (config) {
-  config.set({
+  var configuration = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
@@ -35,7 +35,8 @@ module.exports = function (config) {
       transform: [[
         'babelify', {
           sourceMap: 'inline',
-          presets: ['es2015', 'stage-0']
+          presets: ['es2015', 'stage-0'],
+          plugins: ['transform-runtime']
         }
       ]]
     },
@@ -74,5 +75,13 @@ module.exports = function (config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
+  };
+
+  if (process && process.ENV === 'test') {
+    configuration.singleRun = true;
+    configuration.autoWatch = false;
+    configuration.browsers = ['PhantomJS'];
+  }
+
+  config.set(configuration);
 };
