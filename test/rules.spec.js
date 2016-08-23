@@ -1,4 +1,4 @@
-import * as valirator from '../dist/valirator';
+import * as valirator from '../src/valirator';
 
 describe('rules', () => {
   describe('divisibleByRule', () => {

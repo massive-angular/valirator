@@ -1,4 +1,4 @@
-import { registerRule, hasRule, formatMessage, validate, validateRule, validateValue, validateObject, ValidationSchema } from '../dist/valirator';
+import { registerRule, hasRule, formatMessage, validate, validateRule, validateValue, validateObject, ValidationSchema } from '../src/valirator';
 
 describe('valirator', () => {
   describe('registerRule', () => {

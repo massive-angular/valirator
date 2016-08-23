@@ -1,21 +1,21 @@
-// Karma configuration
+var babel = require('rollup-plugin-babel');
+var commonjs = require('rollup-plugin-commonjs');
+var nodeResolve = require('rollup-plugin-node-resolve');
 
 module.exports = function (config) {
   var configuration = {
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['browserify', 'jasmine'],
+    frameworks: ['jasmine'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/*.js',
-      'test/*.spec.js'
+      'test/**/*.spec.js'
     ],
 
 
@@ -28,17 +28,30 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/*.spec.js': ['browserify']
+      'test/**/*.spec.js': ['rollup']
     },
-    browserify: {
-      debug: true,
-      transform: [[
-        'babelify', {
-          sourceMap: 'inline',
-          presets: ['es2015', 'stage-0'],
+    rollupPreprocessor: {
+      plugins: [
+        commonjs({
+          include: 'node_modules/**',
+          extensions: [
+            '.js'
+          ]
+        }),
+        nodeResolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+          extensions: [
+            '.js'
+          ]
+        }),
+        babel({
+          runtimeHelpers: true,
+          exclude: 'node_modules/**',
           plugins: ['transform-runtime']
-        }
-      ]]
+        })
+      ]
     },
 
     // test results reporter to use
