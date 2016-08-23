@@ -1,4 +1,4 @@
-import { registerRule, hasRule, formatMessage, validate, validateRule, validateValue, validateObject, ValidationSchema } from '../src/valirator';
+import { registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, formatMessage, validate, validateRule, validateValue, validateObject, validateArray, ValidationSchema } from '../src/valirator';
 
 describe('valirator', () => {
   describe('registerRule', () => {
@@ -6,6 +6,59 @@ describe('valirator', () => {
       registerRule('myRule', () => true, 'error');
 
       expect(hasRule('myRule')).toBe(true);
+    });
+  });
+
+  describe('overrideRule', () => {
+    const { check: originalRule } = getRule('required');
+
+    beforeEach(() => {
+      overrideRule('required', (actual, expected) => {
+        return actual % expected === 0;
+      });
+    });
+
+    afterEach(() => {
+      overrideRule('required', originalRule);
+    });
+
+    it('should fail on overridden required rule', (done) => {
+      validateValue(5, { required: 2 })
+        .then((errors) => {
+          expect(errors.hasErrors()).toBe(true);
+
+          done();
+        });
+    });
+
+    it('should pass on overridden required rule', (done) => {
+      validateValue(5, { required: 5 })
+        .then((errors) => {
+          expect(errors.hasErrors()).toBe(false);
+
+          done();
+        });
+    });
+  });
+
+  describe('overrideRuleMessage', () => {
+    const { message: originalMessage } = getRule('required');
+
+    beforeEach(() => {
+      overrideRuleMessage('required', 'custom required message');
+    });
+
+    afterEach(() => {
+      overrideRuleMessage('required', originalMessage);
+    });
+
+    it('should use overridden required message', (done) => {
+      validateValue(null, { required: true })
+        .then((errors) => {
+          expect(errors.required).toBe('custom required message');
+
+          done();
+        });
     });
   });
 
@@ -36,7 +89,7 @@ describe('valirator', () => {
           expect(formattedMessage).toBeDefined();
 
           done();
-        })
+        });
     });
   });
 
@@ -60,6 +113,14 @@ describe('valirator', () => {
           done();
         });
     });
+  });
+
+  describe('validateObject', () => {
+
+  });
+
+  describe('validateArray', () => {
+
   });
 
   describe('validate', () => {

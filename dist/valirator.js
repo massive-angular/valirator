@@ -106,6 +106,23 @@ function getRule(name) {
   return rulesHolder[name] || {};
 }
 
+function overrideRule(name, rule, message) {
+  if (hasRule(name)) {
+    var defaultRule = getRule(name);
+
+    defaultRule.check = rule;
+    defaultRule.message = message || defaultRule.message;
+  }
+}
+
+function overrideRuleMessage(name, message) {
+  if (hasRule(name)) {
+    var defaultRule = getRule(name);
+
+    defaultRule.message = message;
+  }
+}
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -655,6 +672,8 @@ exports.formatMessage = formatMessage;
 exports.registerRule = registerRule;
 exports.hasRule = hasRule;
 exports.getRule = getRule;
+exports.overrideRule = overrideRule;
+exports.overrideRuleMessage = overrideRuleMessage;
 exports.validateRule = validateRule;
 exports.validateValue = validateValue;
 exports.validateProperty = validateProperty;

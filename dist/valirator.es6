@@ -100,6 +100,23 @@ function getRule(name) {
   return rulesHolder[name] || {};
 }
 
+function overrideRule(name, rule, message) {
+  if (hasRule(name)) {
+    var defaultRule = getRule(name);
+
+    defaultRule.check = rule;
+    defaultRule.message = message || defaultRule.message;
+  }
+}
+
+function overrideRuleMessage(name, message) {
+  if (hasRule(name)) {
+    var defaultRule = getRule(name);
+
+    defaultRule.message = message;
+  }
+}
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -633,5 +650,5 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, formatMessage, registerRule, hasRule, getRule, validateRule, validateValue, validateProperty, validateArray, validateObject, validate, ValidationResult, ValidationSchema, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateValue, validateProperty, validateArray, validateObject, validate, ValidationResult, ValidationSchema, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map
