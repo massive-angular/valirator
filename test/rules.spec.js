@@ -5,13 +5,13 @@ describe('rules', () => {
     const { divisibleByRule } = valirator;
 
     it('should be divisible by 3.3', () => {
-      const result = divisibleByRule(9.9, 3.3);
+      const result = divisibleByRule(3.3, 9.9);
 
       expect(result).toBe(true);
     });
 
     it('should not be divisible by 3.3', () => {
-      const result = divisibleByRule(10, 3.3);
+      const result = divisibleByRule(3.3, 10);
 
       expect(result).toBe(false);
     });
@@ -21,13 +21,13 @@ describe('rules', () => {
     const { enumRule } = valirator;
 
     it('should be in enum', () => {
-      const result = enumRule('value1', ['value1', 'value2', 'value3']);
+      const result = enumRule(['value1', 'value2', 'value3'], 'value1');
 
       expect(result).toBe(true);
     });
 
     it('should not be in enum', () => {
-      const result = enumRule('value4', ['value1', 'value2', 'value3']);
+      const result = enumRule(['value1', 'value2', 'value3'], 'value4');
 
       expect(result).toBe(false);
     });
@@ -37,19 +37,19 @@ describe('rules', () => {
     const { formatRule } = valirator;
 
     it('should respect email format', () => {
-      const result = formatRule('email@example.com', 'email');
+      const result = formatRule('email', 'email@example.com');
 
       expect(result).toBe(true);
     });
 
     it('should not respect email format', () => {
-      const result = formatRule('email@example@com.com', 'email');
+      const result = formatRule('email', 'email@example@com.com');
 
       expect(result).toBe(false);
     });
 
     it('should throw error for unknown format', () => {
-      expect(() => formatRule('email@example.com', 'email2')).toThrow();
+      expect(() => formatRule('email2', 'email@example.com')).toThrow();
     });
   });
 
@@ -63,7 +63,7 @@ describe('rules', () => {
     });
 
     it('should not be lower or equal lower then 5', () => {
-      const result = maxRule(10, 5);
+      const result = maxRule(5, 10);
 
       expect(result).toBe(false);
     });
@@ -73,13 +73,13 @@ describe('rules', () => {
     const { maxItemsRule } = valirator;
 
     it('should has less or equal then 5 item', () => {
-      const result = maxItemsRule([1, 2, 3, 4, 5], 5);
+      const result = maxItemsRule(5, [1, 2, 3, 4, 5]);
 
       expect(result).toBe(true);
     });
 
     it('should not has less or equal then 5 item', () => {
-      const result = maxItemsRule([1, 2, 3, 4, 5, 6], 5);
+      const result = maxItemsRule(5, [1, 2, 3, 4, 5, 6]);
 
       expect(result).toBe(false);
     });
@@ -89,13 +89,13 @@ describe('rules', () => {
     const { maxLengthRule } = valirator;
 
     it('should be less or equal then 5 length string', () => {
-      const result = maxLengthRule('12345', 5);
+      const result = maxLengthRule(5, '12345');
 
       expect(result).toBe(true);
     });
 
     it('should not be less or equal then 5 length string', () => {
-      const result = maxLengthRule('123456', 5);
+      const result = maxLengthRule(5, '123456');
 
       expect(result).toBe(false);
     });
@@ -105,13 +105,13 @@ describe('rules', () => {
     const { exclusiveMaxRule } = valirator;
 
     it('should be lower then 5', () => {
-      const result = exclusiveMaxRule(1, 5);
+      const result = exclusiveMaxRule(5, 1);
 
       expect(result).toBe(true);
     });
 
     it('should not be lower then 5', () => {
-      const result = exclusiveMaxRule(10, 5);
+      const result = exclusiveMaxRule(5, 10);
 
       expect(result).toBe(false);
     });
@@ -127,7 +127,7 @@ describe('rules', () => {
     });
 
     it('should not be bigger or equal lower then 5', () => {
-      const result = minRule(1, 5);
+      const result = minRule(5, 1);
 
       expect(result).toBe(false);
     });
@@ -137,13 +137,13 @@ describe('rules', () => {
     const { minItemsRule } = valirator;
 
     it('should has more or equal then 5 item', () => {
-      const result = minItemsRule([1, 2, 3, 4, 5], 5);
+      const result = minItemsRule(5, [1, 2, 3, 4, 5]);
 
       expect(result).toBe(true);
     });
 
     it('should not has more or equal then 5 item', () => {
-      const result = minItemsRule([1, 2, 3, 4], 5);
+      const result = minItemsRule(5, [1, 2, 3, 4]);
 
       expect(result).toBe(false);
     });
@@ -153,13 +153,13 @@ describe('rules', () => {
     const { minLengthRule } = valirator;
 
     it('should be bigger or equal then 5 length string', () => {
-      const result = minLengthRule('12345', 5);
+      const result = minLengthRule(5, '12345');
 
       expect(result).toBe(true);
     });
 
     it('should not be bigger or equal then 5 length string', () => {
-      const result = minLengthRule('1234', 5);
+      const result = minLengthRule(5, '1234');
 
       expect(result).toBe(false);
     });
@@ -169,13 +169,13 @@ describe('rules', () => {
     const { exclusiveMinRule } = valirator;
 
     it('should be bigger then 5', () => {
-      const result = exclusiveMinRule(10, 5);
+      const result = exclusiveMinRule(5, 10);
 
       expect(result).toBe(true);
     });
 
     it('should not be bigger then 5', () => {
-      const result = exclusiveMinRule(1, 5);
+      const result = exclusiveMinRule(5, 1);
 
       expect(result).toBe(false);
     });
@@ -185,13 +185,13 @@ describe('rules', () => {
     const { patternRule } = valirator;
 
     it('should match pattern \d+', () => {
-      const result = patternRule('1234', /\d+/);
+      const result = patternRule(/\d+/, '1234');
 
       expect(result).toBe(true);
     });
 
     it('should not match pattern \d+', () => {
-      const result = patternRule('abc', /\d+/);
+      const result = patternRule(/\d+/, 'abc');
 
       expect(result).toBe(false);
     });
@@ -201,51 +201,51 @@ describe('rules', () => {
     const { requiredRule } = valirator;
 
     it('should be required', () => {
-      const result = requiredRule(null, true);
+      const result = requiredRule(true, null);
 
       expect(result).toBe(false);
     });
 
     it('should not be required', () => {
-      const result = requiredRule(null, false);
+      const result = requiredRule(false, null);
 
       expect(result).toBe(true);
     });
 
     it('should allow empty', () => {
-      const result = requiredRule('', {
+      const result = requiredRule({
         allowEmpty: true
-      });
+      }, '');
 
       expect(result).toBe(true);
     });
 
     it('should not allow empty', () => {
-      const result = requiredRule('', {
+      const result = requiredRule({
         allowEmpty: false
-      });
+      }, '');
 
       expect(result).toBe(false);
     });
 
     it('should allow zero', () => {
-      const result = requiredRule(0, {
+      const result = requiredRule({
         allowZero: true
-      });
+      }, 0);
 
       expect(result).toBe(true);
     });
 
     it('should not allow zero', () => {
-      const result = requiredRule(0, {
+      const result = requiredRule({
         allowZero: false
-      });
+      }, 0);
 
       expect(result).toBe(false);
     });
 
     it('should pass validation', () => {
-      const result = requiredRule('123', true);
+      const result = requiredRule(true, '123');
 
       expect(result).toBe(true);
     });
@@ -255,73 +255,73 @@ describe('rules', () => {
     const { typeRule } = valirator;
 
     it('should be boolean', () => {
-      const result = typeRule(true, 'boolean');
+      const result = typeRule('boolean', true);
 
       expect(result).toBe(true);
     });
 
     it('should not be boolean', () => {
-      const result = typeRule(0, 'boolean');
+      const result = typeRule('boolean', 0);
 
       expect(result).toBe(false);
     });
 
     it('should be number', () => {
-      const result = typeRule(1, 'number');
+      const result = typeRule('number', 1);
 
       expect(result).toBe(true);
     });
 
     it('should not be number', () => {
-      const result = typeRule('1', 'number');
+      const result = typeRule('number', '1');
 
       expect(result).toBe(false);
     });
 
     it('should be string', () => {
-      const result = typeRule('abc', 'string');
+      const result = typeRule('string', 'abc');
 
       expect(result).toBe(true);
     });
 
     it('should not be string', () => {
-      const result = typeRule(123, 'string');
+      const result = typeRule('string', 123);
 
       expect(result).toBe(false);
     });
 
     it('should be date', () => {
-      const result = typeRule(new Date(), 'date');
+      const result = typeRule('date', new Date());
 
       expect(result).toBe(true);
     });
 
     it('should not be date', () => {
-      const result = typeRule('2017-02-11', 'date');
+      const result = typeRule('date', '2017-02-11');
 
       expect(result).toBe(false);
     });
 
     it('should be object', () => {
-      const result = typeRule({ a: 1, b: 2 }, 'object');
+      const result = typeRule('object', { a: 1, b: 2 });
 
       expect(result).toBe(true);
     });
 
     it('should not be object', () => {
-      const result = typeRule(new Date(), 'object');
+      const result = typeRule('object', new Date());
 
       expect(result).toBe(false);
     });
 
     it('should be array', () => {
-      const result = typeRule([1, 2, 3], 'array');
+      const result = typeRule('array', [1, 2, 3]);
 
       expect(result).toBe(true);
     });
 
     it('should not be array', () => {
-      const result = typeRule({ '0': 0, '1': 1, '2': 2 }, 'array');
+      const result = typeRule('array', { '0': 0, '1': 1, '2': 2 });
 
       expect(result).toBe(false);
     });
@@ -331,19 +331,19 @@ describe('rules', () => {
     const { uniqueItemsRule } = valirator;
 
     it('should has only unique items', () => {
-      const result = uniqueItemsRule([{ a: 1 }, { a: 2}, { a: 1 }], true);
+      const result = uniqueItemsRule(true, [{ a: 1 }, { a: 2}, { a: 1 }]);
 
       expect(result).toBe(false);
     });
 
     it('should not only uniq items', () => {
-      const result = uniqueItemsRule([{ a: 1 }, { a: 2}, { a: 1 }], false);
+      const result = uniqueItemsRule(false, [{ a: 1 }, { a: 2}, { a: 1 }]);
 
       expect(result).toBe(true);
     });
 
     it('should pass validation', () => {
-      const result = uniqueItemsRule([{ a: 1 }, { a: 2}, { a: 3 }], true);
+      const result = uniqueItemsRule(true, [{ a: 1 }, { a: 2}, { a: 3 }]);
 
       expect(result).toBe(true);
     });

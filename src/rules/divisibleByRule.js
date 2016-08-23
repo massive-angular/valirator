@@ -1,6 +1,6 @@
 import { registerRule, isDefined } from '../core';
 
-export function divisibleByRule(value, divisibleBy) {
+export function divisibleByRule(divisibleBy, value) {
   if (!isDefined(value)) {
     return true;
   }

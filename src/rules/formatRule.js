@@ -24,7 +24,7 @@ const FORMATS = {
   }
 };
 
-export function formatRule(value, format) {
+export function formatRule(format, value) {
   if (!isDefined(value)) {
     return true;
   }

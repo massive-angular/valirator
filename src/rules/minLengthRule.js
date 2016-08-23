@@ -1,6 +1,6 @@
 import { registerRule, isDefined } from '../core';
 
-export function minLengthRule(value, minLength) {
+export function minLengthRule(minLength, value) {
   if (!isDefined(value)) {
     return true;
   }

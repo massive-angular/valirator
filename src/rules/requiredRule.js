@@ -1,6 +1,6 @@
 import { registerRule, isDefined, isBoolean, isObject } from '../core';
 
-export function requiredRule(value, required) {
+export function requiredRule(required, value) {
   if (value) {
     return true;
   }

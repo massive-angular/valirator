@@ -1,6 +1,6 @@
 import { registerRule, isDefined, isArray } from '../core';
 
-export function maxItemsRule(value, minItems) {
+export function maxItemsRule(minItems, value) {
   if (!isDefined(value)) {
     return true;
   }

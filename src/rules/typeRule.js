@@ -1,6 +1,6 @@
 import { registerRule, isDefined, isArray, isObject, isString, isDate, isNumber, isBoolean } from '../core';
 
-function checkValueType(value, type) {
+function checkValueType(type, value) {
   switch (type) {
     case 'boolean':
       return isBoolean(value);
@@ -25,7 +25,7 @@ function checkValueType(value, type) {
   }
 }
 
-export function typeRule(value, type) {
+export function typeRule(type, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -36,7 +36,7 @@ export function typeRule(value, type) {
     types = [type];
   }
 
-  return types.some(type => checkValueType(value, type));
+  return types.some(type => checkValueType(type, value));
 }
 
 registerRule('type', typeRule, 'must be of %{expected} type');

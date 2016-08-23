@@ -1,6 +1,6 @@
 import { registerRule, isDefined } from '../core';
 
-export function uniqueItemsRule(value, uniqueItems) {
+export function uniqueItemsRule(uniqueItems, value) {
   if (!isDefined(value)) {
     return true;
   }

@@ -1,6 +1,6 @@
 import { registerRule, isDefined, isString } from '../core';
 
-export function patternRule(value, pattern) {
+export function patternRule(pattern, value) {
   if (!isDefined(value)) {
     return true;
   }

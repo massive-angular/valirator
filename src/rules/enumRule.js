@@ -1,6 +1,6 @@
 import { registerRule, isDefined, isArray } from '../core';
 
-export function enumRule(value, e) {
+export function enumRule(e, value) {
   if (!isDefined(value)) {
     return true;
   }

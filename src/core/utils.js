@@ -55,7 +55,7 @@ export function handlePromise(promise, resolve, reject) {
   }
 }
 
-export function formatMessage(message = 'No default message for rule "%{rule}"', actual, expected, property, obj, rule) {
+export function formatMessage(message = 'No default message for rule "%{rule}"', expected, actual, property, obj, rule) {
   return new Promise((resolve, reject) => {
     const lookup = {
       actual,

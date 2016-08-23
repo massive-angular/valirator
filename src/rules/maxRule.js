@@ -1,6 +1,6 @@
 import { registerRule, isDefined } from '../core';
 
-export function maxRule(value, max) {
+export function maxRule(max, value) {
   if (!isDefined(value)) {
     return true;
   }

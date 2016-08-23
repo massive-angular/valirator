@@ -54,8 +54,8 @@ function handlePromise(promise, resolve, reject) {
 
 function formatMessage() {
   var message = arguments.length <= 0 || arguments[0] === undefined ? 'No default message for rule "%{rule}"' : arguments[0];
-  var actual = arguments[1];
-  var expected = arguments[2];
+  var expected = arguments[1];
+  var actual = arguments[2];
   var property = arguments[3];
   var obj = arguments[4];
   var rule = arguments[5];
@@ -159,10 +159,10 @@ function validateRule(rule, expected, value, message, rules, messages, property,
     var overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
     var overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
 
-    var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, property, obj, schema, defaultRule);
+    var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(expected, value, property, obj, schema, defaultRule);
     var callback = function callback(isValid) {
       if (isValid !== true) {
-        formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule).then(resolve).catch(reject);
+        formatMessage(overriddenMessage || message || defaultMessage, expected, value, property, obj, rule).then(resolve).catch(reject);
       } else {
         resolve();
       }
@@ -401,7 +401,7 @@ var ValidationSchema = function ValidationSchema(schema) {
   this.validate = validate.bind(this, schema);
 };
 
-function divisibleByRule(value, divisibleBy) {
+function divisibleByRule(divisibleBy, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -415,7 +415,7 @@ function divisibleByRule(value, divisibleBy) {
 
 registerRule('divisibleBy', divisibleByRule, 'must be divisible by %{expected}');
 
-function enumRule(value, e) {
+function enumRule(e, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -448,7 +448,7 @@ var FORMATS = {
   }
 };
 
-function formatRule(value, format) {
+function formatRule(format, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -462,7 +462,7 @@ function formatRule(value, format) {
 
 registerRule('format', formatRule, 'is not a valid %{expected}');
 
-function maxRule(value, max) {
+function maxRule(max, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -472,7 +472,7 @@ function maxRule(value, max) {
 
 registerRule('max', maxRule, 'must be less than or equal to %{expected}');
 
-function maxItemsRule(value, minItems) {
+function maxItemsRule(minItems, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -482,7 +482,7 @@ function maxItemsRule(value, minItems) {
 
 registerRule('maxItems', maxItemsRule, 'must contain less than %{expected} items');
 
-function maxLengthRule(value, maxLength) {
+function maxLengthRule(maxLength, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -492,7 +492,7 @@ function maxLengthRule(value, maxLength) {
 
 registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');
 
-function exclusiveMaxRule(value, exclusiveMax) {
+function exclusiveMaxRule(exclusiveMax, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -502,7 +502,7 @@ function exclusiveMaxRule(value, exclusiveMax) {
 
 registerRule('exclusiveMax', exclusiveMaxRule, 'must be less than %{expected}');
 
-function minRule(value, min) {
+function minRule(min, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -512,7 +512,7 @@ function minRule(value, min) {
 
 registerRule('min', minRule, 'must be greater than or equal to %{expected}');
 
-function minItemsRule(value, minItems) {
+function minItemsRule(minItems, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -522,7 +522,7 @@ function minItemsRule(value, minItems) {
 
 registerRule('minItems', minItemsRule, 'must contain more than %{expected} items');
 
-function minLengthRule(value, minLength) {
+function minLengthRule(minLength, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -532,7 +532,7 @@ function minLengthRule(value, minLength) {
 
 registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');
 
-function exclusiveMinRule(value, exclusiveMin) {
+function exclusiveMinRule(exclusiveMin, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -542,7 +542,7 @@ function exclusiveMinRule(value, exclusiveMin) {
 
 registerRule('exclusiveMin', exclusiveMinRule, 'must be greater than %{expected}');
 
-function patternRule(value, pattern) {
+function patternRule(pattern, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -554,7 +554,7 @@ function patternRule(value, pattern) {
 
 registerRule('pattern', patternRule, 'invalid input');
 
-function requiredRule(value, required) {
+function requiredRule(required, value) {
   if (value) {
     return true;
   }
@@ -582,7 +582,7 @@ function requiredRule(value, required) {
 
 registerRule('required', requiredRule, 'is required');
 
-function checkValueType(value, type) {
+function checkValueType(type, value) {
   switch (type) {
     case 'boolean':
       return isBoolean(value);
@@ -607,7 +607,7 @@ function checkValueType(value, type) {
   }
 }
 
-function typeRule(value, type) {
+function typeRule(type, value) {
   if (!isDefined(value)) {
     return true;
   }
@@ -619,13 +619,13 @@ function typeRule(value, type) {
   }
 
   return types.some(function (type) {
-    return checkValueType(value, type);
+    return checkValueType(type, value);
   });
 }
 
 registerRule('type', typeRule, 'must be of %{expected} type');
 
-function uniqueItemsRule(value, uniqueItems) {
+function uniqueItemsRule(uniqueItems, value) {
   if (!isDefined(value)) {
     return true;
   }

@@ -1,6 +1,6 @@
 import { registerRule, isDefined, isArray } from '../core';
 
-export function minItemsRule(value, minItems) {
+export function minItemsRule(minItems, value) {
   if (!isDefined(value)) {
     return true;
   }

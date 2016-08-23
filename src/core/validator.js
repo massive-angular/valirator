@@ -11,10 +11,10 @@ export function validateRule(rule, expected, value, message, rules, messages, pr
     const overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
     const overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
 
-    const isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, property, obj, schema, defaultRule);
+    const isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(expected, value, property, obj, schema, defaultRule);
     const callback = (isValid) => {
       if (isValid !== true) {
-        formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule)
+        formatMessage(overriddenMessage || message || defaultMessage, expected, value, property, obj, rule)
           .then(resolve)
           .catch(reject);
       } else {
