@@ -1,0 +1,9 @@
+machine:
+  node:
+    version: 6
+  environment:
+    NODE_ENV: testing
+
+dependencies:
+  post:
+    - npm run build

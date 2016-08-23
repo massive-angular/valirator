@@ -221,15 +221,13 @@ function validateProperty(property, obj) {
         };
 
         if (isArray(value)) {
-          validateArray(value, propertyProperties, rules, messages).then(subValidationCallback).catch(reject);
+          return validateArray(value, propertyProperties, rules, messages).then(subValidationCallback).catch(reject);
         } else if (isObject(value)) {
-          validateObject(value, propertyProperties, rules, messages).then(subValidationCallback).catch(reject);
-        } else {
-          reject(value + ' is not an array nor object');
+          return validateObject(value, propertyProperties, rules, messages).then(subValidationCallback).catch(reject);
         }
-      } else {
-        resolve(new ValidationResult(errors));
       }
+
+      resolve(new ValidationResult(errors));
     }).catch(reject);
   });
 }
