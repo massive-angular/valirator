@@ -3,5 +3,3 @@ node_js:
   - "6"
 env:
   - NODE_ENV=testing
-after_success:
-  - coveralls
