@@ -77,19 +77,17 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
           };
 
           if (isArray(value)) {
-            validateArray(value, propertyProperties, rules, messages)
+            return validateArray(value, propertyProperties, rules, messages)
               .then(subValidationCallback)
               .catch(reject);
           } else if (isObject(value)) {
-            validateObject(value, propertyProperties, rules, messages)
+            return validateObject(value, propertyProperties, rules, messages)
               .then(subValidationCallback)
               .catch(reject);
-          } else {
-            reject(`${value} is not an array nor object`);
           }
-        } else {
-          resolve(new ValidationResult(errors));
         }
+
+        resolve(new ValidationResult(errors));
       })
       .catch(reject);
   });
