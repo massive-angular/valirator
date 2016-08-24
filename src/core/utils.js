@@ -66,7 +66,7 @@ export function formatMessage(message = 'No default message for rule "%{rule}"',
 
     const formattedMessage = isFunction(message)
       ? message(actual, expected, property, obj)
-      : message.replace(/%\{([a-z]+)\}/ig, (_, match) => lookup[match.toLowerCase()] || '');
+      : (isString(message) ? message.replace(/%\{([a-z]+)\}/ig, (_, match) => lookup[match.toLowerCase()] || '') : message);
 
     handlePromise(formattedMessage, resolve, reject);
   });
