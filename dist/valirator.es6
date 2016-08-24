@@ -68,9 +68,9 @@ function formatMessage() {
       rule: rule
     };
 
-    var formattedMessage = isFunction(message) ? message(actual, expected, property, obj) : message.replace(/%\{([a-z]+)\}/ig, function (_, match) {
+    var formattedMessage = isFunction(message) ? message(actual, expected, property, obj) : isString(message) ? message.replace(/%\{([a-z]+)\}/ig, function (_, match) {
       return lookup[match.toLowerCase()] || '';
-    });
+    }) : message;
 
     handlePromise(formattedMessage, resolve, reject);
   });
