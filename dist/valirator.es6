@@ -462,6 +462,26 @@ function formatRule(value, format) {
 
 registerRule('format', formatRule, 'is not a valid %{expected}');
 
+function matchToRule(value, matchTo) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value === matchTo;
+}
+
+registerRule('matchTo', matchToRule, '%{actual} should match to %{expected}');
+
+function notMatchToRule(value, notMatchTo) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value !== notMatchTo;
+}
+
+registerRule('notMatchTo', notMatchToRule, '%{actual} should not match to %{expected}');
+
 function maxRule(value, max) {
   if (!isDefined(value)) {
     return true;
@@ -650,5 +670,5 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateValue, validateProperty, validateArray, validateObject, validate, ValidationResult, ValidationSchema, divisibleByRule, enumRule, formatRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateValue, validateProperty, validateArray, validateObject, validate, ValidationResult, ValidationSchema, divisibleByRule, enumRule, formatRule, matchToRule, notMatchToRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map

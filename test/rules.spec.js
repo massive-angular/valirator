@@ -53,6 +53,38 @@ describe('rules', () => {
     });
   });
 
+  describe('matchTo', () => {
+    const { matchToRule } = valirator;
+
+    it('should pass match to "1234"', () => {
+      const result = matchToRule('1234', '1234');
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail match to "1234"', () => {
+      const result = matchToRule('12345', '1234');
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('notMatchTo', () => {
+    const { notMatchToRule } = valirator;
+
+    it('should pass no match to "1234"', () => {
+      const result = notMatchToRule('12345', '1234');
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail not match to "1234"', () => {
+      const result = notMatchToRule('1234', '1234');
+
+      expect(result).toBe(false);
+    });
+  });
+
   describe('maxRule', () => {
     const { maxRule } = valirator;
 

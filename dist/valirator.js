@@ -468,6 +468,26 @@ function formatRule(value, format) {
 
 registerRule('format', formatRule, 'is not a valid %{expected}');
 
+function matchToRule(value, matchTo) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value === matchTo;
+}
+
+registerRule('matchTo', matchToRule, '%{actual} should match to %{expected}');
+
+function notMatchToRule(value, notMatchTo) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value !== notMatchTo;
+}
+
+registerRule('notMatchTo', notMatchToRule, '%{actual} should not match to %{expected}');
+
 function maxRule(value, max) {
   if (!isDefined(value)) {
     return true;
@@ -685,6 +705,8 @@ exports.ValidationSchema = ValidationSchema;
 exports.divisibleByRule = divisibleByRule;
 exports.enumRule = enumRule;
 exports.formatRule = formatRule;
+exports.matchToRule = matchToRule;
+exports.notMatchToRule = notMatchToRule;
 exports.maxRule = maxRule;
 exports.maxItemsRule = maxItemsRule;
 exports.maxLengthRule = maxLengthRule;
