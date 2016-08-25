@@ -83,6 +83,12 @@ describe('rules', () => {
 
       expect(result).toBe(false);
     });
+
+    it('should access array', () => {
+      const result = notMatchToRule('12345', ['1234', '12345']);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe('maxRule', () => {
