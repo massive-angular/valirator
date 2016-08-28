@@ -483,7 +483,13 @@ function notMatchToRule(value, notMatchTo) {
     return true;
   }
 
-  return value !== notMatchTo;
+  if (!isArray(notMatchTo)) {
+    notMatchTo = [notMatchTo];
+  }
+
+  return notMatchTo.every(function (not) {
+    return not !== value;
+  });
 }
 
 registerRule('notMatchTo', notMatchToRule, '%{actual} should not match to %{expected}');

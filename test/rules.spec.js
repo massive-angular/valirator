@@ -69,6 +69,22 @@ describe('rules', () => {
     });
   });
 
+  describe('matchToProperty', () => {
+    const { matchToPropertyRule } = valirator;
+
+    it('should pass match to property "a"', () => {
+      const result = matchToPropertyRule('1234', 'a', { a: '1234' });
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail match to "1234"', () => {
+      const result = matchToPropertyRule('1234', 'a', { a: '12345' });
+
+      expect(result).toBe(false);
+    });
+  });
+
   describe('notMatchTo', () => {
     const { notMatchToRule } = valirator;
 
@@ -84,8 +100,30 @@ describe('rules', () => {
       expect(result).toBe(false);
     });
 
-    it('should access array', () => {
+    it('should accept array', () => {
       const result = notMatchToRule('12345', ['1234', '12345']);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('notMatchToProperties', () => {
+    const { notMatchToPropertiesRule } = valirator;
+
+    it('should pass no match to property "a"', () => {
+      const result = notMatchToPropertiesRule('12345', 'a', { a: '1234' });
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail not match to property "a"', () => {
+      const result = notMatchToPropertiesRule('1234', 'a', { a: '1234' });
+
+      expect(result).toBe(false);
+    });
+
+    it('should accept array', () => {
+      const result = notMatchToPropertiesRule('12345', ['a', 'b'], { a: '1234', b: '12345' });
 
       expect(result).toBe(false);
     });
