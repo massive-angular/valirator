@@ -380,6 +380,40 @@ describe('valirator', () => {
         });
     });
 
+    it('should support error result for custom rule', (done) => {
+      const obj = {
+        FirstName: 4
+      };
+
+      const schema = {
+        rules: {
+          myRule: (actual, expected) => {
+            if (actual === expected * 2) {
+              return 'not valid!';
+            }
+
+            return true;
+          }
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              min: 6,
+              myRule: 2
+            }
+          }
+        }
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.FirstName.min).toBeDefined();
+          expect(errors.FirstName.myRule).toBe('not valid!');
+
+          done();
+        });
+    });
+
     it('should support async rule', (done) => {
       const obj = {
         FirstName: 2

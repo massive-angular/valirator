@@ -153,7 +153,7 @@ var toConsumableArray = function (arr) {
   }
 };
 
-function validateRule(rule, expected, value, message, rules, messages, property, obj, schema) {
+function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
   return new Promise(function (resolve, reject) {
     var _getRule = getRule(rule);
 
@@ -165,7 +165,7 @@ function validateRule(rule, expected, value, message, rules, messages, property,
     var overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
     var overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
 
-    var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, property, obj, schema, defaultRule);
+    var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
     var callback = function callback(isValid) {
       if (isValid !== true) {
         formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule).then(resolve).catch(reject);
@@ -181,8 +181,8 @@ function validateRule(rule, expected, value, message, rules, messages, property,
 function validateValue(value) {
   var rules = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
   var messages = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-  var property = arguments[3];
-  var obj = arguments[4];
+  var obj = arguments[3];
+  var property = arguments[4];
   var schema = arguments[5];
 
   return new Promise(function (resolve, reject) {
@@ -191,7 +191,7 @@ function validateValue(value) {
       var expected = rules[rule];
       var message = messages[rule];
 
-      return validateRule(rule, expected, value, message, rules, messages, property, obj, schema);
+      return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
     });
 
     Promise.all(promises).then(function (results) {
@@ -227,7 +227,7 @@ function validateProperty(property, obj) {
 
     var value = obj[property];
 
-    validateValue(value, propertyRules, propertyMessages, property, obj, properties).then(function (valueValidationResult) {
+    validateValue(value, propertyRules, propertyMessages, obj, property, properties).then(function (valueValidationResult) {
       var errors = valueValidationResult.getErrors();
 
       if (propertyProperties) {
@@ -478,6 +478,16 @@ function matchToRule(value, matchTo) {
 
 registerRule('matchTo', matchToRule, '%{actual} should match to %{expected}');
 
+function matchToPropertyRule(value, matchToProperty, obj) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value === obj[matchToProperty];
+}
+
+registerRule('matchToProperty', matchToPropertyRule, '%{actual} should match to %{expected}');
+
 function notMatchToRule(value, notMatchTo) {
   if (!isDefined(value)) {
     return true;
@@ -493,6 +503,22 @@ function notMatchToRule(value, notMatchTo) {
 }
 
 registerRule('notMatchTo', notMatchToRule, '%{actual} should not match to %{expected}');
+
+function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  if (!isArray(notMatchToProperties)) {
+    notMatchToProperties = [notMatchToProperties];
+  }
+
+  return notMatchToProperties.every(function (not) {
+    return obj[not] !== value;
+  });
+}
+
+registerRule('notMatchToProperties', notMatchToPropertiesRule, '%{actual} should not match to %{expected}');
 
 function maxRule(value, max) {
   if (!isDefined(value)) {
@@ -712,7 +738,9 @@ exports.divisibleByRule = divisibleByRule;
 exports.enumRule = enumRule;
 exports.formatRule = formatRule;
 exports.matchToRule = matchToRule;
+exports.matchToPropertyRule = matchToPropertyRule;
 exports.notMatchToRule = notMatchToRule;
+exports.notMatchToPropertiesRule = notMatchToPropertiesRule;
 exports.maxRule = maxRule;
 exports.maxItemsRule = maxItemsRule;
 exports.maxLengthRule = maxLengthRule;

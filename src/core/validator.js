@@ -1,5 +1,5 @@
 import { getRule } from './rules';
-import { isFunction, isObject, isArray, noop, getObjectOverride, handlePromise, formatMessage } from './utils';
+import { isFunction, isString, isObject, isArray, noop, getObjectOverride, handlePromise, formatMessage } from './utils';
 
 export function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
   return new Promise((resolve, reject) => {
@@ -13,7 +13,9 @@ export function validateRule(rule, expected, value, message, rules, messages, ob
 
     const isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
     const callback = (isValid) => {
-      if (isValid !== true) {
+      if (isString(isValid)) {
+        resolve(isValid);
+      } else if (isValid !== true) {
         formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule)
           .then(resolve)
           .catch(reject);
