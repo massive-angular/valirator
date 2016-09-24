@@ -167,7 +167,9 @@ function validateRule(rule, expected, value, message, rules, messages, obj, prop
 
     var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
     var callback = function callback(isValid) {
-      if (isValid !== true) {
+      if (isString(isValid)) {
+        resolve(isValid);
+      } else if (isValid !== true) {
         formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule).then(resolve).catch(reject);
       } else {
         resolve();

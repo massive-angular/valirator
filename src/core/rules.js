@@ -1,17 +1,15 @@
 let rulesHolder = {};
 
 export function registerRule(name, rule, message) {
-  if (!Object.hasOwnProperty(name)) {
-    Object.defineProperty(rulesHolder, name, {
-      value: {
-        name,
-        message,
-        check: rule
-      }
-    });
-  } else {
-    throw Error('Rule already defined');
+  if (rulesHolder.hasOwnProperty(name)) {
+    console.warn(`[WARNING]: Trying to override defined rule '${name}'. Please use 'overrideRule' function instead.`);
   }
+
+  rulesHolder[name] = {
+    name,
+    message,
+    check: rule
+  };
 }
 
 export function hasRule(name) {
