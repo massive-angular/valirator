@@ -85,17 +85,15 @@ function formatMessage() {
 var rulesHolder = {};
 
 function registerRule(name, rule, message) {
-  if (!Object.hasOwnProperty(name)) {
-    Object.defineProperty(rulesHolder, name, {
-      value: {
-        name: name,
-        message: message,
-        check: rule
-      }
-    });
-  } else {
-    throw Error('Rule already defined');
+  if (rulesHolder.hasOwnProperty(name)) {
+    console.warn("[WARNING]: Trying to override defined rule '" + name + "'. Please use 'overrideRule' function instead.");
   }
+
+  rulesHolder[name] = {
+    name: name,
+    message: message,
+    check: rule
+  };
 }
 
 function hasRule(name) {

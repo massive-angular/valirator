@@ -1,4 +1,4 @@
-import { registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, formatMessage, validate, validateRule, validateValue, validateObject, validateArray, ValidationSchema } from '../src/valirator';
+import { registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, formatMessage, validate, validateSync, validateRule, validateValue, validateObject, validateArray, ValidationSchema } from '../src/valirator';
 
 describe('valirator', () => {
   describe('registerRule', () => {
@@ -788,6 +788,29 @@ describe('valirator', () => {
 
           done();
         });
+    });
+  });
+
+  describe('validateSync', () => {
+    it('should validate required rule', () => {
+      const obj = {
+        FirstName: null
+      };
+
+      const schema = {
+        properties: {
+          FirstName: {
+            rules: {
+              required: true
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.hasErrors()).toBe(true);
+      expect(errors.FirstName.required).toBeDefined();
     });
   });
 

@@ -16,9 +16,9 @@ export function validateRule(rule, expected, value, message, rules, messages, ob
       if (isString(isValid)) {
         resolve(isValid);
       } else if (isValid !== true) {
-        formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule)
-          .then(resolve)
-          .catch(reject);
+        const formattedMessage = formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
+
+        handlePromise(formattedMessage, resolve, reject);
       } else {
         resolve();
       }
@@ -142,6 +142,10 @@ export function validate(schema, obj) {
   return validateObject(obj, properties || schema, rules, messages);
 }
 
+export function validateSync(schema, obj) {
+  return validate(schema, obj);
+}
+
 export class ValidationResult {
   constructor(errors = {}) {
     return {
@@ -222,5 +226,6 @@ export class ValidationResult {
 export class ValidationSchema {
   constructor(schema) {
     this.validate = validate.bind(this, schema);
+    this.validateSync = validateSync.bind(this, schema);
   }
 }
