@@ -52,6 +52,7 @@ export function handlePromise(promise) {
 
   return {
     then: (cb) => handlePromise(cb(promise)),
+    catch: noop,
     value: promise,
     isPromiseLike: true,
   };

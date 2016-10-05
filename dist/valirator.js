@@ -59,6 +59,7 @@ function handlePromise(promise) {
     then: function then(cb) {
       return handlePromise(cb(promise));
     },
+    catch: noop,
     value: promise,
     isPromiseLike: true
   };
