@@ -45,29 +45,40 @@ export function getObjectOverride(context, prop) {
   return isFunction(context[prop]) ? context[prop] : getObjectOverride(context.__proto__, prop);
 }
 
-export function handlePromise(promise, resolve, reject) {
+export function handlePromise(promise) {
   if (promise && promise.then) {
-    promise
-      .then(resolve)
-      .catch(reject);
-  } else {
-    resolve(promise);
+    return promise;
   }
+
+  return {
+    then: (cb) => handlePromise(cb(promise)),
+    value: promise,
+    isPromiseLike: true,
+  };
+}
+
+export function handlePromises(promises) {
+  const isAnyPromiseNotPromiseLike = promises.some(promise => promise && promise.then && !promise.isPromiseLike);
+  if (isAnyPromiseNotPromiseLike) {
+    return Promise.all(promises);
+  }
+
+  const results = promises.map(promise => promise.value);
+
+  return handlePromise(results);
 }
 
 export function formatMessage(message = 'No default message for rule "%{rule}"', actual, expected, property, obj, rule) {
-  return new Promise((resolve, reject) => {
-    const lookup = {
-      actual,
-      expected,
-      property,
-      rule
-    };
+  const lookup = {
+    actual,
+    expected,
+    property,
+    rule
+  };
 
-    const formattedMessage = isFunction(message)
-      ? message(actual, expected, property, obj)
-      : (isString(message) ? message.replace(/%\{([a-z]+)\}/ig, (_, match) => lookup[match.toLowerCase()] || '') : message);
+  const formattedMessage = isFunction(message)
+    ? message(actual, expected, property, obj)
+    : (isString(message) ? message.replace(/%\{([a-z]+)\}/ig, (_, match) => lookup[match.toLowerCase()] || '') : message);
 
-    handlePromise(formattedMessage, resolve, reject);
-  });
+  return handlePromise(formattedMessage);
 }

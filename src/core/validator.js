@@ -1,135 +1,115 @@
 import { getRule } from './rules';
-import { isFunction, isString, isObject, isArray, noop, getObjectOverride, handlePromise, formatMessage } from './utils';
+import { isFunction, isString, isObject, isArray, noop, handlePromise, handlePromises, getObjectOverride, formatMessage } from './utils';
 
 export function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
-  return new Promise((resolve, reject) => {
-    const {
-      check: defaultRule = noop,
-      message: defaultMessage
-    } = getRule(rule);
+  const {
+    check: defaultRule = noop,
+    message: defaultMessage
+  } = getRule(rule);
 
-    const overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
-    const overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
+  const overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
+  const overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
 
-    const isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
-    const callback = (isValid) => {
-      if (isString(isValid)) {
-        resolve(isValid);
-      } else if (isValid !== true) {
-        const formattedMessage = formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
+  const isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
 
-        handlePromise(formattedMessage, resolve, reject);
-      } else {
-        resolve();
+  return handlePromise(isValid)
+    .then(result => {
+      if (isString(result)) {
+        return result;
+      } else if (result !== true) {
+        return formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
       }
-    };
-
-    handlePromise(isValid, callback, reject);
-  });
+    });
 }
 
 export function validateValue(value, rules = {}, messages = {}, obj, property, schema) {
-  return new Promise((resolve, reject) => {
-    const keys = Object.keys(rules);
-    const promises = keys.map(rule => {
-      const expected = rules[rule];
-      const message = messages[rule];
+  const keys = Object.keys(rules);
+  const promises = keys.map(rule => {
+    const expected = rules[rule];
+    const message = messages[rule];
 
-      return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
-    });
-
-    Promise.all(promises)
-      .then(results => {
-        let errors = {};
-
-        results.forEach((result, i) => {
-          if (result) {
-            errors[keys[i]] = result;
-          }
-        });
-
-        resolve(new ValidationResult(errors));
-      })
-      .catch(reject);
+    return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
   });
+
+  return handlePromises(promises)
+    .then(results => {
+      let errors = {};
+
+      results.forEach((result, i) => {
+        if (result) {
+          errors[keys[i]] = result;
+        }
+      });
+
+      return new ValidationResult(errors);
+    });
 }
 
 export function validateProperty(property, obj, properties = {}, rules = {}, messages = {}) {
-  return new Promise((resolve, reject) => {
-    const {
-      rules: propertyRules = {},
-      messages: propertyMessages = {},
-      properties: propertyProperties
-    } = properties[property];
+  const {
+    rules: propertyRules = {},
+    messages: propertyMessages = {},
+    properties: propertyProperties
+  } = properties[property];
 
-    propertyRules.__proto__ = rules;
-    propertyMessages.__proto__ = messages;
+  propertyRules.__proto__ = rules;
+  propertyMessages.__proto__ = messages;
 
-    const value = obj[property];
+  const value = obj[property];
 
-    validateValue(value, propertyRules, propertyMessages, obj, property, properties)
-      .then(valueValidationResult => {
-        let errors = valueValidationResult.getErrors();
+  return validateValue(value, propertyRules, propertyMessages, obj, property, properties)
+    .then(valueValidationResult => {
+      let errors = valueValidationResult.getErrors();
 
-        if (propertyProperties) {
-          const subValidationCallback = (result) => {
-            errors.__proto__ = result.getErrors();
+      if (propertyProperties) {
+        const subValidationCallback = (result) => {
+          errors.__proto__ = result.getErrors();
 
-            resolve(new ValidationResult(errors));
-          };
+          return new ValidationResult(errors);
+        };
 
-          if (isArray(value)) {
-            return validateArray(value, propertyProperties, rules, messages)
-              .then(subValidationCallback)
-              .catch(reject);
-          } else if (isObject(value)) {
-            return validateObject(value, propertyProperties, rules, messages)
-              .then(subValidationCallback)
-              .catch(reject);
-          }
+        if (isArray(value)) {
+          return validateArray(value, propertyProperties, rules, messages)
+            .then(subValidationCallback);
+        } else if (isObject(value)) {
+          return validateObject(value, propertyProperties, rules, messages)
+            .then(subValidationCallback);
         }
+      }
 
-        resolve(new ValidationResult(errors));
-      })
-      .catch(reject);
-  });
+      return new ValidationResult(errors);
+    });
 }
 
 export function validateArray(array, properties, rules = {}, messages = {}) {
-  return new Promise((resolve, reject) => {
-    const promises = array.map(item => validateObject(item, properties, rules, messages));
+  const promises = array.map(item => validateObject(item, properties, rules, messages));
 
-    Promise.all(promises)
-      .then(results => {
-        let errors = {};
+  return handlePromises(promises)
+    .then(results => {
+      let errors = {};
 
-        results.forEach((result, i) => {
-          errors[i] = result;
-        });
+      results.forEach((result, i) => {
+        errors[i] = result;
+      });
 
-        resolve(new ValidationResult(errors));
-      })
-      .catch(reject);
-  });
+      return new ValidationResult(errors);
+    });
 }
 
 export function validateObject(obj, properties, rules = {}, messages = {}) {
-  return new Promise((resolve, reject) => {
-    const keys = Object.keys(properties);
-    const promises = keys.map(property => validateProperty(property, obj, properties, rules, messages));
+  const keys = Object.keys(properties);
+  const promises = keys.map(property => validateProperty(property, obj, properties, rules, messages));
 
-    Promise.all(promises)
-      .then(results => {
-        let errors = {};
+  return handlePromises(promises)
+    .then(results => {
+      let errors = {};
 
-        results.forEach((result, i) => {
-          errors[keys[i]] = result;
-        });
+      results.forEach((result, i) => {
+        errors[keys[i]] = result;
+      });
 
-        resolve(new ValidationResult(errors));
-      })
-      .catch(reject);
-  });
+      return new ValidationResult(errors);
+    });
 }
 
 export function validate(schema, obj) {
@@ -142,8 +122,15 @@ export function validate(schema, obj) {
   return validateObject(obj, properties || schema, rules, messages);
 }
 
+/**
+ * Use that only in cause if you don't have any async actions.
+ * Otherwise result will be undefined
+ * Highly recommended to use 'validate' function instead
+ * */
 export function validateSync(schema, obj) {
-  return validate(schema, obj);
+  const promise = validate(schema, obj);
+
+  return promise && promise.value;
 }
 
 export class ValidationResult {

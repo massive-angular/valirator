@@ -812,6 +812,533 @@ describe('valirator', () => {
       expect(errors.hasErrors()).toBe(true);
       expect(errors.FirstName.required).toBeDefined();
     });
+
+    it('should override default global message', () => {
+      const obj = {
+        FirstName: null
+      };
+
+      const schema = {
+        messages: {
+          required: 'Field is required'
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              required: true
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.FirstName.required).toBe('Field is required');
+    });
+
+    it('should override default required rule (allow empty, for example)', () => {
+      const obj = {
+        FirstName: ''
+      };
+
+      const schema = {
+        rules: {
+          required: (value) => {
+            return value !== undefined && value !== null;
+          }
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              required: true
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.FirstName.hasErrors()).toBe(false);
+    });
+
+    it('should support nested schemas', () => {
+      const obj = {
+        Person: {
+          FirstName: null
+        }
+      };
+
+      const schema = {
+        properties: {
+          Person: {
+            rules: {
+              required: true,
+            },
+            properties: {
+              FirstName: {
+                rules: {
+                  required: true
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.hasErrors()).toBe(true);
+      expect(errors.Person.hasErrors()).toBe(true);
+      expect(errors.Person.FirstName.hasErrors()).toBe(true);
+      expect(errors.Person.FirstName.required).toBeDefined();
+    });
+
+    it('should pass validation for nested schemas', () => {
+      const obj = {
+        Person: {
+          FirstName: 'John'
+        }
+      };
+
+      const schema = {
+        properties: {
+          Person: {
+            rules: {
+              required: true,
+            },
+            properties: {
+              FirstName: {
+                rules: {
+                  required: true
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.hasErrors()).toBe(false);
+      expect(errors.Person.hasErrors()).toBe(false);
+      expect(errors.Person.FirstName.hasErrors()).toBe(false);
+      expect(errors.Person.FirstName.required).not.toBeDefined();
+    });
+
+    it('should support array schemas', () => {
+      const obj = {
+        Persons: [{
+          FirstName: 'John'
+        }, {
+          FirstName: null
+        }, {
+          FirstName: 'Bob'
+        }]
+      };
+
+      const schema = {
+        properties: {
+          Persons: {
+            properties: {
+              FirstName: {
+                rules: {
+                  required: true
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.Persons[0].FirstName.hasErrors()).toBe(false);
+      expect(errors.Persons[1].FirstName.hasErrors()).toBe(true);
+      expect(errors.Persons[2].FirstName.hasErrors()).toBe(false);
+    });
+
+    it('should support array validation and schemas as well', () => {
+      const obj = {
+        Persons: [{
+          FirstName: 'John'
+        }, {
+          FirstName: null
+        }, {
+          FirstName: 'Bob'
+        }]
+      };
+
+      const schema = {
+        properties: {
+          Persons: {
+            rules: {
+              minLength: 5
+            },
+            properties: {
+              FirstName: {
+                rules: {
+                  required: true
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.hasErrorsFor('Persons')).toBe(true);
+      expect(errors.Persons.hasErrorsOfTypes('minLength')).toBe(true);
+      expect(errors.Persons[0].FirstName.hasErrors()).toBe(false);
+      expect(errors.Persons[1].FirstName.hasErrors()).toBe(true);
+      expect(errors.Persons[2].FirstName.hasErrors()).toBe(false);
+    });
+
+    it('should support custom rule', () => {
+      const obj = {
+        FirstName: 2
+      };
+
+      const schema = {
+        rules: {
+          myRule: (actual, expected) => {
+            return actual === expected * 2;
+          }
+        },
+        messages: {
+          myRule: '%{actual} !== %{expected} * 2'
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              min: 6,
+              myRule: 2
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.FirstName.min).toBeDefined();
+      expect(errors.FirstName.myRule).toBe('2 !== 2 * 2');
+    });
+
+    it('should support error result for custom rule', () => {
+      const obj = {
+        FirstName: 4
+      };
+
+      const schema = {
+        rules: {
+          myRule: (actual, expected) => {
+            if (actual === expected * 2) {
+              return 'not valid!';
+            }
+
+            return true;
+          }
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              min: 6,
+              myRule: 2
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.FirstName.min).toBeDefined();
+      expect(errors.FirstName.myRule).toBe('not valid!');
+    });
+
+    it('should not fail on empty schema', () => {
+      const obj = {
+        FirstName: 2
+      };
+
+      const schema = {};
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.hasErrors()).toBe(false);
+    });
+
+    it('should not fail on empty obj', () => {
+      const obj = {};
+
+      const schema = {
+        properties: {
+          FirstName: {
+            rules: {
+              required: true
+            }
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.FirstName.required).toBeDefined();
+    });
+
+    it('should support high level schema', () => {
+      const obj = {
+        FirstName: null
+      };
+
+      const schema = {
+        FirstName: {
+          rules: {
+            required: true
+          }
+        }
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.FirstName.required).toBeDefined();
+    });
+
+    it('should be fast', () => {
+      console.time('should be fast');
+      const obj = {
+        "Id": "9131",
+        "AccountId": "1",
+        "UserId": null,
+        "FirstName": "Test",
+        "LastName": "Test",
+        "Line1": "15625 Alton Pkwy",
+        "Line2": "Suite 200",
+        "City": "Irvine",
+        "State": "CA",
+        "Zip": "92620",
+        "Country": "US",
+        "Phone": "+1-2345678901",
+        "Phone2": "2342342341",
+        "Company": "Test",
+        "Email": "test@example.com",
+        "Type": "primary"
+      };
+
+      const schema = {
+        messages: {
+          required: 'validation.required'
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 45,
+              pattern: /^[a-zA-Z0-9]+$/
+            },
+            messages: {
+              pattern: 'validation.firstName.pattern'
+            }
+          },
+          LastName: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 45,
+              pattern: /^[a-zA-Z0-9]+$/
+            },
+            messages: {
+              pattern: 'validation.firstName.pattern'
+            }
+          },
+          Email: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 50,
+              format: 'email'
+            },
+            messages: {
+              format: 'validation.email.format'
+            }
+          },
+          Phone: {
+            rules: {
+              type: 'string',
+              required: true
+            }
+          },
+          Line1: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 100
+            }
+          },
+          Line2: {
+            rules: {
+              type: 'string',
+              maxLength: 100
+            }
+          },
+          Country: {
+            rules: {
+              type: 'string',
+              required: true
+            }
+          },
+          State: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 50
+            }
+          },
+          City: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 50
+            }
+          },
+          Zip: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 15
+            }
+          }
+        }
+      };
+
+      validateSync(schema, obj);
+
+      console.timeEnd('should be fast');
+    });
+
+    it('should be fast with array', () => {
+      console.time('should be fast with array');
+      const obj = {
+        "Id": "1",
+        "Name": "CalAmp Account",
+        "ParentAccount": "0",
+        "SolomonId": "GAC22222222",
+        "CreditTerms": "COD",
+        "SalesTerritory": "US West",
+        "Language": "english",
+        "PartnerBranding": "calamp",
+        "CreditPurchaseAuthorized": "0",
+        "ActivationDate": null,
+        "DeactivationDate": null,
+        "IsDisabled": "no",
+        "IsMarkedArchive": "no",
+        "CanViewSubaccounts": "1",
+        "PartnerLogo": "calamp_logo_slogan_1_125px.jpg",
+        "ShowPoweredByLogo": "1",
+        "AllowNewDeviceUseFromParent": "0",
+        "CanViewAirtimeStore": "1",
+        "CanViewHardwareStore": "0",
+        "LastChangeDate": "2016-08-12 05:37:24",
+        "AllowCommandAutoRetry": "1",
+        "SkipInstallProcess": "0",
+        "AllowAirtimeAutoRenew": "1",
+        "InvoiceAccount": "0",
+        "EmailNotificationOnInstall": "1",
+        "MandatoryInstallOdometer": "0",
+        "RenewalPlanId": "4",
+        "RenewalPlanPrice": null,
+        "EnableLocationValidationReport": "1",
+        "ParentName": "N/A",
+        "MaxScheduleActions": 12,
+        "is_cac_account": false,
+        "CustomUserAttributeDefinitions": [],
+        "CustomVehicleAttributeDefinitions": [],
+        "AirTimePlan": [
+          {
+            "RenewalPlanSKU": "rp1111",
+            "RenewalPlanPrice": "33.33"
+          },
+          {
+            "RenewalPlanSKU": "rp2222",
+            "RenewalPlanPrice": "444.44"
+          },
+          {
+            "RenewalPlanSKU": "aa",
+            "RenewalPlanPrice": ""
+          },
+          {
+            "RenewalPlanSKU": "",
+            "RenewalPlanPrice": "aa"
+          },
+          {
+            "RenewalPlanSKU": "",
+            "RenewalPlanPrice": ""
+          }
+        ]
+      };
+
+      const airTimePlanRowRequired = (actual, expected, property, { RenewalPlanSKU, RenewalPlanPrice }, schema, defaultRule) => {
+        let isRequired = {
+          allowEmpty: true
+        };
+
+        if (RenewalPlanSKU || RenewalPlanPrice) {
+          isRequired = true
+        }
+
+        return defaultRule(actual, isRequired)
+      };
+
+      const schema = {
+        messages: {
+          required: 'validation.required'
+        },
+        properties: {
+          Name: {
+            rules: {
+              type: 'string',
+              required: true,
+              maxLength: 64
+            }
+          },
+          Language: {
+            rules: {
+              type: 'string',
+              required: true
+            }
+          },
+          AirTimePlan: {
+            rules: {
+              required: true
+            },
+            properties: {
+              RenewalPlanSKU: {
+                rules: {
+                  required: airTimePlanRowRequired,
+                  pattern: /^RP|rp[0-9]{4}$/
+                },
+                messages: {
+                  pattern: 'validation.renewalPlanSKU.pattern'
+                }
+              },
+              RenewalPlanPrice: {
+                rules: {
+                  required: airTimePlanRowRequired,
+                  pattern: /^[0-9]+\.?[0-9]{2}$/
+                },
+                messages: {
+                  pattern: 'validation.renewalPlanPrice.pattern'
+                }
+              }
+            }
+          }
+        }
+      };
+
+      validateSync(schema, obj);
+
+      console.timeEnd('should be fast with array');
+    });
   });
 
   describe('ValidationSchema', () => {
