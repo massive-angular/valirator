@@ -50,12 +50,33 @@ function getObjectOverride(context, prop) {
   return isFunction(context[prop]) ? context[prop] : getObjectOverride(context.__proto__, prop);
 }
 
-function handlePromise(promise, resolve, reject) {
+function handlePromise(promise) {
   if (promise && promise.then) {
-    promise.then(resolve).catch(reject);
-  } else {
-    resolve(promise);
+    return promise;
   }
+
+  return {
+    then: function then(cb) {
+      return handlePromise(cb(promise));
+    },
+    value: promise,
+    isPromiseLike: true
+  };
+}
+
+function handlePromises(promises) {
+  var isAnyPromiseNotPromiseLike = promises.some(function (promise) {
+    return promise && promise.then && !promise.isPromiseLike;
+  });
+  if (isAnyPromiseNotPromiseLike) {
+    return Promise.all(promises);
+  }
+
+  var results = promises.map(function (promise) {
+    return promise.value;
+  });
+
+  return handlePromise(results);
 }
 
 function formatMessage() {
@@ -66,20 +87,18 @@ function formatMessage() {
   var obj = arguments[4];
   var rule = arguments[5];
 
-  return new Promise(function (resolve, reject) {
-    var lookup = {
-      actual: actual,
-      expected: expected,
-      property: property,
-      rule: rule
-    };
+  var lookup = {
+    actual: actual,
+    expected: expected,
+    property: property,
+    rule: rule
+  };
 
-    var formattedMessage = isFunction(message) ? message(actual, expected, property, obj) : isString(message) ? message.replace(/%\{([a-z]+)\}/ig, function (_, match) {
-      return lookup[match.toLowerCase()] || '';
-    }) : message;
+  var formattedMessage = isFunction(message) ? message(actual, expected, property, obj) : isString(message) ? message.replace(/%\{([a-z]+)\}/ig, function (_, match) {
+    return lookup[match.toLowerCase()] || '';
+  }) : message;
 
-    handlePromise(formattedMessage, resolve, reject);
-  });
+  return handlePromise(formattedMessage);
 }
 
 var rulesHolder = {};
@@ -152,29 +171,24 @@ var toConsumableArray = function (arr) {
 };
 
 function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
-  return new Promise(function (resolve, reject) {
-    var _getRule = getRule(rule);
+  var _getRule = getRule(rule);
 
-    var _getRule$check = _getRule.check;
-    var defaultRule = _getRule$check === undefined ? noop : _getRule$check;
-    var defaultMessage = _getRule.message;
+  var _getRule$check = _getRule.check;
+  var defaultRule = _getRule$check === undefined ? noop : _getRule$check;
+  var defaultMessage = _getRule.message;
 
 
-    var overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
-    var overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
+  var overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
+  var overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
 
-    var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
-    var callback = function callback(isValid) {
-      if (isString(isValid)) {
-        resolve(isValid);
-      } else if (isValid !== true) {
-        formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule).then(resolve).catch(reject);
-      } else {
-        resolve();
-      }
-    };
+  var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
 
-    handlePromise(isValid, callback, reject);
+  return handlePromise(isValid).then(function (result) {
+    if (isString(result)) {
+      return result;
+    } else if (result !== true) {
+      return formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
+    }
   });
 }
 
@@ -185,26 +199,24 @@ function validateValue(value) {
   var property = arguments[4];
   var schema = arguments[5];
 
-  return new Promise(function (resolve, reject) {
-    var keys = Object.keys(rules);
-    var promises = keys.map(function (rule) {
-      var expected = rules[rule];
-      var message = messages[rule];
+  var keys = Object.keys(rules);
+  var promises = keys.map(function (rule) {
+    var expected = rules[rule];
+    var message = messages[rule];
 
-      return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+    return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+  });
+
+  return handlePromises(promises).then(function (results) {
+    var errors = {};
+
+    results.forEach(function (result, i) {
+      if (result) {
+        errors[keys[i]] = result;
+      }
     });
 
-    Promise.all(promises).then(function (results) {
-      var errors = {};
-
-      results.forEach(function (result, i) {
-        if (result) {
-          errors[keys[i]] = result;
-        }
-      });
-
-      resolve(new ValidationResult(errors));
-    }).catch(reject);
+    return new ValidationResult(errors);
   });
 }
 
@@ -212,40 +224,37 @@ function validateProperty(property, obj) {
   var properties = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
   var rules = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-
-  return new Promise(function (resolve, reject) {
-    var _properties$property = properties[property];
-    var _properties$property$ = _properties$property.rules;
-    var propertyRules = _properties$property$ === undefined ? {} : _properties$property$;
-    var _properties$property$2 = _properties$property.messages;
-    var propertyMessages = _properties$property$2 === undefined ? {} : _properties$property$2;
-    var propertyProperties = _properties$property.properties;
+  var _properties$property = properties[property];
+  var _properties$property$ = _properties$property.rules;
+  var propertyRules = _properties$property$ === undefined ? {} : _properties$property$;
+  var _properties$property$2 = _properties$property.messages;
+  var propertyMessages = _properties$property$2 === undefined ? {} : _properties$property$2;
+  var propertyProperties = _properties$property.properties;
 
 
-    propertyRules.__proto__ = rules;
-    propertyMessages.__proto__ = messages;
+  propertyRules.__proto__ = rules;
+  propertyMessages.__proto__ = messages;
 
-    var value = obj[property];
+  var value = obj[property];
 
-    validateValue(value, propertyRules, propertyMessages, obj, property, properties).then(function (valueValidationResult) {
-      var errors = valueValidationResult.getErrors();
+  return validateValue(value, propertyRules, propertyMessages, obj, property, properties).then(function (valueValidationResult) {
+    var errors = valueValidationResult.getErrors();
 
-      if (propertyProperties) {
-        var subValidationCallback = function subValidationCallback(result) {
-          errors.__proto__ = result.getErrors();
+    if (propertyProperties) {
+      var subValidationCallback = function subValidationCallback(result) {
+        errors.__proto__ = result.getErrors();
 
-          resolve(new ValidationResult(errors));
-        };
+        return new ValidationResult(errors);
+      };
 
-        if (isArray(value)) {
-          return validateArray(value, propertyProperties, rules, messages).then(subValidationCallback).catch(reject);
-        } else if (isObject(value)) {
-          return validateObject(value, propertyProperties, rules, messages).then(subValidationCallback).catch(reject);
-        }
+      if (isArray(value)) {
+        return validateArray(value, propertyProperties, rules, messages).then(subValidationCallback);
+      } else if (isObject(value)) {
+        return validateObject(value, propertyProperties, rules, messages).then(subValidationCallback);
       }
+    }
 
-      resolve(new ValidationResult(errors));
-    }).catch(reject);
+    return new ValidationResult(errors);
   });
 }
 
@@ -253,20 +262,18 @@ function validateArray(array, properties) {
   var rules = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
   var messages = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
-  return new Promise(function (resolve, reject) {
-    var promises = array.map(function (item) {
-      return validateObject(item, properties, rules, messages);
+  var promises = array.map(function (item) {
+    return validateObject(item, properties, rules, messages);
+  });
+
+  return handlePromises(promises).then(function (results) {
+    var errors = {};
+
+    results.forEach(function (result, i) {
+      errors[i] = result;
     });
 
-    Promise.all(promises).then(function (results) {
-      var errors = {};
-
-      results.forEach(function (result, i) {
-        errors[i] = result;
-      });
-
-      resolve(new ValidationResult(errors));
-    }).catch(reject);
+    return new ValidationResult(errors);
   });
 }
 
@@ -274,21 +281,19 @@ function validateObject(obj, properties) {
   var rules = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
   var messages = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
-  return new Promise(function (resolve, reject) {
-    var keys = Object.keys(properties);
-    var promises = keys.map(function (property) {
-      return validateProperty(property, obj, properties, rules, messages);
+  var keys = Object.keys(properties);
+  var promises = keys.map(function (property) {
+    return validateProperty(property, obj, properties, rules, messages);
+  });
+
+  return handlePromises(promises).then(function (results) {
+    var errors = {};
+
+    results.forEach(function (result, i) {
+      errors[keys[i]] = result;
     });
 
-    Promise.all(promises).then(function (results) {
-      var errors = {};
-
-      results.forEach(function (result, i) {
-        errors[keys[i]] = result;
-      });
-
-      resolve(new ValidationResult(errors));
-    }).catch(reject);
+    return new ValidationResult(errors);
   });
 }
 
@@ -299,6 +304,17 @@ function validate(schema, obj) {
 
 
   return validateObject(obj, properties || schema, rules, messages);
+}
+
+/**
+ * Use that only in cause if you don't have any async actions.
+ * Otherwise result will be undefined
+ * Highly recommended to use 'validate' function instead
+ * */
+function validateSync(schema, obj) {
+  var promise = validate(schema, obj);
+
+  return promise && promise.value;
 }
 
 var ValidationResult = function ValidationResult() {
@@ -405,6 +421,7 @@ var ValidationSchema = function ValidationSchema(schema) {
   classCallCheck(this, ValidationSchema);
 
   this.validate = validate.bind(this, schema);
+  this.validateSync = validateSync.bind(this, schema);
 };
 
 function divisibleByRule(value, divisibleBy) {
@@ -720,6 +737,7 @@ exports.isDefined = isDefined;
 exports.noop = noop;
 exports.getObjectOverride = getObjectOverride;
 exports.handlePromise = handlePromise;
+exports.handlePromises = handlePromises;
 exports.formatMessage = formatMessage;
 exports.registerRule = registerRule;
 exports.hasRule = hasRule;
@@ -732,6 +750,7 @@ exports.validateProperty = validateProperty;
 exports.validateArray = validateArray;
 exports.validateObject = validateObject;
 exports.validate = validate;
+exports.validateSync = validateSync;
 exports.ValidationResult = ValidationResult;
 exports.ValidationSchema = ValidationSchema;
 exports.divisibleByRule = divisibleByRule;
