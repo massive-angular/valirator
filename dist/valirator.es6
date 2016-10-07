@@ -187,6 +187,12 @@ function validateRule(rule, expected, value, message, rules, messages, obj, prop
   });
 }
 
+function validateRuleSync(rule, expected, value, message, rules, messages, obj, property, schema) {
+  var promise = validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+
+  return promise && promise.value;
+}
+
 function validateValue(value) {
   var rules = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
   var messages = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
@@ -213,6 +219,12 @@ function validateValue(value) {
 
     return new ValidationResult(errors);
   });
+}
+
+function validateValueSync(value, rules, messages, obj, property, schema) {
+  var promise = validateValue(value, rules, messages, obj, property, schema);
+
+  return promise && promise.value;
 }
 
 function validateProperty(property, obj) {
@@ -253,6 +265,12 @@ function validateProperty(property, obj) {
   });
 }
 
+function validatePropertySync(property, obj, properties, rules, messages) {
+  var promise = validateProperty(property, obj, properties, rules, messages);
+
+  return promise && promise.value;
+}
+
 function validateArray(array, properties) {
   var rules = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
   var messages = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
@@ -270,6 +288,12 @@ function validateArray(array, properties) {
 
     return new ValidationResult(errors);
   });
+}
+
+function validateArraySync(array, properties, rules, messages) {
+  var promise = validateArray(array, properties, rules, messages);
+
+  return promise && promise.value;
 }
 
 function validateObject(obj, properties) {
@@ -290,6 +314,12 @@ function validateObject(obj, properties) {
 
     return new ValidationResult(errors);
   });
+}
+
+function validateObjectSync(obj, properties, rules, messages) {
+  var promise = validateObject(obj, properties, rules, messages);
+
+  return promise && promise.value;
 }
 
 function validate(schema, obj) {
@@ -720,5 +750,5 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateValue, validateProperty, validateArray, validateObject, validate, validateSync, ValidationResult, ValidationSchema, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationResult, ValidationSchema, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map
