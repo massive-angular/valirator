@@ -22,6 +22,12 @@ export function validateRule(rule, expected, value, message, rules, messages, ob
     });
 }
 
+export function validateRuleSync(rule, expected, value, message, rules, messages, obj, property, schema) {
+  const promise = validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+
+  return promise && promise.value;
+}
+
 export function validateValue(value, rules = {}, messages = {}, obj, property, schema) {
   const keys = Object.keys(rules);
   const promises = keys.map(rule => {
@@ -43,6 +49,12 @@ export function validateValue(value, rules = {}, messages = {}, obj, property, s
 
       return new ValidationResult(errors);
     });
+}
+
+export function validateValueSync(value, rules, messages, obj, property, schema) {
+  const promise = validateValue(value, rules, messages, obj, property, schema);
+
+  return promise && promise.value;
 }
 
 export function validateProperty(property, obj, properties = {}, rules = {}, messages = {}) {
@@ -81,6 +93,12 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
     });
 }
 
+export function validatePropertySync(property, obj, properties, rules, messages) {
+  const promise = validateProperty(property, obj, properties, rules, messages);
+
+  return promise && promise.value;
+}
+
 export function validateArray(array, properties, rules = {}, messages = {}) {
   const promises = array.map(item => validateObject(item, properties, rules, messages));
 
@@ -94,6 +112,12 @@ export function validateArray(array, properties, rules = {}, messages = {}) {
 
       return new ValidationResult(errors);
     });
+}
+
+export function validateArraySync(array, properties, rules, messages) {
+  const promise = validateArray(array, properties, rules, messages);
+
+  return promise && promise.value;
 }
 
 export function validateObject(obj, properties, rules = {}, messages = {}) {
@@ -110,6 +134,12 @@ export function validateObject(obj, properties, rules = {}, messages = {}) {
 
       return new ValidationResult(errors);
     });
+}
+
+export function validateObjectSync(obj, properties, rules, messages) {
+  const promise = validateObject(obj, properties, rules, messages);
+
+  return promise && promise.value;
 }
 
 export function validate(schema, obj) {
