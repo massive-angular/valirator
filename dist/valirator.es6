@@ -369,7 +369,8 @@ function validateProperty(property, obj) {
   var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
   var _properties$property = properties[property];
   var propertyRules = _properties$property.rules;
-  var propertyMessages = _properties$property.messages;
+  var _properties$property$ = _properties$property.messages;
+  var propertyMessages = _properties$property$ === undefined ? {} : _properties$property$;
   var propertyProperties = _properties$property.properties;
 
 
@@ -379,17 +380,7 @@ function validateProperty(property, obj) {
     } else {
       propertyRules = {};
     }
-  }
-
-  if (!propertyMessages) {
-    if (!properties[property].rules && !properties[property].properties) {
-      propertyMessages = properties[property];
-    } else {
-      propertyMessages = {};
-    }
-  }
-
-  if (!propertyProperties) {
+  } else if (!propertyProperties) {
     if (!properties[property].rules && !properties[property].messages) {
       propertyProperties = properties[property];
     }
