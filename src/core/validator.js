@@ -70,11 +70,33 @@ export function validateValueSync(value, rules, messages, obj, property, schema)
 }
 
 export function validateProperty(property, obj, properties = {}, rules = {}, messages = {}) {
-  const {
-    rules: propertyRules = properties[property] || {},
-    messages: propertyMessages = {},
-    properties: propertyProperties
+  let {
+    rules: propertyRules,
+    messages: propertyMessages,
+    properties: propertyProperties,
   } = properties[property];
+
+  if (!propertyRules) {
+    if (!properties[property].messages && !properties[property].properties) {
+      propertyRules = properties[property];
+    } else {
+      propertyRules = {};
+    }
+  }
+
+  if (!propertyMessages) {
+    if (!properties[property].rules && !properties[property].properties) {
+      propertyMessages = properties[property];
+    } else {
+      propertyMessages = {};
+    }
+  }
+
+  if (!propertyProperties) {
+    if (!properties[property].rules && !properties[property].messages) {
+      propertyProperties = properties[property];
+    }
+  }
 
   propertyRules.__proto__ = rules;
   propertyMessages.__proto__ = messages;

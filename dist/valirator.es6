@@ -243,7 +243,7 @@ function ValidationResult() {
         return keys.reduce(function (result, key) {
           var subErrors = that[key].getErrors ? that[key].getErrors(includeEmptyErrors) : that[key];
 
-          if (Object.keys(subErrors).length > 0 || includeEmptyErrors) {
+          if (Object.keys(subErrors).length || includeEmptyErrors) {
             return _extends({}, result, defineProperty({}, key, subErrors));
           }
 
@@ -368,12 +368,32 @@ function validateProperty(property, obj) {
   var rules = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
   var _properties$property = properties[property];
-  var _properties$property$ = _properties$property.rules;
-  var propertyRules = _properties$property$ === undefined ? properties[property] || {} : _properties$property$;
-  var _properties$property$2 = _properties$property.messages;
-  var propertyMessages = _properties$property$2 === undefined ? {} : _properties$property$2;
+  var propertyRules = _properties$property.rules;
+  var propertyMessages = _properties$property.messages;
   var propertyProperties = _properties$property.properties;
 
+
+  if (!propertyRules) {
+    if (!properties[property].messages && !properties[property].properties) {
+      propertyRules = properties[property];
+    } else {
+      propertyRules = {};
+    }
+  }
+
+  if (!propertyMessages) {
+    if (!properties[property].rules && !properties[property].properties) {
+      propertyMessages = properties[property];
+    } else {
+      propertyMessages = {};
+    }
+  }
+
+  if (!propertyProperties) {
+    if (!properties[property].rules && !properties[property].messages) {
+      propertyProperties = properties[property];
+    }
+  }
 
   propertyRules.__proto__ = rules;
   propertyMessages.__proto__ = messages;

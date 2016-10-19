@@ -62,7 +62,7 @@ export function ValidationResult(errors = {}) {
         return keys.reduce((result, key) => {
           const subErrors = that[key].getErrors ? that[key].getErrors(includeEmptyErrors) : that[key];
 
-          if (Object.keys(subErrors).length > 0 || includeEmptyErrors) {
+          if (Object.keys(subErrors).length || includeEmptyErrors) {
             return {
               ...result,
               [key]: (subErrors),
