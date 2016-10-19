@@ -1,5 +1,17 @@
 import { getRule } from './rules';
-import { isFunction, isString, isObject, isArray, noop, handlePromise, handlePromises, getObjectOverride, formatMessage } from './utils';
+import {
+  isFunction,
+  isString,
+  isObject,
+  isArray,
+  noop,
+  handlePromise,
+  handlePromises,
+  getObjectOverride,
+  formatMessage
+} from './utils';
+
+import { ValidationResult } from './ValidationResult';
 
 export function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
   const {
@@ -59,7 +71,7 @@ export function validateValueSync(value, rules, messages, obj, property, schema)
 
 export function validateProperty(property, obj, properties = {}, rules = {}, messages = {}) {
   const {
-    rules: propertyRules = {},
+    rules: propertyRules = properties[property] || {},
     messages: propertyMessages = {},
     properties: propertyProperties
   } = properties[property];
@@ -71,13 +83,11 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
 
   return validateValue(value, propertyRules, propertyMessages, obj, property, properties)
     .then(valueValidationResult => {
-      let errors = valueValidationResult.getErrors();
-
       if (propertyProperties) {
-        const subValidationCallback = (result) => {
-          errors.__proto__ = result.getErrors();
+        const subValidationCallback = (subValidationResult) => {
+          valueValidationResult.__proto__ = subValidationResult;
 
-          return new ValidationResult(errors);
+          return new ValidationResult(valueValidationResult);
         };
 
         if (isArray(value)) {
@@ -89,7 +99,7 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
         }
       }
 
-      return new ValidationResult(errors);
+      return new ValidationResult(valueValidationResult);
     });
 }
 
@@ -152,97 +162,8 @@ export function validate(schema, obj) {
   return validateObject(obj, properties || schema, rules, messages);
 }
 
-/**
- * Use that only in cause if you don't have any async actions.
- * Otherwise result will be undefined
- * Highly recommended to use 'validate' function instead
- * */
 export function validateSync(schema, obj) {
   const promise = validate(schema, obj);
 
   return promise && promise.value;
-}
-
-export class ValidationResult {
-  constructor(errors = {}) {
-    return {
-      ...this,
-      ...errors.__proto__,
-      ...errors,
-      _invokeActionFor(property, action, ...args) {
-        return errors[property] && errors[property][action] && errors[property][action](...args);
-      },
-      isValid() {
-        return !this.hasErrors();
-      },
-      hasErrors() {
-        const keys = [
-          ...Object.keys(errors.__proto__),
-          ...Object.keys(errors)
-        ];
-
-        return keys.some(key => {
-          if (errors[key].hasErrors) {
-            return errors[key].hasErrors();
-          }
-
-          return errors[key];
-        });
-      },
-      hasErrorsFor(property) {
-        return this._invokeActionFor(property, 'hasErrors');
-      },
-      hasErrorsOfTypes(...types) {
-        const keys = [
-          ...Object.keys(errors.__proto__),
-          ...Object.keys(errors)
-        ];
-
-        return keys.some(key => {
-          if (types.indexOf(key) !== -1) {
-            return true;
-          }
-
-          if (errors[key].hasErrorsOfTypes) {
-            return errors[key].hasErrorsOfTypes(...types);
-          }
-
-          return false;
-        });
-      },
-      hasErrorsOfTypesFor(property, ...types) {
-        return this._invokeActionFor(property, 'hasErrorsOfTypes', ...types);
-      },
-      getErrors() {
-        return {
-          ...errors
-        };
-      },
-      getErrorsFor(property) {
-        return this._invokeActionFor(property, 'getErrors');
-      },
-      getErrorsAsArray(...exclude) {
-        return Object
-          .keys(errors)
-          .filter(key => exclude.indexOf(key) === -1)
-          .map(key => errors[key]);
-      },
-      getErrorsAsArrayFor(property, ...exclude) {
-        return this._invokeActionFor(property, 'getErrorsAsArray', ...exclude);
-      },
-      getFirstError(...exclude) {
-        return (this.getErrorsAsArray(exclude) || [])[0];
-      },
-      getFirstErrorFor(property, ...exclude) {
-        return (this.getErrorsAsArrayFor(property, ...exclude) || [])[0];
-      }
-    };
-  }
-}
-
-export class ValidationSchema {
-  constructor(schema) {
-    this.validate = validate.bind(this, schema);
-    this.validateSync = validateSync.bind(this, schema);
-  }
 }

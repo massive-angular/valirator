@@ -237,6 +237,28 @@ describe('valirator', () => {
         });
     });
 
+    it('should support only rules definitions, if there are no messages or properties', (done) => {
+      const obj = {
+        FirstName: null
+      };
+
+      const schema = {
+        properties: {
+          FirstName: {
+            required: true
+          }
+        }
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.hasErrors()).toBe(true);
+          expect(errors.FirstName.required).toBeDefined();
+
+          done();
+        });
+    });
+
     it('should pass validation for nested schemas', (done) => {
       const obj = {
         Person: {
@@ -872,7 +894,7 @@ describe('valirator', () => {
         properties: {
           Person: {
             rules: {
-              required: true,
+              required: true
             },
             properties: {
               FirstName: {

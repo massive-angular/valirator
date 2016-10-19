@@ -135,10 +135,19 @@ function overrideRuleMessage(name, message) {
   }
 }
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
+var defineProperty = function (obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
   }
+
+  return obj;
 };
 
 var _extends = Object.assign || function (target) {
@@ -155,15 +164,142 @@ var _extends = Object.assign || function (target) {
   return target;
 };
 
-var toConsumableArray = function (arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+function ValidationResult() {
+  var errors = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-    return arr2;
-  } else {
-    return Array.from(arr);
-  }
-};
+  var that = _extends({}, errors.__proto__, errors);
+
+  Object.defineProperties(that, {
+    _invokeActionFor: {
+      value: function _invokeActionFor(property, action) {
+        var _errors$property;
+
+        for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+          args[_key - 2] = arguments[_key];
+        }
+
+        return errors[property] && errors[property][action] && (_errors$property = errors[property])[action].apply(_errors$property, args);
+      }
+    },
+    isValid: {
+      value: function isValid() {
+        return !this.hasErrors();
+      }
+    },
+    hasErrors: {
+      value: function hasErrors() {
+        var keys = Object.keys(that);
+
+        return keys.some(function (key) {
+          if (errors[key].hasErrors) {
+            return errors[key].hasErrors();
+          }
+
+          return errors[key];
+        });
+      }
+    },
+    hasErrorsFor: {
+      value: function hasErrorsFor(property) {
+        return this._invokeActionFor(property, 'hasErrors');
+      }
+    },
+    hasErrorsOfTypes: {
+      value: function hasErrorsOfTypes() {
+        for (var _len2 = arguments.length, types = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          types[_key2] = arguments[_key2];
+        }
+
+        var keys = Object.keys(that);
+
+        return keys.some(function (key) {
+          if (types.indexOf(key) !== -1) {
+            return true;
+          }
+
+          if (errors[key].hasErrorsOfTypes) {
+            var _errors$key;
+
+            return (_errors$key = errors[key]).hasErrorsOfTypes.apply(_errors$key, types);
+          }
+
+          return false;
+        });
+      }
+    },
+    hasErrorsOfTypesFor: {
+      value: function hasErrorsOfTypesFor(property) {
+        for (var _len3 = arguments.length, types = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+          types[_key3 - 1] = arguments[_key3];
+        }
+
+        return this._invokeActionFor.apply(this, [property, 'hasErrorsOfTypes'].concat(types));
+      }
+    },
+    getErrors: {
+      value: function getErrors(includeEmptyErrors) {
+        var keys = Object.keys(that);
+
+        return keys.reduce(function (result, key) {
+          var subErrors = that[key].getErrors ? that[key].getErrors(includeEmptyErrors) : that[key];
+
+          if (Object.keys(subErrors).length > 0 || includeEmptyErrors) {
+            return _extends({}, result, defineProperty({}, key, subErrors));
+          }
+
+          return result;
+        }, {});
+      }
+    },
+    getErrorsFor: {
+      value: function getErrorsFor(property) {
+        return this._invokeActionFor(property, 'getErrors');
+      }
+    },
+    getErrorsAsArray: {
+      value: function getErrorsAsArray() {
+        for (var _len4 = arguments.length, exclude = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+          exclude[_key4] = arguments[_key4];
+        }
+
+        return Object.keys(that).filter(function (key) {
+          return exclude.indexOf(key) === -1;
+        }).map(function (key) {
+          return that[key];
+        });
+      }
+    },
+    getErrorsAsArrayFor: {
+      value: function getErrorsAsArrayFor(property) {
+        for (var _len5 = arguments.length, exclude = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+          exclude[_key5 - 1] = arguments[_key5];
+        }
+
+        return this._invokeActionFor.apply(this, [property, 'getErrorsAsArray'].concat(exclude));
+      }
+    },
+    getFirstError: {
+      value: function getFirstError() {
+        for (var _len6 = arguments.length, exclude = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+          exclude[_key6] = arguments[_key6];
+        }
+
+        return (this.getErrorsAsArray(exclude) || [])[0];
+      }
+    },
+    getFirstErrorFor: {
+      value: function getFirstErrorFor(property) {
+        for (var _len7 = arguments.length, exclude = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
+          exclude[_key7 - 1] = arguments[_key7];
+        }
+
+        return (this.getErrorsAsArrayFor.apply(this, [property].concat(exclude)) || [])[0];
+      }
+    }
+  });
+
+  return that;
+}
 
 function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
   var _getRule = getRule(rule);
@@ -233,7 +369,7 @@ function validateProperty(property, obj) {
   var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
   var _properties$property = properties[property];
   var _properties$property$ = _properties$property.rules;
-  var propertyRules = _properties$property$ === undefined ? {} : _properties$property$;
+  var propertyRules = _properties$property$ === undefined ? properties[property] || {} : _properties$property$;
   var _properties$property$2 = _properties$property.messages;
   var propertyMessages = _properties$property$2 === undefined ? {} : _properties$property$2;
   var propertyProperties = _properties$property.properties;
@@ -245,13 +381,11 @@ function validateProperty(property, obj) {
   var value = obj[property];
 
   return validateValue(value, propertyRules, propertyMessages, obj, property, properties).then(function (valueValidationResult) {
-    var errors = valueValidationResult.getErrors();
-
     if (propertyProperties) {
-      var subValidationCallback = function subValidationCallback(result) {
-        errors.__proto__ = result.getErrors();
+      var subValidationCallback = function subValidationCallback(subValidationResult) {
+        valueValidationResult.__proto__ = subValidationResult;
 
-        return new ValidationResult(errors);
+        return new ValidationResult(valueValidationResult);
       };
 
       if (isArray(value)) {
@@ -261,7 +395,7 @@ function validateProperty(property, obj) {
       }
     }
 
-    return new ValidationResult(errors);
+    return new ValidationResult(valueValidationResult);
   });
 }
 
@@ -331,123 +465,16 @@ function validate(schema, obj) {
   return validateObject(obj, properties || schema, rules, messages);
 }
 
-/**
- * Use that only in cause if you don't have any async actions.
- * Otherwise result will be undefined
- * Highly recommended to use 'validate' function instead
- * */
 function validateSync(schema, obj) {
   var promise = validate(schema, obj);
 
   return promise && promise.value;
 }
 
-var ValidationResult = function ValidationResult() {
-  var errors = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-  classCallCheck(this, ValidationResult);
-
-  return _extends({}, this, errors.__proto__, errors, {
-    _invokeActionFor: function _invokeActionFor(property, action) {
-      var _errors$property;
-
-      for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        args[_key - 2] = arguments[_key];
-      }
-
-      return errors[property] && errors[property][action] && (_errors$property = errors[property])[action].apply(_errors$property, args);
-    },
-    isValid: function isValid() {
-      return !this.hasErrors();
-    },
-    hasErrors: function hasErrors() {
-      var keys = [].concat(toConsumableArray(Object.keys(errors.__proto__)), toConsumableArray(Object.keys(errors)));
-
-      return keys.some(function (key) {
-        if (errors[key].hasErrors) {
-          return errors[key].hasErrors();
-        }
-
-        return errors[key];
-      });
-    },
-    hasErrorsFor: function hasErrorsFor(property) {
-      return this._invokeActionFor(property, 'hasErrors');
-    },
-    hasErrorsOfTypes: function hasErrorsOfTypes() {
-      for (var _len2 = arguments.length, types = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        types[_key2] = arguments[_key2];
-      }
-
-      var keys = [].concat(toConsumableArray(Object.keys(errors.__proto__)), toConsumableArray(Object.keys(errors)));
-
-      return keys.some(function (key) {
-        if (types.indexOf(key) !== -1) {
-          return true;
-        }
-
-        if (errors[key].hasErrorsOfTypes) {
-          var _errors$key;
-
-          return (_errors$key = errors[key]).hasErrorsOfTypes.apply(_errors$key, types);
-        }
-
-        return false;
-      });
-    },
-    hasErrorsOfTypesFor: function hasErrorsOfTypesFor(property) {
-      for (var _len3 = arguments.length, types = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        types[_key3 - 1] = arguments[_key3];
-      }
-
-      return this._invokeActionFor.apply(this, [property, 'hasErrorsOfTypes'].concat(types));
-    },
-    getErrors: function getErrors() {
-      return _extends({}, errors);
-    },
-    getErrorsFor: function getErrorsFor(property) {
-      return this._invokeActionFor(property, 'getErrors');
-    },
-    getErrorsAsArray: function getErrorsAsArray() {
-      for (var _len4 = arguments.length, exclude = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        exclude[_key4] = arguments[_key4];
-      }
-
-      return Object.keys(errors).filter(function (key) {
-        return exclude.indexOf(key) === -1;
-      }).map(function (key) {
-        return errors[key];
-      });
-    },
-    getErrorsAsArrayFor: function getErrorsAsArrayFor(property) {
-      for (var _len5 = arguments.length, exclude = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
-        exclude[_key5 - 1] = arguments[_key5];
-      }
-
-      return this._invokeActionFor.apply(this, [property, 'getErrorsAsArray'].concat(exclude));
-    },
-    getFirstError: function getFirstError() {
-      for (var _len6 = arguments.length, exclude = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-        exclude[_key6] = arguments[_key6];
-      }
-
-      return (this.getErrorsAsArray(exclude) || [])[0];
-    },
-    getFirstErrorFor: function getFirstErrorFor(property) {
-      for (var _len7 = arguments.length, exclude = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
-        exclude[_key7 - 1] = arguments[_key7];
-      }
-
-      return (this.getErrorsAsArrayFor.apply(this, [property].concat(exclude)) || [])[0];
-    }
-  });
-};
-
-var ValidationSchema = function ValidationSchema(schema) {
-  classCallCheck(this, ValidationSchema);
-
+function ValidationSchema(schema) {
   this.validate = validate.bind(this, schema);
   this.validateSync = validateSync.bind(this, schema);
-};
+}
 
 function divisibleByRule(value, divisibleBy) {
   if (!isDefined(value)) {
@@ -750,5 +777,5 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationResult, ValidationSchema, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isDefined, noop, getObjectOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map
