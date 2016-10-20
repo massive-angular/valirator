@@ -359,7 +359,7 @@ describe('valirator', () => {
 
       validate(schema, obj)
         .then(errors => {
-          expect(errors.hasErrorsFor('Persons')).toBe(true);
+          expect(errors.Persons.hasErrors()).toBe(true);
           expect(errors.Persons.hasErrorsOfTypes('minLength')).toBe(true);
           expect(errors.Persons[0].FirstName.hasErrors()).toBe(false);
           expect(errors.Persons[1].FirstName.hasErrors()).toBe(true);
@@ -1009,7 +1009,7 @@ describe('valirator', () => {
 
       const errors = validateSync(schema, obj);
 
-      expect(errors.hasErrorsFor('Persons')).toBe(true);
+      expect(errors.Persons.hasErrors()).toBe(true);
       expect(errors.Persons.hasErrorsOfTypes('minLength')).toBe(true);
       expect(errors.Persons[0].FirstName.hasErrors()).toBe(false);
       expect(errors.Persons[1].FirstName.hasErrors()).toBe(true);

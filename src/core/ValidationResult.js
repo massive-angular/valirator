@@ -1,3 +1,5 @@
+import { isObject } from './utils';
+
 export function ValidationResult(errors = {}) {
   const that = {
     ...errors.__proto__,
@@ -5,11 +7,6 @@ export function ValidationResult(errors = {}) {
   };
 
   Object.defineProperties(that, {
-    _invokeActionFor: {
-      value: function _invokeActionFor(property, action, ...args) {
-        return errors[property] && errors[property][action] && errors[property][action](...args);
-      }
-    },
     isValid: {
       value: function isValid() {
         return !this.hasErrors();
@@ -20,17 +17,12 @@ export function ValidationResult(errors = {}) {
         const keys = Object.keys(that);
 
         return keys.some(key => {
-          if (errors[key].hasErrors) {
-            return errors[key].hasErrors();
+          if (that[key].hasErrors) {
+            return that[key].hasErrors();
           }
 
-          return errors[key];
+          return that[key];
         });
-      },
-    },
-    hasErrorsFor: {
-      value: function hasErrorsFor(property) {
-        return this._invokeActionFor(property, 'hasErrors');
       },
     },
     hasErrorsOfTypes: {
@@ -42,17 +34,12 @@ export function ValidationResult(errors = {}) {
             return true;
           }
 
-          if (errors[key].hasErrorsOfTypes) {
-            return errors[key].hasErrorsOfTypes(...types);
+          if (that[key].hasErrorsOfTypes) {
+            return that[key].hasErrorsOfTypes(...types);
           }
 
           return false;
         });
-      },
-    },
-    hasErrorsOfTypesFor: {
-      value: function hasErrorsOfTypesFor(property, ...types) {
-        return this._invokeActionFor(property, 'hasErrorsOfTypes', ...types);
       },
     },
     getErrors: {
@@ -70,13 +57,26 @@ export function ValidationResult(errors = {}) {
           }
 
           return result;
-        }, {})
+        }, {});
       },
     },
-    getErrorsFor: {
-      value: function getErrorsFor(property) {
-        return this._invokeActionFor(property, 'getErrors');
-      },
+    getFirstErrors: {
+      value: function getFirstErrors(includeEmptyErrors) {
+        const keys = Object.keys(that);
+
+        return keys.reduce((result, key, index) => {
+          const subErrors = that[key].getFirstErrors ? that[key].getFirstErrors(includeEmptyErrors) : that[key];
+
+          if (isObject(that[key]) && (Object.keys(subErrors).length || includeEmptyErrors)) {
+            return {
+              ...result,
+              [key]: (subErrors),
+            };
+          }
+
+          return index === 0 ? subErrors : result;
+        }, {});
+      }
     },
     getErrorsAsArray: {
       value: function getErrorsAsArray(...exclude) {
@@ -86,19 +86,9 @@ export function ValidationResult(errors = {}) {
           .map(key => that[key]);
       },
     },
-    getErrorsAsArrayFor: {
-      value: function getErrorsAsArrayFor(property, ...exclude) {
-        return this._invokeActionFor(property, 'getErrorsAsArray', ...exclude);
-      },
-    },
     getFirstError: {
       value: function getFirstError(...exclude) {
         return (this.getErrorsAsArray(exclude) || [])[0];
-      },
-    },
-    getFirstErrorFor: {
-      value: function getFirstErrorFor(property, ...exclude) {
-        return (this.getErrorsAsArrayFor(property, ...exclude) || [])[0];
       },
     },
   });
