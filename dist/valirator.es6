@@ -242,22 +242,26 @@ function ValidationResult() {
       }
     },
     getErrorsAsArray: {
-      value: function getErrorsAsArray() {
-        for (var _len2 = arguments.length, exclude = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          exclude[_key2] = arguments[_key2];
-        }
+      value: function getErrorsAsArray(includeEmptyErrors) {
+        var keys = Object.keys(that);
 
-        return Object.keys(that).filter(function (key) {
-          return exclude.indexOf(key) === -1;
-        }).map(function (key) {
-          return that[key];
+        return keys.map(function (key) {
+          var subErrors = that[key].getErrorsAsArray ? that[key].getErrorsAsArray(includeEmptyErrors) : that[key];
+
+          if (subErrors.length || includeEmptyErrors) {
+            return subErrors;
+          }
+
+          return null;
+        }, {}).filter(function (error) {
+          return !!error;
         });
       }
     },
     getFirstError: {
       value: function getFirstError() {
-        for (var _len3 = arguments.length, exclude = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-          exclude[_key3] = arguments[_key3];
+        for (var _len2 = arguments.length, exclude = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          exclude[_key2] = arguments[_key2];
         }
 
         return (this.getErrorsAsArray(exclude) || [])[0];
