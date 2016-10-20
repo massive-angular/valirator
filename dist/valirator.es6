@@ -380,10 +380,6 @@ function validateProperty(property, obj) {
     } else {
       propertyRules = {};
     }
-  } else if (!propertyProperties) {
-    if (!properties[property].rules && !properties[property].messages) {
-      propertyProperties = properties[property];
-    }
   }
 
   propertyRules.__proto__ = rules;
