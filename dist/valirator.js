@@ -176,17 +176,6 @@ function ValidationResult() {
   var that = _extends({}, errors.__proto__, errors);
 
   Object.defineProperties(that, {
-    _invokeActionFor: {
-      value: function _invokeActionFor(property, action) {
-        var _errors$property;
-
-        for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-          args[_key - 2] = arguments[_key];
-        }
-
-        return errors[property] && errors[property][action] && (_errors$property = errors[property])[action].apply(_errors$property, args);
-      }
-    },
     isValid: {
       value: function isValid() {
         return !this.hasErrors();
@@ -197,23 +186,18 @@ function ValidationResult() {
         var keys = Object.keys(that);
 
         return keys.some(function (key) {
-          if (errors[key].hasErrors) {
-            return errors[key].hasErrors();
+          if (that[key].hasErrors) {
+            return that[key].hasErrors();
           }
 
-          return errors[key];
+          return that[key];
         });
-      }
-    },
-    hasErrorsFor: {
-      value: function hasErrorsFor(property) {
-        return this._invokeActionFor(property, 'hasErrors');
       }
     },
     hasErrorsOfTypes: {
       value: function hasErrorsOfTypes() {
-        for (var _len2 = arguments.length, types = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          types[_key2] = arguments[_key2];
+        for (var _len = arguments.length, types = Array(_len), _key = 0; _key < _len; _key++) {
+          types[_key] = arguments[_key];
         }
 
         var keys = Object.keys(that);
@@ -223,23 +207,14 @@ function ValidationResult() {
             return true;
           }
 
-          if (errors[key].hasErrorsOfTypes) {
-            var _errors$key;
+          if (that[key].hasErrorsOfTypes) {
+            var _that$key;
 
-            return (_errors$key = errors[key]).hasErrorsOfTypes.apply(_errors$key, types);
+            return (_that$key = that[key]).hasErrorsOfTypes.apply(_that$key, types);
           }
 
           return false;
         });
-      }
-    },
-    hasErrorsOfTypesFor: {
-      value: function hasErrorsOfTypesFor(property) {
-        for (var _len3 = arguments.length, types = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-          types[_key3 - 1] = arguments[_key3];
-        }
-
-        return this._invokeActionFor.apply(this, [property, 'hasErrorsOfTypes'].concat(types));
       }
     },
     getErrors: {
@@ -257,15 +232,25 @@ function ValidationResult() {
         }, {});
       }
     },
-    getErrorsFor: {
-      value: function getErrorsFor(property) {
-        return this._invokeActionFor(property, 'getErrors');
+    getFirstErrors: {
+      value: function getFirstErrors(includeEmptyErrors) {
+        var keys = Object.keys(that);
+
+        return keys.reduce(function (result, key, index) {
+          var subErrors = that[key].getFirstErrors ? that[key].getFirstErrors(includeEmptyErrors) : that[key];
+
+          if (isObject(that[key]) && (Object.keys(subErrors).length || includeEmptyErrors)) {
+            return _extends({}, result, defineProperty({}, key, subErrors));
+          }
+
+          return index === 0 ? subErrors : result;
+        }, {});
       }
     },
     getErrorsAsArray: {
       value: function getErrorsAsArray() {
-        for (var _len4 = arguments.length, exclude = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-          exclude[_key4] = arguments[_key4];
+        for (var _len2 = arguments.length, exclude = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          exclude[_key2] = arguments[_key2];
         }
 
         return Object.keys(that).filter(function (key) {
@@ -275,31 +260,13 @@ function ValidationResult() {
         });
       }
     },
-    getErrorsAsArrayFor: {
-      value: function getErrorsAsArrayFor(property) {
-        for (var _len5 = arguments.length, exclude = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
-          exclude[_key5 - 1] = arguments[_key5];
-        }
-
-        return this._invokeActionFor.apply(this, [property, 'getErrorsAsArray'].concat(exclude));
-      }
-    },
     getFirstError: {
       value: function getFirstError() {
-        for (var _len6 = arguments.length, exclude = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-          exclude[_key6] = arguments[_key6];
+        for (var _len3 = arguments.length, exclude = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+          exclude[_key3] = arguments[_key3];
         }
 
         return (this.getErrorsAsArray(exclude) || [])[0];
-      }
-    },
-    getFirstErrorFor: {
-      value: function getFirstErrorFor(property) {
-        for (var _len7 = arguments.length, exclude = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
-          exclude[_key7 - 1] = arguments[_key7];
-        }
-
-        return (this.getErrorsAsArrayFor.apply(this, [property].concat(exclude)) || [])[0];
       }
     }
   });
