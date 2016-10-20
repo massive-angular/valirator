@@ -79,11 +79,18 @@ export function ValidationResult(errors = {}) {
       }
     },
     getErrorsAsArray: {
-      value: function getErrorsAsArray(...exclude) {
-        return Object
-          .keys(that)
-          .filter(key => exclude.indexOf(key) === -1)
-          .map(key => that[key]);
+      value: function getErrorsAsArray(includeEmptyErrors) {
+        const keys = Object.keys(that);
+
+        return keys.map((key) => {
+          const subErrors = that[key].getErrorsAsArray ? that[key].getErrorsAsArray(includeEmptyErrors) : that[key];
+
+          if (subErrors.length || includeEmptyErrors) {
+            return subErrors;
+          }
+
+          return null;
+        }, {}).filter(error => !!error);
       },
     },
     getFirstError: {
