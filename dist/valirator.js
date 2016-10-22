@@ -33,6 +33,81 @@ var _extends = Object.assign || function (target) {
   return target;
 };
 
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var set = function set(object, property, value, receiver) {
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent !== null) {
+      set(parent, property, value, receiver);
+    }
+  } else if ("value" in desc && desc.writable) {
+    desc.value = value;
+  } else {
+    var setter = desc.set;
+
+    if (setter !== undefined) {
+      setter.call(receiver, value);
+    }
+  }
+
+  return value;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 var toArray = function (arr) {
   return Array.isArray(arr) ? arr : Array.from(arr);
 };
@@ -71,8 +146,20 @@ function isBoolean(obj) {
   return isType(obj, '[object Boolean]');
 }
 
+function isEmpty(obj) {
+  return obj === '' || isArray(obj) && obj.length === 0 || isObject(obj) && Object.keys(obj).length === 0;
+}
+
+function isNull(obj) {
+  return isType(obj, '[object Null]');
+}
+
+function isUndefined(obj) {
+  return isType(obj, '[object Undefined]');
+}
+
 function isDefined(obj) {
-  return !(obj === undefined || obj === null || obj === '');
+  return !(isUndefined(obj) || isNull(obj) || isEmpty(obj));
 }
 
 function hasOwnProperty(obj, prop) {
@@ -172,8 +259,8 @@ function formatMessage() {
 var rulesHolder = {};
 
 function registerRule(name, rule, message) {
-  if (rulesHolder.hasOwnProperty(name)) {
-    console.warn("[WARNING]: Trying to override defined rule '" + name + "'. Please use 'overrideRule' function instead.");
+  if (hasOwnProperty(rulesHolder, name)) {
+    console.warn('[WARNING]: Trying to override defined rule \'' + name + '\'. Please use \'overrideRule\' function instead.');
   }
 
   rulesHolder[name] = {
@@ -184,7 +271,7 @@ function registerRule(name, rule, message) {
 }
 
 function hasRule(name) {
-  return rulesHolder.hasOwnProperty(name);
+  return hasOwnProperty(rulesHolder, name);
 }
 
 function getRule(name) {
@@ -539,8 +626,11 @@ function enumRule(value, e) {
 registerRule('enum', enumRule, 'must be present in given enumerator');
 
 var FORMATS = {
+  'int': /^-?\d+$/,
+  'float': /^-?\d+\.\d+$/,
+  'number': /^-?\d+\.?\d*$/,
   'email': /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i,
-  'ip-address': /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/i,
+  'ip': /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/i,
   'ipv6': /^([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}$/,
   'time': /^\d{2}:\d{2}:\d{2}$/,
   'date': /^\d{4}-\d{2}-\d{2}$/,
@@ -749,6 +839,9 @@ registerRule('required', requiredRule, 'is required');
 
 function checkValueType(value, type) {
   switch (type) {
+    case 'null':
+      return isNull(value);
+
     case 'boolean':
       return isBoolean(value);
 
@@ -824,6 +917,9 @@ exports.isString = isString;
 exports.isDate = isDate;
 exports.isNumber = isNumber;
 exports.isBoolean = isBoolean;
+exports.isEmpty = isEmpty;
+exports.isNull = isNull;
+exports.isUndefined = isUndefined;
 exports.isDefined = isDefined;
 exports.hasOwnProperty = hasOwnProperty;
 exports.getProperty = getProperty;
