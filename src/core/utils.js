@@ -1,3 +1,6 @@
+export function noop() {
+}
+
 export function isType(obj, typeStr) {
   return (Object.prototype.toString.call(obj) === typeStr);
 }
@@ -34,15 +37,38 @@ export function isDefined(obj) {
   return !(obj === undefined || obj === null || obj === '');
 }
 
-export function noop() {
+export function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-export function getObjectOverride(context, prop) {
+export function getProperty(obj, path, fallback = null) {
+  let result = obj;
+  let prop = path;
+
+  do {
+    if (isObject(result) && hasOwnProperty(result, prop)) {
+      return result[prop];
+    } else {
+      const [first, ...rest] = prop.split('.');
+
+      result = result[first];
+      prop = rest.join('.');
+    }
+  } while (prop);
+
+  if (result === null || result === undefined) {
+    return fallback;
+  }
+
+  return result;
+}
+
+export function getPropertyOverride(context, prop) {
   if (!context) {
     return false;
   }
 
-  return isFunction(context[prop]) ? context[prop] : getObjectOverride(context.__proto__, prop);
+  return isFunction(context[prop]) ? context[prop] : getPropertyOverride(context.__proto__, prop);
 }
 
 export function handlePromise(promise) {

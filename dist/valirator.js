@@ -4,6 +4,41 @@
   (factory((global.valirator = global.valirator || {})));
 }(this, (function (exports) { 'use strict';
 
+var defineProperty = function (obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+};
+
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+var toArray = function (arr) {
+  return Array.isArray(arr) ? arr : Array.from(arr);
+};
+
+function noop() {}
+
 function isType(obj, typeStr) {
   return Object.prototype.toString.call(obj) === typeStr;
 }
@@ -40,14 +75,46 @@ function isDefined(obj) {
   return !(obj === undefined || obj === null || obj === '');
 }
 
-function noop() {}
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
 
-function getObjectOverride(context, prop) {
+function getProperty(obj, path) {
+  var fallback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+  var result = obj;
+  var prop = path;
+
+  do {
+    if (isObject(result) && hasOwnProperty(result, prop)) {
+      return result[prop];
+    } else {
+      var _prop$split = prop.split('.');
+
+      var _prop$split2 = toArray(_prop$split);
+
+      var first = _prop$split2[0];
+
+      var rest = _prop$split2.slice(1);
+
+      result = result[first];
+      prop = rest.join('.');
+    }
+  } while (prop);
+
+  if (result === null || result === undefined) {
+    return fallback;
+  }
+
+  return result;
+}
+
+function getPropertyOverride(context, prop) {
   if (!context) {
     return false;
   }
 
-  return isFunction(context[prop]) ? context[prop] : getObjectOverride(context.__proto__, prop);
+  return isFunction(context[prop]) ? context[prop] : getPropertyOverride(context.__proto__, prop);
 }
 
 function handlePromise(promise) {
@@ -140,35 +207,6 @@ function overrideRuleMessage(name, message) {
     defaultRule.message = message;
   }
 }
-
-var defineProperty = function (obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-};
-
-var _extends = Object.assign || function (target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i];
-
-    for (var key in source) {
-      if (Object.prototype.hasOwnProperty.call(source, key)) {
-        target[key] = source[key];
-      }
-    }
-  }
-
-  return target;
-};
 
 function ValidationResult() {
   var errors = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -286,8 +324,8 @@ function validateRule(rule, expected, value, message, rules, messages, obj, prop
   var defaultMessage = _getRule.message;
 
 
-  var overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
-  var overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
+  var overriddenRule = rules && (getPropertyOverride(rules, rule) || rules[rule]);
+  var overriddenMessage = messages && (getPropertyOverride(messages, rule) || messages[rule]);
 
   var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
 
@@ -344,16 +382,17 @@ function validateProperty(property, obj) {
   var properties = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
   var rules = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-  var _properties$property = properties[property];
-  var propertyRules = _properties$property.rules;
-  var _properties$property$ = _properties$property.messages;
-  var propertyMessages = _properties$property$ === undefined ? {} : _properties$property$;
-  var propertyProperties = _properties$property.properties;
+
+  var propertyValue = getProperty(properties, property, {});
+  var propertyRules = propertyValue.rules;
+  var _propertyValue$messag = propertyValue.messages;
+  var propertyMessages = _propertyValue$messag === undefined ? {} : _propertyValue$messag;
+  var propertyProperties = propertyValue.properties;
 
 
   if (!propertyRules) {
-    if (!properties[property].messages && !properties[property].properties) {
-      propertyRules = properties[property];
+    if (!propertyValue.messages && !propertyValue.properties) {
+      propertyRules = propertyValue;
     } else {
       propertyRules = {};
     }
@@ -362,7 +401,7 @@ function validateProperty(property, obj) {
   propertyRules.__proto__ = rules;
   propertyMessages.__proto__ = messages;
 
-  var value = obj[property];
+  var value = getProperty(obj, property);
 
   return validateValue(value, propertyRules, propertyMessages, obj, property, properties).then(function (valueValidationResult) {
     if (propertyProperties) {
@@ -456,8 +495,23 @@ function validateSync(schema, obj) {
 }
 
 function ValidationSchema(schema) {
-  this.validate = validate.bind(this, schema);
-  this.validateSync = validateSync.bind(this, schema);
+  var rules = schema.rules;
+  var messages = schema.messages;
+  var properties = schema.properties;
+
+
+  this.validate = function (obj) {
+    return validate(schema, obj);
+  };
+  this.validateSync = function (obj) {
+    return validateSync(schema, obj);
+  };
+  this.validateProperty = function (property, obj) {
+    return validateProperty(property, obj, properties || schema, rules, messages);
+  };
+  this.validatePropertySync = function (property, obj) {
+    return validatePropertySync(property, obj, properties || schema, rules, messages);
+  };
 }
 
 function divisibleByRule(value, divisibleBy) {
@@ -761,6 +815,7 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
+exports.noop = noop;
 exports.isType = isType;
 exports.isObject = isObject;
 exports.isArray = isArray;
@@ -770,8 +825,9 @@ exports.isDate = isDate;
 exports.isNumber = isNumber;
 exports.isBoolean = isBoolean;
 exports.isDefined = isDefined;
-exports.noop = noop;
-exports.getObjectOverride = getObjectOverride;
+exports.hasOwnProperty = hasOwnProperty;
+exports.getProperty = getProperty;
+exports.getPropertyOverride = getPropertyOverride;
 exports.handlePromise = handlePromise;
 exports.handlePromises = handlePromises;
 exports.formatMessage = formatMessage;

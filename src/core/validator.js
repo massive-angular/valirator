@@ -7,8 +7,9 @@ import {
   noop,
   handlePromise,
   handlePromises,
-  getObjectOverride,
-  formatMessage
+  getPropertyOverride,
+  formatMessage,
+  getProperty,
 } from './utils';
 
 import { ValidationResult } from './ValidationResult';
@@ -19,8 +20,8 @@ export function validateRule(rule, expected, value, message, rules, messages, ob
     message: defaultMessage
   } = getRule(rule);
 
-  const overriddenRule = rules && (getObjectOverride(rules, rule) || rules[rule]);
-  const overriddenMessage = messages && (getObjectOverride(messages, rule) || messages[rule]);
+  const overriddenRule = rules && (getPropertyOverride(rules, rule) || rules[rule]);
+  const overriddenMessage = messages && (getPropertyOverride(messages, rule) || messages[rule]);
 
   const isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
 
@@ -70,15 +71,16 @@ export function validateValueSync(value, rules, messages, obj, property, schema)
 }
 
 export function validateProperty(property, obj, properties = {}, rules = {}, messages = {}) {
+  const propertyValue = getProperty(properties, property, {});
   let {
     rules: propertyRules,
     messages: propertyMessages = {},
     properties: propertyProperties,
-  } = properties[property];
+  } = propertyValue;
 
   if (!propertyRules) {
-    if (!properties[property].messages && !properties[property].properties) {
-      propertyRules = properties[property];
+    if (!propertyValue.messages && !propertyValue.properties) {
+      propertyRules = propertyValue;
     } else {
       propertyRules = {};
     }
@@ -87,7 +89,7 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
   propertyRules.__proto__ = rules;
   propertyMessages.__proto__ = messages;
 
-  const value = obj[property];
+  const value = getProperty(obj, property);
 
   return validateValue(value, propertyRules, propertyMessages, obj, property, properties)
     .then(valueValidationResult => {
