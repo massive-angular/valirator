@@ -39,7 +39,7 @@ Code released under [the MIT license](http://spdx.org/licenses/MIT).
 [circleci-image]: https://img.shields.io/circleci/project/massive-angular/valirator/master.svg
 [david-url]: https://david-dm.org/massive-angular/valirator
 [david-image]: https://img.shields.io/david/massive-angular/valirator.svg
-[david-dev-url]: https://david-dm.org/massive-angular/valirator#info=devDependencies
+[david-dev-url]: https://david-dm.org/massive-angular/valirator?type=dev
 [david-dev-image]: https://img.shields.io/david/dev/massive-angular/valirator.svg
 [nodei-url]: https://npmjs.com/package/valirator
 [nodei-image]: https://nodei.co/npm/valirator.svg?downloads=true&downloadRank=true&stars=true
