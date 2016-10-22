@@ -1,10 +1,10 @@
-import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
-import nodeResolve from 'rollup-plugin-node-resolve';
+var babel = require('rollup-plugin-babel');
+var commonjs = require('rollup-plugin-commonjs');
+var nodeResolve = require('rollup-plugin-node-resolve');
 
-const pkg = require('./package.json');
+var pkg = require('./package.json');
 
-export default {
+module.exports = {
   entry: './src/valirator.js',
   plugins: [
     commonjs({
@@ -22,7 +22,7 @@ export default {
       ]
     }),
     babel({
-      exclude: 'node_modules/**'
+      exclude: 'node_modules/**',
     })
   ],
   targets: [{

@@ -1,6 +1,4 @@
-var babel = require('rollup-plugin-babel');
-var commonjs = require('rollup-plugin-commonjs');
-var nodeResolve = require('rollup-plugin-node-resolve');
+var rollupConfig = require('./rollup.config');
 
 module.exports = function (config) {
   var configuration = {
@@ -15,6 +13,7 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/babel-polyfill/dist/polyfill.js',
       'dist/*.js',
       'test/**/*.spec.js'
     ],
@@ -32,27 +31,7 @@ module.exports = function (config) {
       'test/**/*.spec.js': ['rollup']
     },
     rollupPreprocessor: {
-      plugins: [
-        commonjs({
-          include: 'node_modules/**',
-          extensions: [
-            '.js'
-          ]
-        }),
-        nodeResolve({
-          jsnext: true,
-          main: true,
-          browser: true,
-          extensions: [
-            '.js'
-          ]
-        }),
-        babel({
-          runtimeHelpers: true,
-          exclude: 'node_modules/**',
-          plugins: ['transform-runtime']
-        })
-      ]
+      plugins: rollupConfig.plugins,
     },
 
     // test results reporter to use
