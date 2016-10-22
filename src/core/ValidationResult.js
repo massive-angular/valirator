@@ -1,8 +1,8 @@
-import { isObject } from './utils';
+import { isObject, getPrototypeOf } from './utils';
 
 export function ValidationResult(errors = {}) {
   const that = {
-    ...errors.__proto__,
+    ...getPrototypeOf(errors),
     ...errors,
   };
 

@@ -53,6 +53,24 @@ export function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
+export function setPrototypeOf(obj, proto) {
+  if (Object.setPrototypeOf) {
+    return Object.setPrototypeOf(obj, proto);
+  }
+
+  obj.__proto__ = proto;
+
+  return obj;
+}
+
+export function getPrototypeOf(obj) {
+  if (Object.getPrototypeOf) {
+    return Object.getPrototypeOf(obj);
+  }
+
+  return obj.__proto__;
+}
+
 export function getProperty(obj, path, fallback = null) {
   let result = obj;
   let prop = path;
@@ -80,7 +98,7 @@ export function getPropertyOverride(context, prop) {
     return false;
   }
 
-  return isFunction(context[prop]) ? context[prop] : getPropertyOverride(context.__proto__, prop);
+  return isFunction(context[prop]) ? context[prop] : getPropertyOverride(getPrototypeOf(context), prop);
 }
 
 export function handlePromise(promise) {

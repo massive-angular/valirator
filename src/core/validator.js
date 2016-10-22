@@ -9,6 +9,7 @@ import {
   handlePromises,
   getPropertyOverride,
   formatMessage,
+  setPrototypeOf,
   getProperty,
 } from './utils';
 
@@ -86,8 +87,8 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
     }
   }
 
-  propertyRules.__proto__ = rules;
-  propertyMessages.__proto__ = messages;
+  setPrototypeOf(propertyRules, rules);
+  setPrototypeOf(propertyMessages, messages);
 
   const value = getProperty(obj, property);
 
@@ -95,7 +96,7 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
     .then(valueValidationResult => {
       if (propertyProperties) {
         const subValidationCallback = (subValidationResult) => {
-          valueValidationResult.__proto__ = subValidationResult;
+          setPrototypeOf(valueValidationResult, subValidationResult);
 
           return new ValidationResult(valueValidationResult);
         };

@@ -29,9 +29,9 @@
   },
   "homepage": "https://github.com/massive-angular/valirator#readme",
   "scripts": {
-    "lint": "node_modules/.bin/eslint src",
-    "build": "node_modules/.bin/rollup --config rollup.config.js",
-    "test": "node_modules/.bin/karma start",
+    "lint": "eslint src",
+    "test": "karma start",
+    "build": "rollup --config rollup.config.js",
     "start": "concurrently 'npm run build -- -w' 'npm run test'",
     "prepublish": "npm run lint && rm -rf dist && npm run build && npm run test -- --single-run"
   },

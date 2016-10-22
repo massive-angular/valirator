@@ -4,6 +4,131 @@
   (factory((global.valirator = global.valirator || {})));
 }(this, (function (exports) { 'use strict';
 
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+
+
+
+
+
+
+
+
+
+
+
+
 var defineProperty = function (obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
@@ -167,7 +292,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 function getProperty(obj, path) {
-  var fallback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+  var fallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
   var result = obj;
   var prop = path;
@@ -235,7 +360,7 @@ function handlePromises(promises) {
 }
 
 function formatMessage() {
-  var message = arguments.length <= 0 || arguments[0] === undefined ? 'No default message for rule "%{rule}"' : arguments[0];
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No default message for rule "%{rule}"';
   var actual = arguments[1];
   var expected = arguments[2];
   var property = arguments[3];
@@ -296,7 +421,7 @@ function overrideRuleMessage(name, message) {
 }
 
 function ValidationResult() {
-  var errors = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+  var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var that = _extends({}, errors.__proto__, errors);
 
@@ -432,8 +557,8 @@ function validateRuleSync(rule, expected, value, message, rules, messages, obj, 
 }
 
 function validateValue(value) {
-  var rules = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-  var messages = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+  var rules = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var messages = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var obj = arguments[3];
   var property = arguments[4];
   var schema = arguments[5];
@@ -466,9 +591,9 @@ function validateValueSync(value, rules, messages, obj, property, schema) {
 }
 
 function validateProperty(property, obj) {
-  var properties = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-  var rules = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-  var messages = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+  var properties = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var rules = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var messages = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
   var propertyValue = getProperty(properties, property, {});
   var propertyRules = propertyValue.rules;
@@ -516,8 +641,8 @@ function validatePropertySync(property, obj, properties, rules, messages) {
 }
 
 function validateArray(array, properties) {
-  var rules = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-  var messages = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+  var rules = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var messages = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   var promises = array.map(function (item) {
     return validateObject(item, properties, rules, messages);
@@ -541,8 +666,8 @@ function validateArraySync(array, properties, rules, messages) {
 }
 
 function validateObject(obj, properties) {
-  var rules = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-  var messages = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+  var rules = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var messages = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   var keys = Object.keys(properties);
   var promises = keys.map(function (property) {
