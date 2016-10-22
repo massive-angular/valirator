@@ -1,7 +1,10 @@
-import { registerRule, isDefined, isArray, isObject, isString, isDate, isNumber, isBoolean } from '../core';
+import { registerRule, isDefined, isArray, isObject, isString, isDate, isNumber, isBoolean, isNull } from '../core';
 
 function checkValueType(value, type) {
   switch (type) {
+    case 'null':
+      return isNull(value);
+
     case 'boolean':
       return isBoolean(value);
 

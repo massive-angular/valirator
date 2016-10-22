@@ -1,7 +1,9 @@
+import { hasOwnProperty } from './utils';
+
 let rulesHolder = {};
 
 export function registerRule(name, rule, message) {
-  if (rulesHolder.hasOwnProperty(name)) {
+  if (hasOwnProperty(rulesHolder, name)) {
     console.warn(`[WARNING]: Trying to override defined rule '${name}'. Please use 'overrideRule' function instead.`);
   }
 
@@ -13,7 +15,7 @@ export function registerRule(name, rule, message) {
 }
 
 export function hasRule(name) {
-  return rulesHolder.hasOwnProperty(name);
+  return hasOwnProperty(rulesHolder, name);
 }
 
 export function getRule(name) {

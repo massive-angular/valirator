@@ -33,8 +33,20 @@ export function isBoolean(obj) {
   return isType(obj, '[object Boolean]');
 }
 
+export function isEmpty(obj) {
+  return obj === '' || (isArray(obj) && obj.length === 0) || (isObject(obj) && Object.keys(obj).length === 0);
+}
+
+export function isNull(obj) {
+  return isType(obj, '[object Null]');
+}
+
+export function isUndefined(obj) {
+  return isType(obj, '[object Undefined]');
+}
+
 export function isDefined(obj) {
-  return !(obj === undefined || obj === null || obj === '');
+  return !(isUndefined(obj) || isNull(obj) || isEmpty(obj));
 }
 
 export function hasOwnProperty(obj, prop) {
