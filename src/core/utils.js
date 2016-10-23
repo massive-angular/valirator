@@ -45,8 +45,12 @@ export function isUndefined(obj) {
   return isType(obj, '[object Undefined]');
 }
 
+export function isNullOrUndefined(obj) {
+  return isNull(obj) || isUndefined(obj);
+}
+
 export function isDefined(obj) {
-  return !(isUndefined(obj) || isNull(obj) || isEmpty(obj));
+  return !(isNullOrUndefined(obj) || isEmpty(obj));
 }
 
 export function hasOwnProperty(obj, prop) {
