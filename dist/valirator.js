@@ -283,12 +283,34 @@ function isUndefined(obj) {
   return isType(obj, '[object Undefined]');
 }
 
+function isNullOrUndefined(obj) {
+  return isNull(obj) || isUndefined(obj);
+}
+
 function isDefined(obj) {
-  return !(isUndefined(obj) || isNull(obj) || isEmpty(obj));
+  return !(isNullOrUndefined(obj) || isEmpty(obj));
 }
 
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+function setPrototypeOf(obj, proto) {
+  if (Object.setPrototypeOf) {
+    return Object.setPrototypeOf(obj, proto);
+  }
+
+  obj.__proto__ = proto;
+
+  return obj;
+}
+
+function getPrototypeOf(obj) {
+  if (Object.getPrototypeOf) {
+    return Object.getPrototypeOf(obj);
+  }
+
+  return obj.__proto__;
 }
 
 function getProperty(obj, path) {
@@ -326,7 +348,7 @@ function getPropertyOverride(context, prop) {
     return false;
   }
 
-  return isFunction(context[prop]) ? context[prop] : getPropertyOverride(context.__proto__, prop);
+  return isFunction(context[prop]) ? context[prop] : getPropertyOverride(getPrototypeOf(context), prop);
 }
 
 function handlePromise(promise) {
@@ -423,7 +445,7 @@ function overrideRuleMessage(name, message) {
 function ValidationResult() {
   var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  var that = _extends({}, errors.__proto__, errors);
+  var that = _extends({}, getPrototypeOf(errors), errors);
 
   Object.defineProperties(that, {
     isValid: {
@@ -610,15 +632,15 @@ function validateProperty(property, obj) {
     }
   }
 
-  propertyRules.__proto__ = rules;
-  propertyMessages.__proto__ = messages;
+  setPrototypeOf(propertyRules, rules);
+  setPrototypeOf(propertyMessages, messages);
 
   var value = getProperty(obj, property);
 
   return validateValue(value, propertyRules, propertyMessages, obj, property, properties).then(function (valueValidationResult) {
     if (propertyProperties) {
       var subValidationCallback = function subValidationCallback(subValidationResult) {
-        valueValidationResult.__proto__ = subValidationResult;
+        setPrototypeOf(valueValidationResult, subValidationResult);
 
         return new ValidationResult(valueValidationResult);
       };
@@ -1045,8 +1067,11 @@ exports.isBoolean = isBoolean;
 exports.isEmpty = isEmpty;
 exports.isNull = isNull;
 exports.isUndefined = isUndefined;
+exports.isNullOrUndefined = isNullOrUndefined;
 exports.isDefined = isDefined;
 exports.hasOwnProperty = hasOwnProperty;
+exports.setPrototypeOf = setPrototypeOf;
+exports.getPrototypeOf = getPrototypeOf;
 exports.getProperty = getProperty;
 exports.getPropertyOverride = getPropertyOverride;
 exports.handlePromise = handlePromise;
