@@ -104,8 +104,14 @@ export function validateProperty(property, obj, properties = {}, rules = {}, mes
         if (isArray(value)) {
           return validateArray(value, propertyProperties, rules, messages)
             .then(subValidationCallback);
-        } else if (isObject(value)) {
-          return validateObject(value, propertyProperties, rules, messages)
+        } else {
+          let normalizedValue = {};
+
+          if (isObject(value)) {
+            normalizedValue = value;
+          }
+
+          return validateObject(normalizedValue , propertyProperties, rules, messages)
             .then(subValidationCallback);
         }
       }
