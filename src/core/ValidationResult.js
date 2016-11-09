@@ -1,4 +1,4 @@
-import { isObject, getPrototypeOf } from './utils';
+import { isString, isObject, getPrototypeOf } from './utils';
 
 export function ValidationResult(errors = {}) {
   const that = {
@@ -67,7 +67,7 @@ export function ValidationResult(errors = {}) {
         return keys.reduce((result, key, index) => {
           const subErrors = that[key].getFirstErrors ? that[key].getFirstErrors(includeEmptyErrors) : that[key];
 
-          if (isObject(that[key]) && (Object.keys(subErrors).length || includeEmptyErrors)) {
+          if (!isString(result) && isObject(that[key]) && (Object.keys(subErrors).length || includeEmptyErrors)) {
             return {
               ...result,
               [key]: (subErrors),

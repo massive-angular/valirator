@@ -154,8 +154,10 @@ describe('valirator', () => {
       };
 
       const schema = {
-        messages: {
-          required: 'Field is required'
+        overrides: {
+          messages: {
+            required: 'Field is required'
+          },
         },
         properties: {
           FirstName: {
@@ -180,10 +182,12 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          required: (value) => {
-            return value !== undefined && value !== null;
-          }
+        overrides: {
+          rules: {
+            required: (value) => {
+              return value !== undefined && value !== null;
+            }
+          },
         },
         properties: {
           FirstName: {
@@ -232,6 +236,40 @@ describe('valirator', () => {
           expect(errors.Person.hasErrors()).toBe(true);
           expect(errors.Person.FirstName.hasErrors()).toBe(true);
           expect(errors.Person.FirstName.required).toBeDefined();
+
+          done();
+        });
+    });
+
+    it('should support high level object validation', (done) => {
+      const obj = {
+        FirstName: null,
+        LastName: 'John',
+      };
+
+      const schema = {
+        rules: {
+          required: (value, a, b, c, d, requiredRule) => {
+            return requiredRule(value) && requiredRule(value.FirstName) && requiredRule(value.LastName);
+          },
+        },
+        properties: {
+          FirstName: {
+            rules: {
+              required: true
+            }
+          },
+          LastName: {
+            required: true,
+          },
+        }
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.hasErrors()).toBe(true);
+          expect(errors.FirstName.hasErrors()).toBe(true);
+          expect(errors.FirstName.required).toBeDefined();
 
           done();
         });
@@ -375,13 +413,16 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          myRule: (actual, expected) => {
-            return actual === expected * 2;
-          }
-        },
-        messages: {
-          myRule: '%{actual} !== %{expected} * 2'
+        overrides: {
+
+          rules: {
+            myRule: (actual, expected) => {
+              return actual === expected * 2;
+            }
+          },
+          messages: {
+            myRule: '%{actual} !== %{expected} * 2'
+          },
         },
         properties: {
           FirstName: {
@@ -408,14 +449,16 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          myRule: (actual, expected) => {
-            if (actual === expected * 2) {
-              return 'not valid!';
-            }
+        overrides: {
+          rules: {
+            myRule: (actual, expected) => {
+              if (actual === expected * 2) {
+                return 'not valid!';
+              }
 
-            return true;
-          }
+              return true;
+            }
+          },
         },
         properties: {
           FirstName: {
@@ -442,17 +485,19 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          myRule: (actual, expected) => {
-            return new Promise((resolve) => {
-              setTimeout(() => {
-                resolve(actual === expected * 2);
-              }, 10);
-            });
-          }
-        },
-        messages: {
-          myRule: '%{actual} !== %{expected} * 2'
+        overrides: {
+          rules: {
+            myRule: (actual, expected) => {
+              return new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve(actual === expected * 2);
+                }, 10);
+              });
+            }
+          },
+          messages: {
+            myRule: '%{actual} !== %{expected} * 2'
+          },
         },
         properties: {
           FirstName: {
@@ -479,19 +524,21 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          myRule: (actual, expected) => {
-            return actual === expected * 2;
-          }
-        },
-        messages: {
-          myRule: (actual, expected) => {
-            return new Promise((resolve) => {
-              setTimeout(() => {
-                resolve(`${actual} !== ${expected} * 2`);
-              }, 10);
-            });
-          }
+        overrides: {
+          rules: {
+            myRule: (actual, expected) => {
+              return actual === expected * 2;
+            }
+          },
+          messages: {
+            myRule: (actual, expected) => {
+              return new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve(`${actual} !== ${expected} * 2`);
+                }, 10);
+              });
+            }
+          },
         },
         properties: {
           FirstName: {
@@ -841,8 +888,10 @@ describe('valirator', () => {
       };
 
       const schema = {
-        messages: {
-          required: 'Field is required'
+        overrides: {
+          messages: {
+            required: 'Field is required'
+          },
         },
         properties: {
           FirstName: {
@@ -864,10 +913,12 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          required: (value) => {
-            return value !== undefined && value !== null;
-          }
+        overrides: {
+          rules: {
+            required: (value) => {
+              return value !== undefined && value !== null;
+            }
+          },
         },
         properties: {
           FirstName: {
@@ -1022,13 +1073,15 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          myRule: (actual, expected) => {
-            return actual === expected * 2;
-          }
-        },
-        messages: {
-          myRule: '%{actual} !== %{expected} * 2'
+        overrides: {
+          rules: {
+            myRule: (actual, expected) => {
+              return actual === expected * 2;
+            }
+          },
+          messages: {
+            myRule: '%{actual} !== %{expected} * 2'
+          },
         },
         properties: {
           FirstName: {
@@ -1052,14 +1105,16 @@ describe('valirator', () => {
       };
 
       const schema = {
-        rules: {
-          myRule: (actual, expected) => {
-            if (actual === expected * 2) {
-              return 'not valid!';
-            }
+        overrides: {
+          rules: {
+            myRule: (actual, expected) => {
+              if (actual === expected * 2) {
+                return 'not valid!';
+              }
 
-            return true;
-          }
+              return true;
+            }
+          },
         },
         properties: {
           FirstName: {
@@ -1370,19 +1425,21 @@ describe('valirator', () => {
       };
 
       const schema = new ValidationSchema({
-        rules: {
-          myRule: (actual, expected) => {
-            return actual === expected * 2;
-          }
-        },
-        messages: {
-          myRule: (actual, expected) => {
-            return new Promise((resolve) => {
-              setTimeout(() => {
-                resolve(`${actual} !== ${expected} * 2`);
-              }, 10);
-            });
-          }
+        overrides: {
+          rules: {
+            myRule: (actual, expected) => {
+              return actual === expected * 2;
+            }
+          },
+          messages: {
+            myRule: (actual, expected) => {
+              return new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve(`${actual} !== ${expected} * 2`);
+                }, 10);
+              });
+            }
+          },
         },
         properties: {
           FirstName: {

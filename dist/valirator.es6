@@ -285,6 +285,10 @@ function isDefined(obj) {
   return !(isNullOrUndefined(obj) || isEmpty(obj));
 }
 
+function toString(obj) {
+  return String(obj);
+}
+
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
@@ -307,11 +311,16 @@ function getPrototypeOf(obj) {
   return obj.__proto__;
 }
 
-function getProperty(obj, path) {
+function getProperty(obj) {
+  var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
   var fallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
   var result = obj;
-  var prop = path;
+  var prop = toString(path);
+
+  if (path === '') {
+    return result;
+  }
 
   do {
     if (isObject(result) && hasOwnProperty(result, prop)) {
@@ -505,7 +514,7 @@ function ValidationResult() {
         return keys.reduce(function (result, key, index) {
           var subErrors = that[key].getFirstErrors ? that[key].getFirstErrors(includeEmptyErrors) : that[key];
 
-          if (isObject(that[key]) && (Object.keys(subErrors).length || includeEmptyErrors)) {
+          if (!isString(result) && isObject(that[key]) && (Object.keys(subErrors).length || includeEmptyErrors)) {
             return _extends({}, result, defineProperty({}, key, subErrors));
           }
 
@@ -607,31 +616,37 @@ function validateValueSync(value, rules, messages, obj, property, schema) {
 }
 
 function validateProperty(property, obj) {
-  var properties = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var rules = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  var messages = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+  var schema = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var overrides = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
-  var propertyValue = getProperty(properties, property, {});
+  var propertyValue = getProperty(schema, property, {});
   var propertyRules = propertyValue.rules;
   var _propertyValue$messag = propertyValue.messages;
   var propertyMessages = _propertyValue$messag === undefined ? {} : _propertyValue$messag;
+  var _propertyValue$overri = propertyValue.overrides;
+  var propertyOverrides = _propertyValue$overri === undefined ? {} : _propertyValue$overri;
   var propertyProperties = propertyValue.properties;
+  var _overrides$rules = overrides.rules;
+  var overriddenRules = _overrides$rules === undefined ? {} : _overrides$rules;
+  var _overrides$messages = overrides.messages;
+  var overriddenMessages = _overrides$messages === undefined ? {} : _overrides$messages;
 
 
   if (!propertyRules) {
-    if (!propertyValue.messages && !propertyValue.properties) {
+    if (!propertyValue.messages && !propertyValue.properties && !propertyValue.overrides) {
       propertyRules = propertyValue;
     } else {
       propertyRules = {};
     }
   }
 
-  setPrototypeOf(propertyRules, rules);
-  setPrototypeOf(propertyMessages, messages);
+  setPrototypeOf(propertyOverrides, overrides);
+  setPrototypeOf(propertyRules, overriddenRules);
+  setPrototypeOf(propertyMessages, overriddenMessages);
 
   var value = getProperty(obj, property);
 
-  return validateValue(value, propertyRules, propertyMessages, obj, property, properties).then(function (valueValidationResult) {
+  return validateValue(value, propertyRules, propertyMessages, obj, property, schema).then(function (valueValidationResult) {
     if (propertyProperties) {
       var subValidationCallback = function subValidationCallback(subValidationResult) {
         setPrototypeOf(valueValidationResult, subValidationResult);
@@ -640,7 +655,7 @@ function validateProperty(property, obj) {
       };
 
       if (isArray(value)) {
-        return validateArray(value, propertyProperties, rules, messages).then(subValidationCallback);
+        return validateArray(value, propertyProperties, propertyOverrides).then(subValidationCallback);
       } else {
         var normalizedValue = {};
 
@@ -648,7 +663,7 @@ function validateProperty(property, obj) {
           normalizedValue = value;
         }
 
-        return validateObject(normalizedValue, propertyProperties, rules, messages).then(subValidationCallback);
+        return validateObject(normalizedValue, propertyProperties, propertyOverrides).then(subValidationCallback);
       }
     }
 
@@ -656,18 +671,17 @@ function validateProperty(property, obj) {
   });
 }
 
-function validatePropertySync(property, obj, properties, rules, messages) {
-  var promise = validateProperty(property, obj, properties, rules, messages);
+function validatePropertySync(property, obj, schema, overrides) {
+  var promise = validateProperty(property, obj, schema, overrides);
 
   return promise && promise.value;
 }
 
-function validateArray(array, properties) {
-  var rules = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var messages = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+function validateArray(array, schema) {
+  var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
   var promises = array.map(function (item) {
-    return validateObject(item, properties, rules, messages);
+    return validateObject(item, schema, overrides);
   });
 
   return handlePromises(promises).then(function (results) {
@@ -681,19 +695,18 @@ function validateArray(array, properties) {
   });
 }
 
-function validateArraySync(array, properties, rules, messages) {
-  var promise = validateArray(array, properties, rules, messages);
+function validateArraySync(array, schema, overrides) {
+  var promise = validateArray(array, schema, overrides);
 
   return promise && promise.value;
 }
 
-function validateObject(obj, properties) {
-  var rules = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var messages = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+function validateObject(obj, schema) {
+  var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  var keys = Object.keys(properties);
+  var keys = Object.keys(schema);
   var promises = keys.map(function (property) {
-    return validateProperty(property, obj, properties, rules, messages);
+    return validateProperty(property, obj, schema, overrides);
   });
 
   return handlePromises(promises).then(function (results) {
@@ -707,8 +720,8 @@ function validateObject(obj, properties) {
   });
 }
 
-function validateObjectSync(obj, properties, rules, messages) {
-  var promise = validateObject(obj, properties, rules, messages);
+function validateObjectSync(obj, schema, overrides) {
+  var promise = validateObject(obj, schema, overrides);
 
   return promise && promise.value;
 }
@@ -717,9 +730,18 @@ function validate(schema, obj) {
   var rules = schema.rules;
   var messages = schema.messages;
   var properties = schema.properties;
+  var overrides = schema.overrides;
 
 
-  return validateObject(obj, properties || schema, rules, messages);
+  var valueValidationResult = void 0;
+
+  return validateValue(obj, rules, messages).then(function (result) {
+    valueValidationResult = result;
+
+    return validateObject(obj, properties || schema, overrides);
+  }).then(function (objectValidationResult) {
+    return new ValidationResult(_extends({}, valueValidationResult, objectValidationResult));
+  });
 }
 
 function validateSync(schema, obj) {
@@ -1055,5 +1077,5 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-export { noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
+export { noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule };
 //# sourceMappingURL=valirator.es6.map

@@ -1,6 +1,6 @@
 {
   "name": "valirator",
-  "version": "1.4.11",
+  "version": "1.5.0",
   "description": "Powerful javascript by schema validation tool",
   "main": "dist/valirator.js",
   "jsnext:main": "dist/valirator.es6",
