@@ -738,9 +738,15 @@ function validate(schema, obj) {
   return validateValue(obj, rules, messages).then(function (result) {
     valueValidationResult = result;
 
-    return validateObject(obj, properties || schema, overrides);
-  }).then(function (objectValidationResult) {
-    return new ValidationResult(_extends({}, valueValidationResult, objectValidationResult));
+    if (isArray(obj)) {
+      return validateArray(obj, properties || schema, overrides);
+    } else if (isObject(obj)) {
+      return validateObject(obj, properties || schema, overrides);
+    }
+
+    return {};
+  }).then(function (validationResult) {
+    return new ValidationResult(_extends({}, valueValidationResult, validationResult));
   });
 }
 

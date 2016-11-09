@@ -367,6 +367,51 @@ describe('valirator', () => {
         });
     });
 
+    it('should support high level array schemas', (done) => {
+      const obj = [{
+        FirstName: 'John'
+      }, {
+        FirstName: null
+      }, {
+        FirstName: 'Bob'
+      }];
+
+      const schema = {
+        FirstName: {
+          rules: {
+            required: true
+          }
+        }
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors[0].FirstName.hasErrors()).toBe(false);
+          expect(errors[1].FirstName.hasErrors()).toBe(true);
+          expect(errors[2].FirstName.hasErrors()).toBe(false);
+
+          done();
+        });
+    });
+
+    it('should support primitive validation', (done) => {
+      const obj = null;
+
+      const schema = {
+        rules: {
+          required: true,
+        },
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.hasErrors()).toBe(true);
+          expect(errors.required).toBeDefined();
+
+          done();
+        });
+    });
+
     it('should support array validation and schemas as well', (done) => {
       const obj = {
         Persons: [{

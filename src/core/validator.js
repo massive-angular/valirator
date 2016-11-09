@@ -190,12 +190,18 @@ export function validate(schema, obj) {
     .then(result => {
       valueValidationResult = result;
 
-      return validateObject(obj, properties || schema, overrides);
+      if (isArray(obj)) {
+        return validateArray(obj, properties || schema, overrides);
+      } else if(isObject(obj)) {
+        return validateObject(obj, properties || schema, overrides);
+      }
+
+      return {};
     })
-    .then(objectValidationResult => {
+    .then(validationResult => {
       return new ValidationResult({
         ...valueValidationResult,
-        ...objectValidationResult,
+        ...validationResult,
       });
     });
 }
