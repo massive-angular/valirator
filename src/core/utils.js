@@ -53,6 +53,10 @@ export function isDefined(obj) {
   return !(isNullOrUndefined(obj) || isEmpty(obj));
 }
 
+export function toString(obj) {
+  return String(obj);
+}
+
 export function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
@@ -75,9 +79,13 @@ export function getPrototypeOf(obj) {
   return obj.__proto__;
 }
 
-export function getProperty(obj, path, fallback = null) {
+export function getProperty(obj, path = '', fallback = null) {
   let result = obj;
-  let prop = path;
+  let prop = toString(path);
+
+  if (path === '') {
+    return result;
+  }
 
   do {
     if (isObject(result) && hasOwnProperty(result, prop)) {
