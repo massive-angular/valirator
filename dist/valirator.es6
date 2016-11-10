@@ -330,13 +330,10 @@ function getProperty(obj) {
     if (isObject(result) && hasOwnProperty(result, prop)) {
       return result[prop];
     } else {
-      var _prop$split = prop.split('.');
-
-      var _prop$split2 = toArray(_prop$split);
-
-      var first = _prop$split2[0];
-
-      var rest = _prop$split2.slice(1);
+      var _prop$split = prop.split('.'),
+          _prop$split2 = toArray(_prop$split),
+          first = _prop$split2[0],
+          rest = _prop$split2.slice(1);
 
       result = result[first];
       prop = rest.join('.');
@@ -558,12 +555,10 @@ function ValidationResult() {
 }
 
 function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
-  var _getRule = getRule(rule);
-
-  var _getRule$check = _getRule.check;
-  var defaultRule = _getRule$check === undefined ? noop : _getRule$check;
-  var defaultMessage = _getRule.message;
-
+  var _getRule = getRule(rule),
+      _getRule$check = _getRule.check,
+      defaultRule = _getRule$check === undefined ? noop : _getRule$check,
+      defaultMessage = _getRule.message;
 
   var overriddenRule = rules && (getPropertyOverride(rules, rule) || rules[rule]);
   var overriddenMessage = messages && (getPropertyOverride(messages, rule) || messages[rule]);
@@ -624,17 +619,17 @@ function validateProperty(property, obj) {
   var overrides = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   var propertyValue = getProperty(schema, property, {});
-  var __isArray__ = propertyValue.__isArray__;
-  var propertyRules = propertyValue.rules;
-  var _propertyValue$messag = propertyValue.messages;
-  var propertyMessages = _propertyValue$messag === undefined ? {} : _propertyValue$messag;
-  var _propertyValue$overri = propertyValue.overrides;
-  var propertyOverrides = _propertyValue$overri === undefined ? {} : _propertyValue$overri;
-  var propertyProperties = propertyValue.properties;
-  var _overrides$rules = overrides.rules;
-  var overriddenRules = _overrides$rules === undefined ? {} : _overrides$rules;
-  var _overrides$messages = overrides.messages;
-  var overriddenMessages = _overrides$messages === undefined ? {} : _overrides$messages;
+  var __isArray__ = propertyValue.__isArray__,
+      propertyRules = propertyValue.rules,
+      _propertyValue$messag = propertyValue.messages,
+      propertyMessages = _propertyValue$messag === undefined ? {} : _propertyValue$messag,
+      _propertyValue$overri = propertyValue.overrides,
+      propertyOverrides = _propertyValue$overri === undefined ? {} : _propertyValue$overri,
+      propertyProperties = propertyValue.properties;
+  var _overrides$rules = overrides.rules,
+      overriddenRules = _overrides$rules === undefined ? {} : _overrides$rules,
+      _overrides$messages = overrides.messages,
+      overriddenMessages = _overrides$messages === undefined ? {} : _overrides$messages;
 
 
   if (!isDefined(property) && !isDefined(propertyProperties)) {
@@ -740,9 +735,9 @@ function validateSync(schema, obj) {
 }
 
 function ValidationSchema(schema) {
-  var rules = schema.rules;
-  var messages = schema.messages;
-  var properties = schema.properties;
+  var rules = schema.rules,
+      messages = schema.messages,
+      properties = schema.properties;
 
 
   this.validate = function (obj) {
@@ -977,8 +972,8 @@ function requiredRule(value, required) {
   }
 
   if (isObject(required)) {
-    var allowEmpty = required.allowEmpty;
-    var allowZero = required.allowZero;
+    var allowEmpty = required.allowEmpty,
+        allowZero = required.allowZero;
 
 
     if (isBoolean(allowEmpty)) {
