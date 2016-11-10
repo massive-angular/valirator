@@ -87,6 +87,10 @@ export function getProperty(obj, path = '', fallback = null) {
     return result;
   }
 
+  if (!isDefined(obj)) {
+    return fallback;
+  }
+
   do {
     if (isObject(result) && hasOwnProperty(result, prop)) {
       return result[prop];

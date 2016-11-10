@@ -412,6 +412,25 @@ describe('valirator', () => {
         });
     });
 
+    it('should support __isArray__ param', (done) => {
+      const obj = null;
+
+      const schema = {
+        __isArray__: true,
+        rules: {
+          required: true,
+        },
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.hasErrors()).toBe(true);
+          expect(errors.hasErrorsOfTypes('required')).toBe(true);
+
+          done();
+        });
+    });
+
     it('should support array validation and schemas as well', (done) => {
       const obj = {
         Persons: [{
@@ -426,6 +445,7 @@ describe('valirator', () => {
       const schema = {
         properties: {
           Persons: {
+            __isArray__: true,
             rules: {
               minLength: 5
             },
@@ -623,6 +643,28 @@ describe('valirator', () => {
       const obj = {};
 
       const schema = {
+        properties: {
+          FirstName: {
+            rules: {
+              required: true
+            }
+          }
+        }
+      };
+
+      validate(schema, obj)
+        .then(errors => {
+          expect(errors.FirstName.required).toBeDefined();
+
+          done();
+        });
+    });
+
+    it('should not fail on null obj', (done) => {
+      const obj = null;
+
+      const schema = {
+        __isObject__: true,
         properties: {
           FirstName: {
             rules: {

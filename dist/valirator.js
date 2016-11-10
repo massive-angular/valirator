@@ -328,6 +328,10 @@ function getProperty(obj) {
     return result;
   }
 
+  if (!isDefined(obj)) {
+    return fallback;
+  }
+
   do {
     if (isObject(result) && hasOwnProperty(result, prop)) {
       return result[prop];
@@ -626,6 +630,7 @@ function validateProperty(property, obj) {
   var overrides = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   var propertyValue = getProperty(schema, property, {});
+  var __isArray__ = propertyValue.__isArray__;
   var propertyRules = propertyValue.rules;
   var _propertyValue$messag = propertyValue.messages;
   var propertyMessages = _propertyValue$messag === undefined ? {} : _propertyValue$messag;
@@ -638,12 +643,16 @@ function validateProperty(property, obj) {
   var overriddenMessages = _overrides$messages === undefined ? {} : _overrides$messages;
 
 
-  if (!propertyRules) {
+  if (!isDefined(property) && !isDefined(propertyProperties)) {
+    propertyProperties = propertyValue;
+  } else if (!isDefined(propertyRules)) {
     if (!propertyValue.messages && !propertyValue.properties && !propertyValue.overrides) {
       propertyRules = propertyValue;
-    } else {
-      propertyRules = {};
     }
+  }
+
+  if (!isDefined(propertyRules)) {
+    propertyRules = {};
   }
 
   setPrototypeOf(propertyOverrides, overrides);
@@ -660,16 +669,10 @@ function validateProperty(property, obj) {
         return new ValidationResult(valueValidationResult);
       };
 
-      if (isArray(value)) {
+      if (isArray(value) || __isArray__) {
         return validateArray(value, propertyProperties, propertyOverrides).then(subValidationCallback);
       } else {
-        var normalizedValue = {};
-
-        if (isObject(value)) {
-          normalizedValue = value;
-        }
-
-        return validateObject(normalizedValue, propertyProperties, propertyOverrides).then(subValidationCallback);
+        return validateObject(value, propertyProperties, propertyOverrides).then(subValidationCallback);
       }
     }
 
@@ -686,7 +689,7 @@ function validatePropertySync(property, obj, schema, overrides) {
 function validateArray(array, schema) {
   var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  var promises = array.map(function (item) {
+  var promises = (array || []).map(function (item) {
     return validateObject(item, schema, overrides);
   });
 
@@ -733,27 +736,7 @@ function validateObjectSync(obj, schema, overrides) {
 }
 
 function validate(schema, obj) {
-  var rules = schema.rules;
-  var messages = schema.messages;
-  var properties = schema.properties;
-  var overrides = schema.overrides;
-
-
-  var valueValidationResult = void 0;
-
-  return validateValue(obj, rules, messages).then(function (result) {
-    valueValidationResult = result;
-
-    if (isArray(obj)) {
-      return validateArray(obj, properties || schema, overrides);
-    } else if (isObject(obj)) {
-      return validateObject(obj, properties || schema, overrides);
-    }
-
-    return {};
-  }).then(function (validationResult) {
-    return new ValidationResult(_extends({}, valueValidationResult, validationResult));
-  });
+  return validateProperty(undefined, obj, schema);
 }
 
 function validateSync(schema, obj) {

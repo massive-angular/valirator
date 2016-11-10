@@ -1,8 +1,8 @@
 import { getRule } from './rules';
 import {
+  isDefined,
   isFunction,
   isString,
-  isObject,
   isArray,
   noop,
   handlePromise,
@@ -74,6 +74,7 @@ export function validateValueSync(value, rules, messages, obj, property, schema)
 export function validateProperty(property, obj, schema = {}, overrides = {}) {
   const propertyValue = getProperty(schema, property, {});
   let {
+    __isArray__,
     rules: propertyRules,
     messages: propertyMessages = {},
     overrides: propertyOverrides = {},
@@ -85,12 +86,17 @@ export function validateProperty(property, obj, schema = {}, overrides = {}) {
     messages: overriddenMessages = {},
   } = overrides;
 
-  if (!propertyRules) {
+  if (!isDefined(property) && !isDefined(propertyProperties)) {
+    propertyProperties = propertyValue;
+  }
+  else if (!isDefined(propertyRules)) {
     if (!propertyValue.messages && !propertyValue.properties && !propertyValue.overrides) {
       propertyRules = propertyValue;
-    } else {
-      propertyRules = {};
     }
+  }
+
+  if (!isDefined(propertyRules)) {
+    propertyRules = {};
   }
 
   setPrototypeOf(propertyOverrides, overrides);
@@ -108,17 +114,11 @@ export function validateProperty(property, obj, schema = {}, overrides = {}) {
           return new ValidationResult(valueValidationResult);
         };
 
-        if (isArray(value)) {
+        if (isArray(value) || __isArray__) {
           return validateArray(value, propertyProperties, propertyOverrides)
             .then(subValidationCallback);
         } else {
-          let normalizedValue = {};
-
-          if (isObject(value)) {
-            normalizedValue = value;
-          }
-
-          return validateObject(normalizedValue , propertyProperties, propertyOverrides)
+          return validateObject(value , propertyProperties, propertyOverrides)
             .then(subValidationCallback);
         }
       }
@@ -134,7 +134,7 @@ export function validatePropertySync(property, obj, schema, overrides) {
 }
 
 export function validateArray(array, schema, overrides = {}) {
-  const promises = array.map(item => validateObject(item, schema, overrides));
+  const promises = (array || []).map(item => validateObject(item, schema, overrides));
 
   return handlePromises(promises)
     .then(results => {
@@ -177,33 +177,7 @@ export function validateObjectSync(obj, schema, overrides) {
 }
 
 export function validate(schema, obj) {
-  const {
-    rules,
-    messages,
-    properties,
-    overrides,
-  } = schema;
-
-  let valueValidationResult;
-
-  return validateValue(obj, rules, messages)
-    .then(result => {
-      valueValidationResult = result;
-
-      if (isArray(obj)) {
-        return validateArray(obj, properties || schema, overrides);
-      } else if(isObject(obj)) {
-        return validateObject(obj, properties || schema, overrides);
-      }
-
-      return {};
-    })
-    .then(validationResult => {
-      return new ValidationResult({
-        ...valueValidationResult,
-        ...validationResult,
-      });
-    });
+  return validateProperty(undefined, obj, schema);
 }
 
 export function validateSync(schema, obj) {
