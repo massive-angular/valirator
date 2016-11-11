@@ -1,15 +1,15 @@
 import { validate, validateSync } from '../core';
 
-export function angularValidator(schema) {
-  return function ValidatorValidatorFn(control) {
+export function ngFormValidator(schema) {
+  return function validatorFn(control) {
     const validationResult = validateSync(schema, control.value);
 
     return validationResult.getFirstErrors();
   }
 }
 
-export function angularAsyncValidator(schema) {
-  return function ValiratorAsyncValidatorFn(control) {
+export function ngFormAsyncValidator(schema) {
+  return function asyncValidatorFn(control) {
     return validate(schema, control.value)
       .then(validationResult => {
         return validationResult.getFirstErrors();

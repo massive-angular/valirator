@@ -1061,21 +1061,21 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-function angularValidator(schema) {
-  return function ValidatorValidatorFn(control) {
+function ngFormValidator(schema) {
+  return function validatorFn(control) {
     var validationResult = validateSync(schema, control.value);
 
     return validationResult.getFirstErrors();
   };
 }
 
-function angularAsyncValidator(schema) {
-  return function ValiratorAsyncValidatorFn(control) {
+function ngFormAsyncValidator(schema) {
+  return function asyncValidatorFn(control) {
     return validate(schema, control.value).then(function (validationResult) {
       return validationResult.getFirstErrors();
     });
   };
 }
 
-export { noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, angularValidator, angularAsyncValidator };
+export { noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, ngFormValidator, ngFormAsyncValidator };
 //# sourceMappingURL=valirator.es6.map
