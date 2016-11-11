@@ -1067,7 +1067,7 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-function ngFormValidator(schema) {
+function ngValidator(schema) {
   return function validatorFn(control) {
     var validationResult = validateSync(schema, control.value);
 
@@ -1075,7 +1075,7 @@ function ngFormValidator(schema) {
   };
 }
 
-function ngFormAsyncValidator(schema) {
+function ngAsyncValidator(schema) {
   return function asyncValidatorFn(control) {
     return validate(schema, control.value).then(function (validationResult) {
       return validationResult.getFirstErrors();
@@ -1144,8 +1144,8 @@ exports.patternRule = patternRule;
 exports.requiredRule = requiredRule;
 exports.typeRule = typeRule;
 exports.uniqueItemsRule = uniqueItemsRule;
-exports.ngFormValidator = ngFormValidator;
-exports.ngFormAsyncValidator = ngFormAsyncValidator;
+exports.ngValidator = ngValidator;
+exports.ngAsyncValidator = ngAsyncValidator;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

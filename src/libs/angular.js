@@ -1,6 +1,6 @@
 import { validate, validateSync } from '../core';
 
-export function ngFormValidator(schema) {
+export function ngValidator(schema) {
   return function validatorFn(control) {
     const validationResult = validateSync(schema, control.value);
 
@@ -8,7 +8,7 @@ export function ngFormValidator(schema) {
   }
 }
 
-export function ngFormAsyncValidator(schema) {
+export function ngAsyncValidator(schema) {
   return function asyncValidatorFn(control) {
     return validate(schema, control.value)
       .then(validationResult => {
