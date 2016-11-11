@@ -1067,6 +1067,22 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
+function angularValidator(schema) {
+  return function ValidatorValidatorFn(control) {
+    var validationResult = validateSync(schema, control.value);
+
+    return validationResult.getFirstErrors();
+  };
+}
+
+function angularAsyncValidator(schema) {
+  return function ValiratorAsyncValidatorFn(control) {
+    return validate(schema, control.value).then(function (validationResult) {
+      return validationResult.getFirstErrors();
+    });
+  };
+}
+
 exports.noop = noop;
 exports.isType = isType;
 exports.isObject = isObject;
@@ -1128,6 +1144,8 @@ exports.patternRule = patternRule;
 exports.requiredRule = requiredRule;
 exports.typeRule = typeRule;
 exports.uniqueItemsRule = uniqueItemsRule;
+exports.angularValidator = angularValidator;
+exports.angularAsyncValidator = angularAsyncValidator;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
