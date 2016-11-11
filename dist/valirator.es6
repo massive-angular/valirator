@@ -1061,21 +1061,37 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-function ngValidator(schema) {
+function ngValidator(schema, onlyFirstErrors) {
   return function validatorFn(control) {
     var validationResult = validateSync(schema, control.value);
 
-    return validationResult.getErrors();
+    return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
   };
 }
 
-function ngAsyncValidator(schema) {
+function ngAsyncValidator(schema, onlyFirstErrors) {
   return function asyncValidatorFn(control) {
     return validate(schema, control.value).then(function (validationResult) {
-      return validationResult.getErrors();
+      return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
     });
   };
 }
 
-export { noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, ngValidator, ngAsyncValidator };
+function reduxFormValidator(schema, onlyFirstErrors) {
+  return function validatorFn(values) {
+    var validationResult = validateSync(schema, values);
+
+    return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+  };
+}
+
+function reduxFormAsyncValidator(schema, onlyFirstErrors) {
+  return function asyncValidatorFn(values) {
+    return validate(schema, values).then(function (validationResult) {
+      return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+    });
+  };
+}
+
+export { noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, ngValidator, ngAsyncValidator, reduxFormValidator, reduxFormAsyncValidator };
 //# sourceMappingURL=valirator.es6.map

@@ -1067,18 +1067,34 @@ function uniqueItemsRule(value, uniqueItems) {
 
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
-function ngValidator(schema) {
+function ngValidator(schema, onlyFirstErrors) {
   return function validatorFn(control) {
     var validationResult = validateSync(schema, control.value);
 
-    return validationResult.getErrors();
+    return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
   };
 }
 
-function ngAsyncValidator(schema) {
+function ngAsyncValidator(schema, onlyFirstErrors) {
   return function asyncValidatorFn(control) {
     return validate(schema, control.value).then(function (validationResult) {
-      return validationResult.getErrors();
+      return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+    });
+  };
+}
+
+function reduxFormValidator(schema, onlyFirstErrors) {
+  return function validatorFn(values) {
+    var validationResult = validateSync(schema, values);
+
+    return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+  };
+}
+
+function reduxFormAsyncValidator(schema, onlyFirstErrors) {
+  return function asyncValidatorFn(values) {
+    return validate(schema, values).then(function (validationResult) {
+      return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
     });
   };
 }
@@ -1146,6 +1162,8 @@ exports.typeRule = typeRule;
 exports.uniqueItemsRule = uniqueItemsRule;
 exports.ngValidator = ngValidator;
 exports.ngAsyncValidator = ngAsyncValidator;
+exports.reduxFormValidator = reduxFormValidator;
+exports.reduxFormAsyncValidator = reduxFormAsyncValidator;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
