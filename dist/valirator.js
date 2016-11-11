@@ -1071,14 +1071,14 @@ function ngValidator(schema) {
   return function validatorFn(control) {
     var validationResult = validateSync(schema, control.value);
 
-    return validationResult.getFirstErrors();
+    return validationResult.getErrors();
   };
 }
 
 function ngAsyncValidator(schema) {
   return function asyncValidatorFn(control) {
     return validate(schema, control.value).then(function (validationResult) {
-      return validationResult.getFirstErrors();
+      return validationResult.getErrors();
     });
   };
 }
