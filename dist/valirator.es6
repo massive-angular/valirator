@@ -1077,18 +1077,18 @@ function ngAsyncValidator(schema, onlyFirstErrors) {
   };
 }
 
-function reduxFormValidator(schema, onlyFirstErrors) {
+function reduxFormValidator(schema, allErrors) {
   return function validatorFn(values) {
     var validationResult = validateSync(schema, values);
 
-    return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+    return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
   };
 }
 
-function reduxFormAsyncValidator(schema, onlyFirstErrors) {
+function reduxFormAsyncValidator(schema, allErrors) {
   return function asyncValidatorFn(values) {
     return validate(schema, values).then(function (validationResult) {
-      return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+      return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
     });
   };
 }

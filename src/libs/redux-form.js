@@ -1,18 +1,18 @@
 import { validate, validateSync } from '../core';
 
-export function reduxFormValidator(schema, onlyFirstErrors) {
+export function reduxFormValidator(schema, allErrors) {
   return function validatorFn(values) {
     const validationResult = validateSync(schema, values);
 
-    return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+    return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
   }
 }
 
-export function reduxFormAsyncValidator(schema, onlyFirstErrors) {
+export function reduxFormAsyncValidator(schema, allErrors) {
   return function asyncValidatorFn(values) {
     return validate(schema, values)
       .then(validationResult => {
-        return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
+        return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
       });
   }
 }
