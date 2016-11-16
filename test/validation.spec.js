@@ -1032,18 +1032,9 @@ describe('validation', () => {
       };
 
       const schema = {
-        properties: {
-          Person: {
-            rules: {
-              required: true
-            },
-            properties: {
-              FirstName: {
-                rules: {
-                  required: true
-                }
-              }
-            }
+        Person: {
+          FirstName: {
+            required: true
           }
         }
       };

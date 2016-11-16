@@ -944,16 +944,26 @@ function validateProperty(property, obj) {
       overriddenMessages = _overrides$messages === undefined ? {} : _overrides$messages;
 
 
-  if (!isDefined(property) && !isDefined(propertyProperties)) {
-    propertyProperties = propertyValue;
-  } else if (!isDefined(propertyRules)) {
-    if (!propertyValue.messages && !propertyValue.properties && !propertyValue.overrides) {
+  if (!propertyRules && !propertyProperties) {
+    var propertyKeys = Object.keys(propertyValue);
+
+    if (propertyKeys.some(function (key) {
+      return hasRule(key);
+    })) {
       propertyRules = propertyValue;
     }
   }
 
-  if (!isDefined(propertyRules)) {
+  if (!propertyRules && !propertyProperties) {
+    propertyProperties = propertyValue;
+  }
+
+  if (!propertyRules) {
     propertyRules = {};
+  }
+
+  if (!propertyProperties) {
+    propertyProperties = {};
   }
 
   setPrototypeOf(propertyOverrides, overrides);
