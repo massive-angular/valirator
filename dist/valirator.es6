@@ -946,10 +946,11 @@ function validateProperty(property, obj) {
 
   if (!propertyRules && !propertyProperties) {
     var propertyKeys = Object.keys(propertyValue);
+    var hasRuleProperty = propertyKeys.some(function (key) {
+      return hasRule(key) || hasOwnProperty(overriddenRules, key) || isFunction(propertyValue[key]);
+    });
 
-    if (propertyKeys.some(function (key) {
-      return hasRule(key);
-    })) {
+    if (hasRuleProperty) {
       propertyRules = propertyValue;
     }
   }
