@@ -1,8 +1,8 @@
-import * as valirator from '../src/valirator';
+import * as rules from '../lib/rules';
 
 describe('rules', () => {
   describe('divisibleByRule', () => {
-    const { divisibleByRule } = valirator;
+    const { divisibleByRule } = rules;
 
     it('should be divisible by 3.3', () => {
       const result = divisibleByRule(9.9, 3.3);
@@ -18,7 +18,7 @@ describe('rules', () => {
   });
 
   describe('enumRule', () => {
-    const { enumRule } = valirator;
+    const { enumRule } = rules;
 
     it('should be in enum', () => {
       const result = enumRule('value1', ['value1', 'value2', 'value3']);
@@ -34,7 +34,7 @@ describe('rules', () => {
   });
 
   describe('formatRule', () => {
-    const { formatRule } = valirator;
+    const { formatRule } = rules;
 
     it('should respect email format', () => {
       const result = formatRule('email@example.com', 'email');
@@ -54,7 +54,7 @@ describe('rules', () => {
   });
 
   describe('matchTo', () => {
-    const { matchToRule } = valirator;
+    const { matchToRule } = rules;
 
     it('should pass match to "1234"', () => {
       const result = matchToRule('1234', '1234');
@@ -70,7 +70,7 @@ describe('rules', () => {
   });
 
   describe('matchToProperty', () => {
-    const { matchToPropertyRule } = valirator;
+    const { matchToPropertyRule } = rules;
 
     it('should pass match to property "a"', () => {
       const result = matchToPropertyRule('1234', 'a', { a: '1234' });
@@ -86,7 +86,7 @@ describe('rules', () => {
   });
 
   describe('notMatchTo', () => {
-    const { notMatchToRule } = valirator;
+    const { notMatchToRule } = rules;
 
     it('should pass no match to "1234"', () => {
       const result = notMatchToRule('12345', '1234');
@@ -108,7 +108,7 @@ describe('rules', () => {
   });
 
   describe('notMatchToProperties', () => {
-    const { notMatchToPropertiesRule } = valirator;
+    const { notMatchToPropertiesRule } = rules;
 
     it('should pass no match to property "a"', () => {
       const result = notMatchToPropertiesRule('12345', 'a', { a: '1234' });
@@ -130,7 +130,7 @@ describe('rules', () => {
   });
 
   describe('maxRule', () => {
-    const { maxRule } = valirator;
+    const { maxRule } = rules;
 
     it('should be lower or equal then 5', () => {
       const result = maxRule(5, 5);
@@ -146,7 +146,7 @@ describe('rules', () => {
   });
 
   describe('maxItemsRule', () => {
-    const { maxItemsRule } = valirator;
+    const { maxItemsRule } = rules;
 
     it('should has less or equal then 5 item', () => {
       const result = maxItemsRule([1, 2, 3, 4, 5], 5);
@@ -162,7 +162,7 @@ describe('rules', () => {
   });
 
   describe('maxLengthRule', () => {
-    const { maxLengthRule } = valirator;
+    const { maxLengthRule } = rules;
 
     it('should be less or equal then 5 length string', () => {
       const result = maxLengthRule('12345', 5);
@@ -178,7 +178,7 @@ describe('rules', () => {
   });
 
   describe('exclusiveMaxRule', () => {
-    const { exclusiveMaxRule } = valirator;
+    const { exclusiveMaxRule } = rules;
 
     it('should be lower then 5', () => {
       const result = exclusiveMaxRule(1, 5);
@@ -194,7 +194,7 @@ describe('rules', () => {
   });
 
   describe('minRule', () => {
-    const { minRule } = valirator;
+    const { minRule } = rules;
 
     it('should be bigger or equal then 5', () => {
       const result = minRule(5, 5);
@@ -210,7 +210,7 @@ describe('rules', () => {
   });
 
   describe('minItemsRule', () => {
-    const { minItemsRule } = valirator;
+    const { minItemsRule } = rules;
 
     it('should has more or equal then 5 item', () => {
       const result = minItemsRule([1, 2, 3, 4, 5], 5);
@@ -226,7 +226,7 @@ describe('rules', () => {
   });
 
   describe('minLengthRule', () => {
-    const { minLengthRule } = valirator;
+    const { minLengthRule } = rules;
 
     it('should be bigger or equal then 5 length string', () => {
       const result = minLengthRule('12345', 5);
@@ -242,7 +242,7 @@ describe('rules', () => {
   });
 
   describe('exclusiveMinRule', () => {
-    const { exclusiveMinRule } = valirator;
+    const { exclusiveMinRule } = rules;
 
     it('should be bigger then 5', () => {
       const result = exclusiveMinRule(10, 5);
@@ -258,7 +258,7 @@ describe('rules', () => {
   });
 
   describe('patternRule', () => {
-    const { patternRule } = valirator;
+    const { patternRule } = rules;
 
     it('should match pattern \d+', () => {
       const result = patternRule('1234', /\d+/);
@@ -274,7 +274,7 @@ describe('rules', () => {
   });
 
   describe('requiredRule', () => {
-    const { requiredRule } = valirator;
+    const { requiredRule } = rules;
 
     it('should be required', () => {
       const result = requiredRule(null, true);
@@ -328,7 +328,7 @@ describe('rules', () => {
   });
 
   describe('typeRule', () => {
-    const { typeRule } = valirator;
+    const { typeRule } = rules;
 
     it('should be boolean', () => {
       const result = typeRule(true, 'boolean');
@@ -404,7 +404,7 @@ describe('rules', () => {
   });
 
   describe('uniqueItemsRule', () => {
-    const { uniqueItemsRule } = valirator;
+    const { uniqueItemsRule } = rules;
 
     it('should has only unique items', () => {
       const result = uniqueItemsRule([{ a: 1 }, { a: 2}, { a: 1 }], true);

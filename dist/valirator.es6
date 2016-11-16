@@ -289,6 +289,18 @@ function toString(obj) {
   return String(obj);
 }
 
+function indexOf(array, value) {
+  if (!isArray(array)) {
+    return -1;
+  }
+
+  return array.indexOf(value);
+}
+
+function inArray(array, value) {
+  return indexOf(array, value) !== -1;
+}
+
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
@@ -407,14 +419,84 @@ function formatMessage() {
   return handlePromise(formattedMessage);
 }
 
-var rulesHolder = {};
+function divisibleByRule(value, divisibleBy) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  var multiplier = Math.max(toString(value - Math.floor(value)).length - 2, toString(divisibleBy - Math.floor(divisibleBy)).length - 2);
+
+  multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
+
+  return value * multiplier % (divisibleBy * multiplier) === 0;
+}
+
+function enumRule(value, e) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return inArray(e, value);
+}
+
+var FORMATS = {
+  'int': /^-?\d+$/,
+  'float': /^-?\d+\.\d+$/,
+  'number': /^-?\d+\.?\d*$/,
+  'email': /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i,
+  'ip': /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/i,
+  'ipv6': /^([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}$/,
+  'time': /^\d{2}:\d{2}:\d{2}$/,
+  'date': /^\d{4}-\d{2}-\d{2}$/,
+  'date-time': /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:.\d{1,3})?Z$/,
+  'color': /^#[a-z0-9]{6}|#[a-z0-9]{3}|(?:rgb\(\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*\))aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow$/i,
+  'host-name': /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])/,
+  'url': /^(https?|ftp|git):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i,
+  'regex': {
+    test: function test(value) {
+      try {
+        new RegExp(value);
+      } catch (e) {
+        return false;
+      }
+
+      return true;
+    }
+  }
+};
+
+function formatRule(value, format) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  if (!FORMATS[format]) {
+    throw new Error('Unknown format "' + format + '"');
+  }
+
+  return FORMATS[format].test(value);
+}
+
+function addFormatToFormatRule(name, format) {
+  if (isString(format)) {
+    FORMATS[name] = new RegExp(format);
+  } else if (isFunction(format)) {
+    FORMATS[name] = {
+      test: format
+    };
+  } else {
+    FORMATS[name] = format;
+  }
+}
+
+var rulesStorage = {};
 
 function registerRule(name, rule, message) {
-  if (hasOwnProperty(rulesHolder, name)) {
+  if (hasOwnProperty(rulesStorage, name)) {
     console.warn('[WARNING]: Trying to override defined rule \'' + name + '\'. Please use \'overrideRule\' function instead.');
   }
 
-  rulesHolder[name] = {
+  rulesStorage[name] = {
     name: name,
     message: message,
     check: rule
@@ -422,11 +504,11 @@ function registerRule(name, rule, message) {
 }
 
 function hasRule(name) {
-  return hasOwnProperty(rulesHolder, name);
+  return hasOwnProperty(rulesStorage, name);
 }
 
 function getRule(name) {
-  return rulesHolder[name] || {};
+  return rulesStorage[name] || {};
 }
 
 function overrideRule(name, rule, message) {
@@ -444,6 +526,236 @@ function overrideRuleMessage(name, message) {
 
     defaultRule.message = message;
   }
+}
+
+registerRule('divisibleBy', divisibleByRule, 'must be divisible by %{expected}');
+registerRule('enum', enumRule, 'must be present in given enumerator');
+registerRule('exclusiveMax', exclusiveMaxRule, 'must be less than %{expected}');
+registerRule('exclusiveMin', exclusiveMinRule, 'must be greater than %{expected}');
+registerRule('format', formatRule, 'is not a valid %{expected}');
+registerRule('matchToProperty', matchToPropertyRule, '%{actual} should match to %{expected}');
+registerRule('matchTo', matchToRule, '%{actual} should match to %{expected}');
+registerRule('maxItems', maxItemsRule, 'must contain less than %{expected} items');
+registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');
+registerRule('max', maxRule, 'must be less than or equal to %{expected}');
+registerRule('minItems', minItemsRule, 'must contain more than %{expected} items');
+registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');
+registerRule('min', minRule, 'must be greater than or equal to %{expected}');
+registerRule('notMatchToProperties', notMatchToPropertiesRule, '%{actual} should not match to %{expected}');
+registerRule('notMatchTo', notMatchToRule, '%{actual} should not match to %{expected}');
+registerRule('pattern', patternRule, 'invalid input');
+registerRule('required', requiredRule, 'is required');
+registerRule('type', typeRule, 'must be of %{expected} type');
+registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
+
+function matchToRule(value, matchTo) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value === matchTo;
+}
+
+function matchToPropertyRule(value, matchToProperty, obj) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value === obj[matchToProperty];
+}
+
+function notMatchToRule(value, notMatchTo) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  if (!isArray(notMatchTo)) {
+    notMatchTo = [notMatchTo];
+  }
+
+  return notMatchTo.every(function (not) {
+    return not !== value;
+  });
+}
+
+function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  if (!isArray(notMatchToProperties)) {
+    notMatchToProperties = [notMatchToProperties];
+  }
+
+  return notMatchToProperties.every(function (not) {
+    return obj[not] !== value;
+  });
+}
+
+function maxRule(value, max) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value <= max;
+}
+
+function maxItemsRule(value, minItems) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return isArray(value) && value.length <= minItems;
+}
+
+function maxLengthRule(value, maxLength) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value.length <= maxLength;
+}
+
+function exclusiveMaxRule(value, exclusiveMax) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value < exclusiveMax;
+}
+
+function minRule(value, min) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value >= min;
+}
+
+function minItemsRule(value, minItems) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return isArray(value) && value.length >= minItems;
+}
+
+function minLengthRule(value, minLength) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value.length >= minLength;
+}
+
+function exclusiveMinRule(value, exclusiveMin) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  return value > exclusiveMin;
+}
+
+function patternRule(value, pattern) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  pattern = isString(pattern) ? new RegExp(pattern) : pattern;
+
+  return pattern.test(value);
+}
+
+function requiredRule(value, required) {
+  if (value) {
+    return true;
+  }
+
+  if (isBoolean(required)) {
+    return !required;
+  }
+
+  if (isObject(required)) {
+    var allowEmpty = required.allowEmpty,
+        allowZero = required.allowZero;
+
+
+    if (isBoolean(allowEmpty)) {
+      return allowEmpty && value === '';
+    }
+
+    if (isBoolean(allowZero)) {
+      return allowZero && value === 0;
+    }
+  }
+
+  return isDefined(value);
+}
+
+function checkValueType(value, type) {
+  switch (type) {
+    case 'boolean':
+      return isBoolean(value);
+
+    case 'number':
+      return isNumber(value);
+
+    case 'string':
+      return isString(value);
+
+    case 'date':
+      return isDate(value);
+
+    case 'object':
+      return isObject(value);
+
+    case 'array':
+      return isArray(value);
+
+    default:
+      return true;
+  }
+}
+
+function typeRule(value, type) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  var types = type;
+
+  if (!Array.isArray(type)) {
+    types = [type];
+  }
+
+  return types.some(function (type) {
+    return checkValueType(value, type);
+  });
+}
+
+function uniqueItemsRule(value, uniqueItems) {
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  if (!uniqueItems) {
+    return true;
+  }
+
+  var hash = {};
+
+  var i = 0,
+      ln = value.length;
+  for (; i < ln; i++) {
+    var key = JSON.stringify(value[i]);
+    if (hash[key]) {
+      return false;
+    }
+
+    hash[key] = true;
+  }
+
+  return true;
 }
 
 function ValidationResult() {
@@ -735,10 +1047,7 @@ function validateSync(schema, obj) {
 }
 
 function ValidationSchema(schema) {
-  var rules = schema.rules,
-      messages = schema.messages,
-      properties = schema.properties;
-
+  this._schema = schema;
 
   this.validate = function (obj) {
     return validate(schema, obj);
@@ -747,319 +1056,12 @@ function ValidationSchema(schema) {
     return validateSync(schema, obj);
   };
   this.validateProperty = function (property, obj) {
-    return validateProperty(property, obj, properties || schema, rules, messages);
+    return validateProperty(property, obj, schema);
   };
   this.validatePropertySync = function (property, obj) {
-    return validatePropertySync(property, obj, properties || schema, rules, messages);
+    return validatePropertySync(property, obj);
   };
 }
-
-function divisibleByRule(value, divisibleBy) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  var multiplier = Math.max((value - Math.floor(value)).toString().length - 2, (divisibleBy - Math.floor(divisibleBy)).toString().length - 2);
-
-  multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
-
-  return value * multiplier % (divisibleBy * multiplier) === 0;
-}
-
-registerRule('divisibleBy', divisibleByRule, 'must be divisible by %{expected}');
-
-function enumRule(value, e) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return isArray(e) && e.indexOf(value) !== -1;
-}
-
-registerRule('enum', enumRule, 'must be present in given enumerator');
-
-var FORMATS = {
-  'int': /^-?\d+$/,
-  'float': /^-?\d+\.\d+$/,
-  'number': /^-?\d+\.?\d*$/,
-  'email': /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i,
-  'ip': /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/i,
-  'ipv6': /^([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}$/,
-  'time': /^\d{2}:\d{2}:\d{2}$/,
-  'date': /^\d{4}-\d{2}-\d{2}$/,
-  'date-time': /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:.\d{1,3})?Z$/,
-  'color': /^#[a-z0-9]{6}|#[a-z0-9]{3}|(?:rgb\(\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*\))aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow$/i,
-  'host-name': /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])/,
-  'url': /^(https?|ftp|git):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i,
-  'regex': {
-    test: function test(value) {
-      try {
-        new RegExp(value);
-      } catch (e) {
-        return false;
-      }
-
-      return true;
-    }
-  }
-};
-
-function formatRule(value, format) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  if (!FORMATS[format]) {
-    throw new Error('Unknown format "' + format + '"');
-  }
-
-  return FORMATS[format].test(value);
-}
-
-registerRule('format', formatRule, 'is not a valid %{expected}');
-
-function matchToRule(value, matchTo) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value === matchTo;
-}
-
-registerRule('matchTo', matchToRule, '%{actual} should match to %{expected}');
-
-function matchToPropertyRule(value, matchToProperty, obj) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value === obj[matchToProperty];
-}
-
-registerRule('matchToProperty', matchToPropertyRule, '%{actual} should match to %{expected}');
-
-function notMatchToRule(value, notMatchTo) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  if (!isArray(notMatchTo)) {
-    notMatchTo = [notMatchTo];
-  }
-
-  return notMatchTo.every(function (not) {
-    return not !== value;
-  });
-}
-
-registerRule('notMatchTo', notMatchToRule, '%{actual} should not match to %{expected}');
-
-function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  if (!isArray(notMatchToProperties)) {
-    notMatchToProperties = [notMatchToProperties];
-  }
-
-  return notMatchToProperties.every(function (not) {
-    return obj[not] !== value;
-  });
-}
-
-registerRule('notMatchToProperties', notMatchToPropertiesRule, '%{actual} should not match to %{expected}');
-
-function maxRule(value, max) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value <= max;
-}
-
-registerRule('max', maxRule, 'must be less than or equal to %{expected}');
-
-function maxItemsRule(value, minItems) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return isArray(value) && value.length <= minItems;
-}
-
-registerRule('maxItems', maxItemsRule, 'must contain less than %{expected} items');
-
-function maxLengthRule(value, maxLength) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value.length <= maxLength;
-}
-
-registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');
-
-function exclusiveMaxRule(value, exclusiveMax) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value < exclusiveMax;
-}
-
-registerRule('exclusiveMax', exclusiveMaxRule, 'must be less than %{expected}');
-
-function minRule(value, min) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value >= min;
-}
-
-registerRule('min', minRule, 'must be greater than or equal to %{expected}');
-
-function minItemsRule(value, minItems) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return isArray(value) && value.length >= minItems;
-}
-
-registerRule('minItems', minItemsRule, 'must contain more than %{expected} items');
-
-function minLengthRule(value, minLength) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value.length >= minLength;
-}
-
-registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');
-
-function exclusiveMinRule(value, exclusiveMin) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  return value > exclusiveMin;
-}
-
-registerRule('exclusiveMin', exclusiveMinRule, 'must be greater than %{expected}');
-
-function patternRule(value, pattern) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  pattern = isString(pattern) ? new RegExp(pattern) : pattern;
-
-  return pattern.test(value);
-}
-
-registerRule('pattern', patternRule, 'invalid input');
-
-function requiredRule(value, required) {
-  if (value) {
-    return true;
-  }
-
-  if (isBoolean(required)) {
-    return !required;
-  }
-
-  if (isObject(required)) {
-    var allowEmpty = required.allowEmpty,
-        allowZero = required.allowZero;
-
-
-    if (isBoolean(allowEmpty)) {
-      return allowEmpty && value === '';
-    }
-
-    if (isBoolean(allowZero)) {
-      return allowZero && value === 0;
-    }
-  }
-
-  return isDefined(value);
-}
-
-registerRule('required', requiredRule, 'is required');
-
-function checkValueType(value, type) {
-  switch (type) {
-    case 'null':
-      return isNull(value);
-
-    case 'boolean':
-      return isBoolean(value);
-
-    case 'number':
-      return isNumber(value);
-
-    case 'string':
-      return isString(value);
-
-    case 'date':
-      return isDate(value);
-
-    case 'object':
-      return isObject(value);
-
-    case 'array':
-      return isArray(value);
-
-    default:
-      return true;
-  }
-}
-
-function typeRule(value, type) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  var types = type;
-
-  if (!Array.isArray(type)) {
-    types = [type];
-  }
-
-  return types.some(function (type) {
-    return checkValueType(value, type);
-  });
-}
-
-registerRule('type', typeRule, 'must be of %{expected} type');
-
-function uniqueItemsRule(value, uniqueItems) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
-  if (!uniqueItems) {
-    return true;
-  }
-
-  var hash = {};
-
-  for (var i = 0, l = value.length; i < l; i++) {
-    var key = JSON.stringify(value[i]);
-    if (hash[key]) {
-      return false;
-    }
-
-    hash[key] = true;
-  }
-
-  return true;
-}
-
-registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
 function ngValidator(schema, onlyFirstErrors) {
   return function validatorFn(control) {
@@ -1093,5 +1095,5 @@ function reduxFormAsyncValidator(schema, allErrors) {
   };
 }
 
-export { noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ValidationSchema, ValidationResult, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, ngValidator, ngAsyncValidator, reduxFormValidator, reduxFormAsyncValidator };
+export { ValidationSchema, ValidationResult, noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, indexOf, inArray, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, addFormatToFormatRule, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validateRule, validateRuleSync, validateValue, validateValueSync, validateProperty, validatePropertySync, validateArray, validateArraySync, validateObject, validateObjectSync, validate, validateSync, ngValidator, ngAsyncValidator, reduxFormValidator, reduxFormAsyncValidator };
 //# sourceMappingURL=valirator.es6.map

@@ -1,11 +1,11 @@
-var babel = require('rollup-plugin-babel');
-var commonjs = require('rollup-plugin-commonjs');
-var nodeResolve = require('rollup-plugin-node-resolve');
+const babel = require('rollup-plugin-babel');
+const commonjs = require('rollup-plugin-commonjs');
+const nodeResolve = require('rollup-plugin-node-resolve');
 
-var pkg = require('./package.json');
+const pkg = require('./package.json');
 
 module.exports = {
-  entry: './src/valirator.js',
+  entry: './lib/index.js',
   plugins: [
     commonjs({
       include: 'node_modules/**',
