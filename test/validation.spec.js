@@ -1,7 +1,7 @@
 import { formatMessage } from '../lib/utils';
 import { registerRule, hasRule, getRule, overrideRule, overrideRuleMessage } from '../lib/storage';
 import { validate, validateSync, validateRule, validateValue, validateObject, validateArray } from '../lib/core'
-import ValidationSchema from '../lib/ValidationSchema';
+import ValidationSchema from '../lib/validationSchema';
 
 describe('validation', () => {
   describe('registerRule', () => {
