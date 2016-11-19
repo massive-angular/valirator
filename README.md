@@ -17,6 +17,80 @@ Several quick start options are available:
 * Install with [npm][npm-url]: `npm install valirator --save`
 * Install with [bower][bower-url]: `bower install valirator --save`
 
+## Usage
+```javascript
+import { validate } from 'valirator';
+
+const validationResult = await validate(schema, obj);
+```
+
+## Schema Examples
+
+### Simple schema
+```javascript
+const schema = {
+  Email: {
+    required: true,
+    minLength: 3,
+    maxLength: 50,
+  },
+  Password: {
+    required: true,
+    minLength: 3,
+    maxLength: 50,
+  },
+};
+```
+
+### Nested schema
+```javascript
+const schema = {
+  Person: {
+    FirstName: {
+      required: true,
+      maxLength: 50,
+    },
+    LastName: {
+      required: true,
+      maxLength: 50,
+    },
+    Email: {
+      required: true,
+      format: 'email',
+    }
+  }
+}
+```
+
+### Array schema
+```javascript
+const schema = {
+  Employees: {
+    rules: {
+      required: true,
+      minItems: 5,
+    },
+    properties: {
+      FirstName: {
+        required: true,
+        maxLength: 50,
+      },
+      LastName: {
+        required: true,
+        maxLength: 50,
+      },
+      Email: {
+        required: true,
+        format: 'email',
+      },
+    },
+    messages: {
+      required: 'Please fill %{property}',
+    }
+  }
+}
+```
+
 ## Creators
 **Alexandr Dascal**
 * <https://github.com/adascal>
