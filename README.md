@@ -93,10 +93,10 @@ const schema = {
 
 ## Creators
 **Alexandr Dascal**
-* https://github.com/adascal
+* [https://github.com/adascal](https://github.com/adascal)
 
 **Slava Matvienco**
-* https://github.com/wfm-slava
+* [https://github.com/wfm-slava](https://github.com/wfm-slava)
 
 ## License
 Code released under [the MIT license](http://spdx.org/licenses/MIT).
