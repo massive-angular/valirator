@@ -36,7 +36,7 @@
     "test": "karma start",
     "build": "rollup --config rollup.config.js",
     "start": "concurrently 'npm run build -- -w' 'npm run test'",
-    "docs": "documentation build lib/ -f html -o docs",
+    "docs": "documentation build lib/ -f html -c documentation.yml -o docs",
     "prepublish": "npm run lint && rm -rf dist && npm run build && npm run test -- --single-run"
   },
   "dependencies": {},
@@ -47,7 +47,7 @@
     "babel-preset-es2015-rollup": "1.2.0",
     "babel-preset-stage-0": "6.16.0",
     "concurrently": "3.1.0",
-    "documentation": "^4.0.0-beta13",
+    "documentation": "4.0.0-beta13",
     "eslint": "3.10.2",
     "eslint-plugin-import": "2.2.0",
     "jasmine": "2.5.2",
