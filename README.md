@@ -17,6 +17,9 @@ Several quick start options are available:
 * Install with [npm][npm-url]: `npm install valirator --save`
 * Install with [bower][bower-url]: `bower install valirator --save`
 
+## Documentation
+For documentation please follow: https://massive-angular.github.io/valirator/
+
 ## Usage
 ```javascript
 import { validate } from 'valirator';
