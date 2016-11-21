@@ -20,3 +20,7 @@ toc:
   - formatMessage
   - ValidationResult
   - ValidationSchema
+  - ngValidator
+  - ngAsyncValidator
+  - reduxFormValidator
+  - reduxFormAsyncValidator

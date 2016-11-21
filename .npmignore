@@ -1,0 +1,5 @@
+docs
+node_modules
+circle.yml
+documentation.yml
+yarn.lock
