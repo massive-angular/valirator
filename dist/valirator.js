@@ -237,64 +237,180 @@ var toArray = function (arr) {
   return Array.isArray(arr) ? arr : Array.from(arr);
 };
 
+/**
+ * @description
+ * Empty function
+ */
 function noop() {}
 
+/**
+ * @description
+ * Check if type
+ *
+ * @param obj
+ * @param {string} typeStr - type string like: '[object Object]', '[object Array]' and etc
+ * @returns {boolean}
+ */
 function isType(obj, typeStr) {
   return Object.prototype.toString.call(obj) === typeStr;
 }
 
+/**
+ * @description
+ * Check if is Object
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isObject(obj) {
   return isType(obj, '[object Object]');
 }
 
+/**
+ * @description
+ * Check if is Array
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isArray(obj) {
   return isType(obj, '[object Array]');
 }
 
+/**
+ * @description
+ * Check if is Function
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isFunction(obj) {
   return isType(obj, '[object Function]');
 }
 
+/**
+ * @description
+ * Check if is String
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isString(obj) {
   return isType(obj, '[object String]');
 }
 
+/**
+ * @description
+ * Check if is Date
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isDate(obj) {
   return isType(obj, '[object Date]');
 }
 
+/**
+ * @description
+ * Check if is Number
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isNumber(obj) {
   return isType(obj, '[object Number]') && !isNaN(obj);
 }
 
+/**
+ * @description
+ * Check if is Boolean
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isBoolean(obj) {
   return isType(obj, '[object Boolean]');
 }
 
+/**
+ * @description
+ * Check if is Empty
+ * Empty string -> true
+ * Empty array -> true
+ * Empty object -> true
+ *
+ * Anything else -> false
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isEmpty(obj) {
   return obj === '' || isArray(obj) && obj.length === 0 || isObject(obj) && Object.keys(obj).length === 0;
 }
 
+/**
+ * @description
+ * Check if is Null
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isNull(obj) {
   return isType(obj, '[object Null]');
 }
 
+/**
+ * @description
+ * Check if is Undefined
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isUndefined(obj) {
   return isType(obj, '[object Undefined]');
 }
 
+/**
+ * @description
+ * Check is is Null or Undefined
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isNullOrUndefined(obj) {
   return isNull(obj) || isUndefined(obj);
 }
 
+/**
+ * @description
+ * Check is object is defined (not null, not undefined, not empty string, object or array
+ *
+ * @param obj
+ * @returns {boolean}
+ */
 function isDefined(obj) {
   return !(isNullOrUndefined(obj) || isEmpty(obj));
 }
 
+/**
+ * @description
+ * Safe convert to String
+ *
+ * @param obj
+ * @returns {string}
+ */
 function toString(obj) {
   return String(obj);
 }
 
+/**
+ * @description
+ * Safe indexOf
+ *
+ * @param array
+ * @param value
+ * @returns {Number}
+ */
 function indexOf(array, value) {
   if (!isArray(array)) {
     return -1;
@@ -303,14 +419,38 @@ function indexOf(array, value) {
   return array.indexOf(value);
 }
 
+/**
+ * @description
+ * Safe check if value in array
+ *
+ * @param array
+ * @param value
+ * @returns {boolean}
+ */
 function inArray(array, value) {
-  return indexOf(array, value) !== -1;
+  return isArray(array) && indexOf(array, value) !== -1;
 }
 
+/**
+ * @description
+ * Safe check is object has property
+ *
+ * @param obj
+ * @param {string} prop - property name
+ * @returns {boolean}
+ */
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
+/**
+ * @description
+ * Safe set prototype
+ *
+ * @param obj
+ * @param proto
+ * @returns {Object}
+ */
 function setPrototypeOf(obj, proto) {
   if (Object.setPrototypeOf) {
     return Object.setPrototypeOf(obj, proto);
@@ -321,6 +461,13 @@ function setPrototypeOf(obj, proto) {
   return obj;
 }
 
+/**
+ * @description
+ * Safe get prototype
+ *
+ * @param obj
+ * @returns {*}
+ */
 function getPrototypeOf(obj) {
   if (Object.getPrototypeOf) {
     return Object.getPrototypeOf(obj);
@@ -329,6 +476,15 @@ function getPrototypeOf(obj) {
   return obj.__proto__;
 }
 
+/**
+ * @description
+ * Get property value
+ *
+ * @param {Object} obj
+ * @param {string} path
+ * @param fallback - fallback value
+ * @returns {*}
+ */
 function getProperty(obj) {
   var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
   var fallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -365,6 +521,14 @@ function getProperty(obj) {
   return result;
 }
 
+/**
+ * @description
+ * Get property override in chain
+ *
+ * @param {Object} context
+ * @param {string} prop
+ * @returns {*}
+ */
 function getPropertyOverride(context, prop) {
   if (!context) {
     return false;
@@ -373,6 +537,13 @@ function getPropertyOverride(context, prop) {
   return isFunction(context[prop]) ? context[prop] : getPropertyOverride(getPrototypeOf(context), prop);
 }
 
+/**
+ * @description
+ * Handle Promise or PromiseLike object
+ *
+ * @param {Promise|PromiseLike} promise
+ * @returns {Promise|PromiseLike}
+ */
 function handlePromise(promise) {
   if (promise && promise.then) {
     return promise;
@@ -388,6 +559,13 @@ function handlePromise(promise) {
   };
 }
 
+/**
+ * @description
+ * Handle array of Promises or PromiseLike objects
+ *
+ * @param promises
+ * @returns {Promise|PromiseLike}
+ */
 function handlePromises(promises) {
   var isAnyPromiseNotPromiseLike = promises.some(function (promise) {
     return promise && promise.then && !promise.isPromiseLike;
@@ -403,6 +581,18 @@ function handlePromises(promises) {
   return handlePromise(results);
 }
 
+/**
+ * @description
+ * Format message for rule
+ *
+ * @param {string|Function} message - message template
+ * @param {*} actual - actual value
+ * @param {*} expected - expected value
+ * @param {string} property - validating property
+ * @param {Object} obj - validating object
+ * @param {Function} rule - validating function
+ * @returns {Promise<string>|PromiseLike<string>}
+ */
 function formatMessage() {
   var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No default message for rule "%{rule}"';
   var actual = arguments[1];
@@ -425,6 +615,20 @@ function formatMessage() {
   return handlePromise(formattedMessage);
 }
 
+/**
+ * @typedef {Object} PromiseLike
+ * @property {Function} then
+ * @property {Function} catch
+ * @property {*} value
+ * @property {boolean} isPromiseLike
+ */
+
+/**
+ *
+ * @param value
+ * @param divisibleBy
+ * @returns {boolean}
+ */
 function divisibleByRule(value, divisibleBy) {
   if (!isDefined(value)) {
     return true;
@@ -437,6 +641,12 @@ function divisibleByRule(value, divisibleBy) {
   return value * multiplier % (divisibleBy * multiplier) === 0;
 }
 
+/**
+ *
+ * @param value
+ * @param e
+ * @returns {boolean}
+ */
 function enumRule(value, e) {
   if (!isDefined(value)) {
     return true;
@@ -471,6 +681,12 @@ var FORMATS = {
   }
 };
 
+/**
+ *
+ * @param value
+ * @param format
+ * @returns {boolean}
+ */
 function formatRule(value, format) {
   if (!isDefined(value)) {
     return true;
@@ -483,6 +699,11 @@ function formatRule(value, format) {
   return FORMATS[format].test(value);
 }
 
+/**
+ *
+ * @param name
+ * @param format
+ */
 function addFormatToFormatRule(name, format) {
   if (isString(format)) {
     FORMATS[name] = new RegExp(format);
@@ -497,6 +718,13 @@ function addFormatToFormatRule(name, format) {
 
 var rulesStorage = {};
 
+/**
+ * Register validation rule
+ *
+ * @param {string} name - rule name
+ * @param {Function} rule - rule function
+ * @param {string|Function} message - rule message
+ */
 function registerRule(name, rule, message) {
   if (hasOwnProperty(rulesStorage, name)) {
     console.warn('[WARNING]: Trying to override defined rule \'' + name + '\'. Please use \'overrideRule\' function instead.');
@@ -509,14 +737,33 @@ function registerRule(name, rule, message) {
   };
 }
 
+/**
+ * Check if rule is registered
+ *
+ * @param {string} name - rule name
+ * @returns {boolean}
+ */
 function hasRule(name) {
   return hasOwnProperty(rulesStorage, name);
 }
 
+/**
+ * Get rule by name
+ *
+ * @param {string} name
+ * @returns {{name, message, check}}
+ */
 function getRule(name) {
   return rulesStorage[name] || {};
 }
 
+/**
+ * Override rule by name
+ *
+ * @param {string} name - rule name
+ * @param {Function} rule - rule function
+ * @param {string|Function} message - rule message
+ */
 function overrideRule(name, rule, message) {
   if (hasRule(name)) {
     var defaultRule = getRule(name);
@@ -526,6 +773,12 @@ function overrideRule(name, rule, message) {
   }
 }
 
+/**
+ * Override rule message by name
+ *
+ * @param {string} name - rule name
+ * @param {string|Function} message - rule message
+ */
 function overrideRuleMessage(name, message) {
   if (hasRule(name)) {
     var defaultRule = getRule(name);
@@ -554,6 +807,12 @@ registerRule('required', requiredRule, 'is required');
 registerRule('type', typeRule, 'must be of %{expected} type');
 registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
 
+/**
+ *
+ * @param value
+ * @param matchTo
+ * @returns {boolean}
+ */
 function matchToRule(value, matchTo) {
   if (!isDefined(value)) {
     return true;
@@ -562,6 +821,13 @@ function matchToRule(value, matchTo) {
   return value === matchTo;
 }
 
+/**
+ *
+ * @param value
+ * @param matchToProperty
+ * @param obj
+ * @returns {boolean}
+ */
 function matchToPropertyRule(value, matchToProperty, obj) {
   if (!isDefined(value)) {
     return true;
@@ -570,6 +836,12 @@ function matchToPropertyRule(value, matchToProperty, obj) {
   return value === obj[matchToProperty];
 }
 
+/**
+ *
+ * @param value
+ * @param notMatchTo
+ * @returns {*}
+ */
 function notMatchToRule(value, notMatchTo) {
   if (!isDefined(value)) {
     return true;
@@ -584,6 +856,13 @@ function notMatchToRule(value, notMatchTo) {
   });
 }
 
+/**
+ *
+ * @param value
+ * @param notMatchToProperties
+ * @param obj
+ * @returns {*}
+ */
 function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
   if (!isDefined(value)) {
     return true;
@@ -598,6 +877,12 @@ function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
   });
 }
 
+/**
+ *
+ * @param value
+ * @param max
+ * @returns {boolean}
+ */
 function maxRule(value, max) {
   if (!isDefined(value)) {
     return true;
@@ -606,6 +891,12 @@ function maxRule(value, max) {
   return value <= max;
 }
 
+/**
+ *
+ * @param value
+ * @param minItems
+ * @returns {boolean}
+ */
 function maxItemsRule(value, minItems) {
   if (!isDefined(value)) {
     return true;
@@ -614,6 +905,12 @@ function maxItemsRule(value, minItems) {
   return isArray(value) && value.length <= minItems;
 }
 
+/**
+ *
+ * @param value
+ * @param maxLength
+ * @returns {boolean}
+ */
 function maxLengthRule(value, maxLength) {
   if (!isDefined(value)) {
     return true;
@@ -622,6 +919,12 @@ function maxLengthRule(value, maxLength) {
   return value.length <= maxLength;
 }
 
+/**
+ *
+ * @param value
+ * @param exclusiveMax
+ * @returns {boolean}
+ */
 function exclusiveMaxRule(value, exclusiveMax) {
   if (!isDefined(value)) {
     return true;
@@ -630,6 +933,12 @@ function exclusiveMaxRule(value, exclusiveMax) {
   return value < exclusiveMax;
 }
 
+/**
+ *
+ * @param value
+ * @param min
+ * @returns {boolean}
+ */
 function minRule(value, min) {
   if (!isDefined(value)) {
     return true;
@@ -638,6 +947,12 @@ function minRule(value, min) {
   return value >= min;
 }
 
+/**
+ *
+ * @param value
+ * @param minItems
+ * @returns {boolean}
+ */
 function minItemsRule(value, minItems) {
   if (!isDefined(value)) {
     return true;
@@ -646,6 +961,12 @@ function minItemsRule(value, minItems) {
   return isArray(value) && value.length >= minItems;
 }
 
+/**
+ *
+ * @param value
+ * @param minLength
+ * @returns {boolean}
+ */
 function minLengthRule(value, minLength) {
   if (!isDefined(value)) {
     return true;
@@ -654,6 +975,12 @@ function minLengthRule(value, minLength) {
   return value.length >= minLength;
 }
 
+/**
+ *
+ * @param value
+ * @param exclusiveMin
+ * @returns {boolean}
+ */
 function exclusiveMinRule(value, exclusiveMin) {
   if (!isDefined(value)) {
     return true;
@@ -662,6 +989,12 @@ function exclusiveMinRule(value, exclusiveMin) {
   return value > exclusiveMin;
 }
 
+/**
+ *
+ * @param value
+ * @param pattern
+ * @returns {boolean}
+ */
 function patternRule(value, pattern) {
   if (!isDefined(value)) {
     return true;
@@ -672,6 +1005,12 @@ function patternRule(value, pattern) {
   return pattern.test(value);
 }
 
+/**
+ *
+ * @param value
+ * @param required
+ * @returns {*}
+ */
 function requiredRule(value, required) {
   if (value) {
     return true;
@@ -723,6 +1062,12 @@ function checkValueType(value, type) {
   }
 }
 
+/**
+ *
+ * @param value
+ * @param type
+ * @returns {boolean}
+ */
 function typeRule(value, type) {
   if (!isDefined(value)) {
     return true;
@@ -739,6 +1084,12 @@ function typeRule(value, type) {
   });
 }
 
+/**
+ *
+ * @param value
+ * @param uniqueItems
+ * @returns {boolean}
+ */
 function uniqueItemsRule(value, uniqueItems) {
   if (!isDefined(value)) {
     return true;
@@ -764,6 +1115,21 @@ function uniqueItemsRule(value, uniqueItems) {
   return true;
 }
 
+/**
+ * @typedef ValidationResult
+ * @property {boolean} isValid - check if validation result has not errors
+ * @property {boolean} hasErrors - check if validation result has errors
+ * @property {boolean} hasErrorsOfTypes - check if validation result has errors of specific types
+ * @property {*} getErrors - get validation result errors
+ * @property {*} getFirstErrors - get first validation result errors
+ * @property {Array<*>} getErrorsAsArray - get validation result errors as array
+ * @property {string} getFirstError - get first validation result error
+ *
+ * ValidationResult is util class that contain information about errors and any level
+ *
+ * @param {Object} errors - validation errors
+ * @returns {ValidationResult}
+ */
 function ValidationResult() {
   var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -872,66 +1238,137 @@ function ValidationResult() {
   return that;
 }
 
-function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
-  var _getRule = getRule(rule),
-      _getRule$check = _getRule.check,
-      defaultRule = _getRule$check === undefined ? noop : _getRule$check,
-      defaultMessage = _getRule.message;
-
-  var overriddenRule = rules && (getPropertyOverride(rules, rule) || rules[rule]);
-  var overriddenMessage = messages && (getPropertyOverride(messages, rule) || messages[rule]);
-
-  var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
-
-  return handlePromise(isValid).then(function (result) {
-    if (isString(result)) {
-      return result;
-    } else if (result !== true) {
-      return formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
-    }
-  });
+/**
+ * @description
+ * Main endpoint for validation
+ * Validate anything by specified schema
+ *
+ * @param {Object} schema - Validation schema
+ * @param {Object|Array} anything - Anything to validate
+ * @returns {Promise<ValidationResult>}
+ *
+ * @example
+ * import { validate } from 'valirator';
+ *
+ * const schema = {
+ *    FirstName: {
+ *      required: true,
+ *    },
+ *    LastName: {
+ *      required: true,
+ *    },
+ * };
+ *
+ * const obj = {
+ *   FirstName: 'Bob',
+ * };
+ *
+ * const validationResult = await validate(schema, obj);
+ */
+function validate(schema, anything) {
+  return validateProperty(undefined, anything, schema);
 }
 
-function validateRuleSync(rule, expected, value, message, rules, messages, obj, property, schema) {
-  var promise = validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+/**
+ * @description
+ * Wrapper on validate function for sync validation
+ * Can be used if no async operation defined (rule or message)
+ *
+ * @param {Object} schema - Validation schema
+ * @param {Object|Array} anything - Anything to validate
+ * @returns {ValidationResult}
+ */
+function validateSync(schema, anything) {
+  var promise = validate(schema, anything);
 
   return promise && promise.value;
 }
 
-function validateValue(value) {
-  var rules = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var messages = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var obj = arguments[3];
-  var property = arguments[4];
-  var schema = arguments[5];
+/**
+ *
+ * @param obj
+ * @param schema
+ * @param overrides
+ * @returns {Promise<ValidationResult>}
+ */
+function validateObject(obj, schema) {
+  var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  var keys = Object.keys(rules);
-  var promises = keys.map(function (rule) {
-    var expected = rules[rule];
-    var message = messages[rule];
-
-    return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+  var keys = Object.keys(schema);
+  var promises = keys.map(function (property) {
+    return validateProperty(property, obj, schema, overrides);
   });
 
   return handlePromises(promises).then(function (results) {
     var errors = {};
 
     results.forEach(function (result, i) {
-      if (result) {
-        errors[keys[i]] = result;
-      }
+      errors[keys[i]] = result;
     });
 
     return new ValidationResult(errors);
   });
 }
 
-function validateValueSync(value, rules, messages, obj, property, schema) {
-  var promise = validateValue(value, rules, messages, obj, property, schema);
+/**
+ *
+ * @param obj
+ * @param schema
+ * @param overrides
+ * @returns {ValidationResult}
+ */
+function validateObjectSync(obj, schema, overrides) {
+  var promise = validateObject(obj, schema, overrides);
 
   return promise && promise.value;
 }
 
+/**
+ *
+ * @param array
+ * @param schema
+ * @param overrides
+ * @returns {Promise<ValidationResult>}
+ */
+function validateArray(array, schema) {
+  var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var promises = (array || []).map(function (item) {
+    return validateObject(item, schema, overrides);
+  });
+
+  return handlePromises(promises).then(function (results) {
+    var errors = {};
+
+    results.forEach(function (result, i) {
+      errors[i] = result;
+    });
+
+    return new ValidationResult(errors);
+  });
+}
+
+/**
+ *
+ * @param array
+ * @param schema
+ * @param overrides
+ * @returns {ValidationResult}
+ */
+function validateArraySync(array, schema, overrides) {
+  var promise = validateArray(array, schema, overrides);
+
+  return promise && promise.value;
+}
+
+/**
+ *
+ * @param property
+ * @param obj
+ * @param schema
+ * @param overrides
+ * @returns {Promise<ValidationResult>}
+ */
 function validateProperty(property, obj) {
   var schema = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var overrides = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -998,71 +1435,132 @@ function validateProperty(property, obj) {
   });
 }
 
+/**
+ *
+ * @param property
+ * @param obj
+ * @param schema
+ * @param overrides
+ * @returns {ValidationResult}
+ */
 function validatePropertySync(property, obj, schema, overrides) {
   var promise = validateProperty(property, obj, schema, overrides);
 
   return promise && promise.value;
 }
 
-function validateArray(array, schema) {
-  var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+/**
+ *
+ * @param value
+ * @param rules
+ * @param messages
+ * @param obj
+ * @param property
+ * @param schema
+ * @returns {Promise<ValidationResult>}
+ */
+function validateValue(value) {
+  var rules = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var messages = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var obj = arguments[3];
+  var property = arguments[4];
+  var schema = arguments[5];
 
-  var promises = (array || []).map(function (item) {
-    return validateObject(item, schema, overrides);
+  var keys = Object.keys(rules);
+  var promises = keys.map(function (rule) {
+    var expected = rules[rule];
+    var message = messages[rule];
+
+    return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
   });
 
   return handlePromises(promises).then(function (results) {
     var errors = {};
 
     results.forEach(function (result, i) {
-      errors[i] = result;
+      if (result) {
+        errors[keys[i]] = result;
+      }
     });
 
     return new ValidationResult(errors);
   });
 }
 
-function validateArraySync(array, schema, overrides) {
-  var promise = validateArray(array, schema, overrides);
+/**
+ *
+ * @param value
+ * @param rules
+ * @param messages
+ * @param obj
+ * @param property
+ * @param schema
+ * @returns {ValidationResult}
+ */
+function validateValueSync(value, rules, messages, obj, property, schema) {
+  var promise = validateValue(value, rules, messages, obj, property, schema);
 
   return promise && promise.value;
 }
 
-function validateObject(obj, schema) {
-  var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+/**
+ *
+ * @param rule
+ * @param expected
+ * @param value
+ * @param message
+ * @param rules
+ * @param messages
+ * @param obj
+ * @param property
+ * @param schema
+ * @returns {Promise<boolean>}
+ */
+function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
+  var _getRule = getRule(rule),
+      _getRule$check = _getRule.check,
+      defaultRule = _getRule$check === undefined ? noop : _getRule$check,
+      defaultMessage = _getRule.message;
 
-  var keys = Object.keys(schema);
-  var promises = keys.map(function (property) {
-    return validateProperty(property, obj, schema, overrides);
+  var overriddenRule = rules && (getPropertyOverride(rules, rule) || rules[rule]);
+  var overriddenMessage = messages && (getPropertyOverride(messages, rule) || messages[rule]);
+
+  var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
+
+  return handlePromise(isValid).then(function (result) {
+    if (isString(result)) {
+      return result;
+    } else if (result !== true) {
+      return formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
+    }
   });
-
-  return handlePromises(promises).then(function (results) {
-    var errors = {};
-
-    results.forEach(function (result, i) {
-      errors[keys[i]] = result;
-    });
-
-    return new ValidationResult(errors);
-  });
 }
 
-function validateObjectSync(obj, schema, overrides) {
-  var promise = validateObject(obj, schema, overrides);
+/**
+ *
+ * @param rule
+ * @param expected
+ * @param value
+ * @param message
+ * @param rules
+ * @param messages
+ * @param obj
+ * @param property
+ * @param schema
+ * @returns {boolean}
+ */
+function validateRuleSync(rule, expected, value, message, rules, messages, obj, property, schema) {
+  var promise = validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
 
   return promise && promise.value;
 }
 
-function validate(schema, obj) {
-  return validateProperty(undefined, obj, schema);
-}
-
-function validateSync(schema, obj) {
-  var promise = validate(schema, obj);
-
-  return promise && promise.value;
-}
-
+/**
+ * ValidationSchema is util class that
+ *
+ * @param {Object} schema -
+ * @constructor
+ */
 function ValidationSchema(schema) {
   this._schema = schema;
 
@@ -1080,32 +1578,56 @@ function ValidationSchema(schema) {
   };
 }
 
+/**
+ *
+ * @param schema
+ * @param onlyFirstErrors
+ * @returns {ngValidatorFn}
+ */
 function ngValidator(schema, onlyFirstErrors) {
-  return function validatorFn(control) {
+  return function ngValidatorFn(control) {
     var validationResult = validateSync(schema, control.value);
 
     return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
   };
 }
 
+/**
+ *
+ * @param schema
+ * @param onlyFirstErrors
+ * @returns {ngAsyncValidatorFn}
+ */
 function ngAsyncValidator(schema, onlyFirstErrors) {
-  return function asyncValidatorFn(control) {
+  return function ngAsyncValidatorFn(control) {
     return validate(schema, control.value).then(function (validationResult) {
       return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
     });
   };
 }
 
+/**
+ *
+ * @param schema
+ * @param allErrors
+ * @returns {reduxFormValidatorFn}
+ */
 function reduxFormValidator(schema, allErrors) {
-  return function validatorFn(values) {
+  return function reduxFormValidatorFn(values) {
     var validationResult = validateSync(schema, values);
 
     return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
   };
 }
 
+/**
+ *
+ * @param schema
+ * @param allErrors
+ * @returns {reduxFormAsyncValidatorFn}
+ */
 function reduxFormAsyncValidator(schema, allErrors) {
-  return function asyncValidatorFn(values) {
+  return function reduxFormAsyncValidatorFn(values) {
     return validate(schema, values).then(function (validationResult) {
       return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
     });
@@ -1164,18 +1686,18 @@ exports.hasRule = hasRule;
 exports.getRule = getRule;
 exports.overrideRule = overrideRule;
 exports.overrideRuleMessage = overrideRuleMessage;
-exports.validateRule = validateRule;
-exports.validateRuleSync = validateRuleSync;
-exports.validateValue = validateValue;
-exports.validateValueSync = validateValueSync;
-exports.validateProperty = validateProperty;
-exports.validatePropertySync = validatePropertySync;
-exports.validateArray = validateArray;
-exports.validateArraySync = validateArraySync;
-exports.validateObject = validateObject;
-exports.validateObjectSync = validateObjectSync;
 exports.validate = validate;
 exports.validateSync = validateSync;
+exports.validateObject = validateObject;
+exports.validateObjectSync = validateObjectSync;
+exports.validateArray = validateArray;
+exports.validateArraySync = validateArraySync;
+exports.validateProperty = validateProperty;
+exports.validatePropertySync = validatePropertySync;
+exports.validateValue = validateValue;
+exports.validateValueSync = validateValueSync;
+exports.validateRule = validateRule;
+exports.validateRuleSync = validateRuleSync;
 exports.ngValidator = ngValidator;
 exports.ngAsyncValidator = ngAsyncValidator;
 exports.reduxFormValidator = reduxFormValidator;
