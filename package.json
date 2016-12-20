@@ -47,7 +47,7 @@
     "babel-preset-es2015-rollup": "3.0.0",
     "babel-preset-stage-0": "6.16.0",
     "concurrently": "3.1.0",
-    "documentation": "4.0.0-beta13",
+    "documentation": "4.0.0-beta16",
     "eslint": "3.12.2",
     "eslint-plugin-import": "2.2.0",
     "jasmine": "2.5.2",
