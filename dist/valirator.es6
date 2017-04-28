@@ -661,16 +661,17 @@ registerRule('enum', enumRule, 'must be present in given enumerator');
 registerRule('exclusiveMax', exclusiveMaxRule, 'must be less than %{expected}');
 registerRule('exclusiveMin', exclusiveMinRule, 'must be greater than %{expected}');
 registerRule('format', formatRule, 'is not a valid %{expected}');
-registerRule('matchToProperty', matchToPropertyRule, '%{actual} should match to %{expected}');
-registerRule('matchTo', matchToRule, '%{actual} should match to %{expected}');
+registerRule('matchToProperty', matchToPropertyRule, 'should match to %{expected}');
+registerRule('matchTo', matchToRule, 'should match to %{expected}');
 registerRule('maxItems', maxItemsRule, 'must contain less than %{expected} items');
 registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');
 registerRule('max', maxRule, 'must be less than or equal to %{expected}');
 registerRule('minItems', minItemsRule, 'must contain more than %{expected} items');
 registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');
 registerRule('min', minRule, 'must be greater than or equal to %{expected}');
-registerRule('notMatchToProperties', notMatchToPropertiesRule, '%{actual} should not match to %{expected}');
-registerRule('notMatchTo', notMatchToRule, '%{actual} should not match to %{expected}');
+registerRule('notMatchToProperty', notMatchToPropertiesRule, 'should not match to %{expected}');
+registerRule('notMatchToProperties', notMatchToPropertiesRule, 'should not match to %{expected}');
+registerRule('notMatchTo', notMatchToRule, 'should not match to %{expected}');
 registerRule('pattern', patternRule, 'invalid input');
 registerRule('required', requiredRule, 'is required');
 registerRule('type', typeRule, 'must be of %{expected} type');
@@ -683,10 +684,6 @@ registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values')
  * @returns {boolean}
  */
 function matchToRule(value, matchTo) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
   return value === matchTo;
 }
 
@@ -698,10 +695,6 @@ function matchToRule(value, matchTo) {
  * @returns {boolean}
  */
 function matchToPropertyRule(value, matchToProperty, obj) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
   return value === obj[matchToProperty];
 }
 
@@ -712,10 +705,6 @@ function matchToPropertyRule(value, matchToProperty, obj) {
  * @returns {*}
  */
 function notMatchToRule(value, notMatchTo) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
   if (!isArray(notMatchTo)) {
     notMatchTo = [notMatchTo];
   }
@@ -733,10 +722,6 @@ function notMatchToRule(value, notMatchTo) {
  * @returns {*}
  */
 function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
-  if (!isDefined(value)) {
-    return true;
-  }
-
   if (!isArray(notMatchToProperties)) {
     notMatchToProperties = [notMatchToProperties];
   }
