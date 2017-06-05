@@ -1125,7 +1125,7 @@ function ValidationResult() {
  *
  * const validationResult = await validate(schema, obj);
  */
-function validate(schema, anything) {
+function validate$1(schema, anything) {
   return validateProperty(undefined, anything, schema);
 }
 
@@ -1139,7 +1139,7 @@ function validate(schema, anything) {
  * @returns {ValidationResult}
  */
 function validateSync(schema, anything) {
-  var promise = validate(schema, anything);
+  var promise = validate$1(schema, anything);
 
   return promise && promise.value;
 }
@@ -1425,7 +1425,7 @@ function ValidationSchema(schema) {
   this._schema = schema;
 
   this.validate = function (obj) {
-    return validate(schema, obj);
+    return validate$1(schema, obj);
   };
   this.validateSync = function (obj) {
     return validateSync(schema, obj);
@@ -1460,7 +1460,7 @@ function ngValidator(schema, onlyFirstErrors) {
  */
 function ngAsyncValidator(schema, onlyFirstErrors) {
   return function ngAsyncValidatorFn(control) {
-    return validate(schema, control.value).then(function (validationResult) {
+    return validate$1(schema, control.value).then(function (validationResult) {
       return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
     });
   };
@@ -1488,7 +1488,7 @@ function reduxFormValidator(schema, allErrors) {
  */
 function reduxFormAsyncValidator(schema, allErrors) {
   return function reduxFormAsyncValidatorFn(values) {
-    return validate(schema, values).then(function (validationResult) {
+    return validate$1(schema, values).then(function (validationResult) {
       return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
     });
   };
@@ -1496,6 +1496,7 @@ function reduxFormAsyncValidator(schema, allErrors) {
 
 exports.ValidationSchema = ValidationSchema;
 exports.ValidationResult = ValidationResult;
+exports['default'] = validate$1;
 exports.noop = noop;
 exports.isType = isType;
 exports.isObject = isObject;
@@ -1546,7 +1547,7 @@ exports.hasRule = hasRule;
 exports.getRule = getRule;
 exports.overrideRule = overrideRule;
 exports.overrideRuleMessage = overrideRuleMessage;
-exports.validate = validate;
+exports.validate = validate$1;
 exports.validateSync = validateSync;
 exports.validateObject = validateObject;
 exports.validateObjectSync = validateObjectSync;

@@ -1119,7 +1119,7 @@ function ValidationResult() {
  *
  * const validationResult = await validate(schema, obj);
  */
-function validate(schema, anything) {
+function validate$1(schema, anything) {
   return validateProperty(undefined, anything, schema);
 }
 
@@ -1133,7 +1133,7 @@ function validate(schema, anything) {
  * @returns {ValidationResult}
  */
 function validateSync(schema, anything) {
-  var promise = validate(schema, anything);
+  var promise = validate$1(schema, anything);
 
   return promise && promise.value;
 }
@@ -1419,7 +1419,7 @@ function ValidationSchema(schema) {
   this._schema = schema;
 
   this.validate = function (obj) {
-    return validate(schema, obj);
+    return validate$1(schema, obj);
   };
   this.validateSync = function (obj) {
     return validateSync(schema, obj);
@@ -1454,7 +1454,7 @@ function ngValidator(schema, onlyFirstErrors) {
  */
 function ngAsyncValidator(schema, onlyFirstErrors) {
   return function ngAsyncValidatorFn(control) {
-    return validate(schema, control.value).then(function (validationResult) {
+    return validate$1(schema, control.value).then(function (validationResult) {
       return onlyFirstErrors ? validationResult.getFirstErrors() : validationResult.getErrors();
     });
   };
@@ -1482,11 +1482,11 @@ function reduxFormValidator(schema, allErrors) {
  */
 function reduxFormAsyncValidator(schema, allErrors) {
   return function reduxFormAsyncValidatorFn(values) {
-    return validate(schema, values).then(function (validationResult) {
+    return validate$1(schema, values).then(function (validationResult) {
       return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
     });
   };
 }
 
-export { ValidationSchema, ValidationResult, noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, indexOf, inArray, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, addFormatToFormatRule, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validate, validateSync, validateObject, validateObjectSync, validateArray, validateArraySync, validateProperty, validatePropertySync, validateValue, validateValueSync, validateRule, validateRuleSync, ngValidator, ngAsyncValidator, reduxFormValidator, reduxFormAsyncValidator };
+export { ValidationSchema, ValidationResult, noop, isType, isObject, isArray, isFunction, isString, isDate, isNumber, isBoolean, isEmpty, isNull, isUndefined, isNullOrUndefined, isDefined, toString, indexOf, inArray, hasOwnProperty, setPrototypeOf, getPrototypeOf, getProperty, getPropertyOverride, handlePromise, handlePromises, formatMessage, divisibleByRule, enumRule, formatRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, exclusiveMaxRule, minRule, minItemsRule, minLengthRule, exclusiveMinRule, patternRule, requiredRule, typeRule, uniqueItemsRule, addFormatToFormatRule, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validate$1 as validate, validateSync, validateObject, validateObjectSync, validateArray, validateArraySync, validateProperty, validatePropertySync, validateValue, validateValueSync, validateRule, validateRuleSync, ngValidator, ngAsyncValidator, reduxFormValidator, reduxFormAsyncValidator };export default validate$1;
 //# sourceMappingURL=valirator.es6.map

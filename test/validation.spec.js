@@ -264,6 +264,10 @@ describe('validation', () => {
           },
           LastName: {
             required: true,
+            pattern: [
+              /\d+/,
+              /\w+/,
+            ],
           },
         }
       };
@@ -273,6 +277,7 @@ describe('validation', () => {
           expect(errors.hasErrors()).toBe(true);
           expect(errors.FirstName.hasErrors()).toBe(true);
           expect(errors.FirstName.required).toBeDefined();
+          expect(errors.LastName.hasErrors()).toBe(false);
 
           done();
         });
