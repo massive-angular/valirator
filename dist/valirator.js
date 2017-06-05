@@ -1,7 +1,7 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.valirator = global.valirator || {})));
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global.valirator = global.valirator || {})));
 }(this, (function (exports) { 'use strict';
 
 var defineProperty = function (obj, key, value) {
@@ -33,30 +33,6 @@ var _extends = Object.assign || function (target) {
   return target;
 };
 
-var get = function get(object, property, receiver) {
-  if (object === null) object = Function.prototype;
-  var desc = Object.getOwnPropertyDescriptor(object, property);
-
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent === null) {
-      return undefined;
-    } else {
-      return get(parent, property, receiver);
-    }
-  } else if ("value" in desc) {
-    return desc.value;
-  } else {
-    var getter = desc.get;
-
-    if (getter === undefined) {
-      return undefined;
-    }
-
-    return getter.call(receiver);
-  }
-};
 
 
 
@@ -74,27 +50,8 @@ var get = function get(object, property, receiver) {
 
 
 
-var set = function set(object, property, value, receiver) {
-  var desc = Object.getOwnPropertyDescriptor(object, property);
 
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
 
-    if (parent !== null) {
-      set(parent, property, value, receiver);
-    }
-  } else if ("value" in desc && desc.writable) {
-    desc.value = value;
-  } else {
-    var setter = desc.set;
-
-    if (setter !== undefined) {
-      setter.call(receiver, value);
-    }
-  }
-
-  return value;
-};
 
 
 
@@ -304,6 +261,17 @@ function indexOf(array, value) {
  */
 function inArray(array, value) {
   return isArray(array) && indexOf(array, value) !== -1;
+}
+
+/**
+ * @description
+ * Cast item to array
+ *
+ * @param array
+ * @returns {Array}
+ */
+function castArray(array) {
+  return isArray(array) ? array : [array];
 }
 
 /**
@@ -1385,13 +1353,29 @@ function validateRule(rule, expected, value, message, rules, messages, obj, prop
   var overriddenRule = rules && (getPropertyOverride(rules, rule) || rules[rule]);
   var overriddenMessage = messages && (getPropertyOverride(messages, rule) || messages[rule]);
 
-  var isValid = (isFunction(overriddenRule) ? overriddenRule : defaultRule)(value, expected, obj, property, schema, defaultRule);
+  var ruleFn = isFunction(overriddenRule) ? overriddenRule : defaultRule;
+  var ruleMsg = overriddenMessage || message || defaultMessage;
 
-  return handlePromise(isValid).then(function (result) {
-    if (isString(result)) {
-      return result;
-    } else if (result !== true) {
-      return formatMessage(overriddenMessage || message || defaultMessage, value, expected, property, obj, rule);
+  var expects = castArray(expected);
+  var validations = expects.map(function (exp) {
+    return handlePromise(ruleFn(value, exp, obj, property, schema, defaultRule));
+  });
+
+  return handlePromises(validations).then(function (results) {
+    var hasValidResult = results.some(function (result) {
+      return result === true;
+    });
+
+    if (!hasValidResult) {
+      var result = results.find(function (result) {
+        return result !== true;
+      });
+
+      if (isString(result)) {
+        return result;
+      } else if (result !== true) {
+        return formatMessage(ruleMsg, value, expects.join(', '), property, obj, rule);
+      }
     }
   });
 }
@@ -1514,6 +1498,7 @@ exports.isDefined = isDefined;
 exports.toString = toString;
 exports.indexOf = indexOf;
 exports.inArray = inArray;
+exports.castArray = castArray;
 exports.hasOwnProperty = hasOwnProperty;
 exports.setPrototypeOf = setPrototypeOf;
 exports.getPrototypeOf = getPrototypeOf;
