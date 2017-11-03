@@ -1196,7 +1196,7 @@ function ValidationResult() {
  * Main endpoint for validation
  * Validate anything by specified schema
  *
- * @param {Object} schema - Validation schema
+ * @param {Object|Function} schema - Validation schema
  * @param {Object|Array} anything - Anything to validate
  * @returns {Promise<ValidationResult>}
  *
@@ -1219,7 +1219,9 @@ function ValidationResult() {
  * const validationResult = await validate(schema, obj);
  */
 function validate$1(schema, anything) {
-  return validateProperty(undefined, anything, schema);
+  return handlePromise(isFunction(schema) ? schema(anything) : schema).then(function (builtSchema) {
+    return validateProperty(undefined, anything, builtSchema);
+  });
 }
 
 /**
@@ -1227,12 +1229,12 @@ function validate$1(schema, anything) {
  * Wrapper on validate function for sync validation
  * Can be used if no async operation defined (rule or message)
  *
- * @param {Object} schema - Validation schema
+ * @param {Object|Function} schema - Validation schema
  * @param {Object|Array} anything - Anything to validate
  * @returns {ValidationResult}
  */
 function validateSync(schema, anything) {
-  var promise = validate$1(schema, anything);
+  var promise = validate$1(isFunction(schema) ? schema(anything) : schema, anything);
 
   return promise && promise.value;
 }
@@ -1560,7 +1562,7 @@ function ngAsyncValidator(schema, onlyFirstErrors) {
  */
 function reduxFormValidator(schema, allErrors) {
   return function reduxFormValidatorFn(values) {
-    var validationResult = validateSync(isFunction(schema) ? schema(values) : schema, values);
+    var validationResult = validateSync(schema, values);
 
     return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
   };
@@ -1574,9 +1576,7 @@ function reduxFormValidator(schema, allErrors) {
  */
 function reduxFormAsyncValidator(schema, allErrors) {
   return function reduxFormAsyncValidatorFn(values) {
-    return handlePromise(isFunction(schema) ? schema(values) : schema).then(function (builtSchema) {
-      return validate$1(builtSchema, values);
-    }).then(function (validationResult) {
+    return validate$1(schema, values).then(function (validationResult) {
       return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
     });
   };

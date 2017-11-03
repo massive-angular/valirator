@@ -11,7 +11,7 @@ module.exports = {
     format: 'umd',
     name: 'valirator'
   },
-  sourceMap: true,
+  sourcemap: true,
   plugins: [
     commonjs({
       include: 'node_modules/**',
