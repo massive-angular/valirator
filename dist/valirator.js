@@ -1,8 +1,133 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.valirator = global.valirator || {})));
+	(factory((global.valirator = {})));
 }(this, (function (exports) { 'use strict';
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+
+
+
+
+
+
+
+
+
+
+
 
 var defineProperty = function (obj, key, value) {
   if (key in obj) {
@@ -1400,29 +1525,6 @@ function validateRuleSync(rule, expected, value, message, rules, messages, obj, 
 }
 
 /**
- * ValidationSchema is util class that
- *
- * @param {Object} schema -
- * @constructor
- */
-function ValidationSchema(schema) {
-  this._schema = schema;
-
-  this.validate = function (obj) {
-    return validate$1(schema, obj);
-  };
-  this.validateSync = function (obj) {
-    return validateSync(schema, obj);
-  };
-  this.validateProperty = function (property, obj) {
-    return validateProperty(property, obj, schema);
-  };
-  this.validatePropertySync = function (property, obj) {
-    return validatePropertySync(property, obj);
-  };
-}
-
-/**
  *
  * @param schema
  * @param onlyFirstErrors
@@ -1458,7 +1560,7 @@ function ngAsyncValidator(schema, onlyFirstErrors) {
  */
 function reduxFormValidator(schema, allErrors) {
   return function reduxFormValidatorFn(values) {
-    var validationResult = validateSync(schema, values);
+    var validationResult = validateSync(isFunction(schema) ? schema(values) : schema, values);
 
     return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
   };
@@ -1472,15 +1574,40 @@ function reduxFormValidator(schema, allErrors) {
  */
 function reduxFormAsyncValidator(schema, allErrors) {
   return function reduxFormAsyncValidatorFn(values) {
-    return validate$1(schema, values).then(function (validationResult) {
+    return handlePromise(isFunction(schema) ? schema(values) : schema).then(function (builtSchema) {
+      return validate$1(builtSchema, values);
+    }).then(function (validationResult) {
       return allErrors ? validationResult.getErrors() : validationResult.getFirstErrors();
     });
   };
 }
 
+/**
+ * ValidationSchema is util class that
+ *
+ * @param {Object} schema -
+ * @constructor
+ */
+function ValidationSchema(schema) {
+  this._schema = schema;
+
+  this.validate = function (obj) {
+    return validate$1(schema, obj);
+  };
+  this.validateSync = function (obj) {
+    return validateSync(schema, obj);
+  };
+  this.validateProperty = function (property, obj) {
+    return validateProperty(property, obj, schema);
+  };
+  this.validatePropertySync = function (property, obj) {
+    return validatePropertySync(property, obj);
+  };
+}
+
+exports['default'] = validate$1;
 exports.ValidationSchema = ValidationSchema;
 exports.ValidationResult = ValidationResult;
-exports['default'] = validate$1;
 exports.noop = noop;
 exports.isType = isType;
 exports.isObject = isObject;

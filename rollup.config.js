@@ -5,7 +5,13 @@ const nodeResolve = require('rollup-plugin-node-resolve');
 const pkg = require('./package.json');
 
 module.exports = {
-  entry: './lib/index.js',
+  input: './lib/index.js',
+  output: {
+    file: pkg['main'],
+    format: 'umd',
+    name: 'valirator'
+  },
+  sourceMap: true,
   plugins: [
     commonjs({
       include: 'node_modules/**',
@@ -25,14 +31,4 @@ module.exports = {
       exclude: 'node_modules/**',
     })
   ],
-  targets: [{
-    dest: pkg['main'],
-    format: 'umd',
-    sourceMap: true,
-    moduleName: 'valirator'
-  }, {
-    dest: pkg['jsnext:main'],
-    format: 'es',
-    sourceMap: true
-  }]
 };

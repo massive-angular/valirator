@@ -32,6 +32,8 @@ module.exports = function (config) {
     },
     rollupPreprocessor: {
       plugins: rollupConfig.plugins,
+      format: 'iife',
+      sourcemap: 'inline'
     },
 
     // test results reporter to use
