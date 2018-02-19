@@ -53,6 +53,86 @@ describe('rules', () => {
     });
   });
 
+  describe('lessThan', () => {
+    const { lessThanRule } = rules;
+
+    it('should pass less than "1234"', () => {
+      const result = lessThanRule(1234, 12345);
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail less than "1234"', () => {
+      const result = lessThanRule(12345, 1234);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('lessThanProperty', () => {
+    const { lessThanPropertyRule } = rules;
+
+    it('should pass less than property "a"', () => {
+      const result = lessThanPropertyRule(1234, 'a', { a: 12345 });
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail less than property "a"', () => {
+      const result = lessThanPropertyRule(12345, 'a', { a: 1234 });
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('moreThan', () => {
+    const { moreThanRule } = rules;
+
+    it('should pass more than "1234"', () => {
+      const result = moreThanRule(12345, 1234);
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail more than "1234"', () => {
+      const result = moreThanRule(1234, 12345);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('moreThanProperty', () => {
+    const { moreThanPropertyRule } = rules;
+
+    it('should pass more than property "a"', () => {
+      const result = moreThanPropertyRule (12345, 'a', { a: 1234 });
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail more than property "a"', () => {
+      const result = moreThanPropertyRule (1234, 'a', { a: 12345 });
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('moreThanProperty', () => {
+    const { matchToPropertyRule } = rules;
+
+    it('should pass match to property "a"', () => {
+      const result = matchToPropertyRule('1234', 'a', { a: '1234' });
+
+      expect(result).toBe(true);
+    });
+
+    it('should fail match to "1234"', () => {
+      const result = matchToPropertyRule('1234', 'a', { a: '12345' });
+
+      expect(result).toBe(false);
+    });
+  });
+
   describe('matchTo', () => {
     const { matchToRule } = rules;
 
@@ -78,7 +158,7 @@ describe('rules', () => {
       expect(result).toBe(true);
     });
 
-    it('should fail match to "1234"', () => {
+    it('should fail match to property "a"', () => {
       const result = matchToPropertyRule('1234', 'a', { a: '12345' });
 
       expect(result).toBe(false);
@@ -177,22 +257,6 @@ describe('rules', () => {
     });
   });
 
-  describe('exclusiveMaxRule', () => {
-    const { exclusiveMaxRule } = rules;
-
-    it('should be lower then 5', () => {
-      const result = exclusiveMaxRule(1, 5);
-
-      expect(result).toBe(true);
-    });
-
-    it('should not be lower then 5', () => {
-      const result = exclusiveMaxRule(10, 5);
-
-      expect(result).toBe(false);
-    });
-  });
-
   describe('minRule', () => {
     const { minRule } = rules;
 
@@ -236,22 +300,6 @@ describe('rules', () => {
 
     it('should not be bigger or equal then 5 length string', () => {
       const result = minLengthRule('1234', 5);
-
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('exclusiveMinRule', () => {
-    const { exclusiveMinRule } = rules;
-
-    it('should be bigger then 5', () => {
-      const result = exclusiveMinRule(10, 5);
-
-      expect(result).toBe(true);
-    });
-
-    it('should not be bigger then 5', () => {
-      const result = exclusiveMinRule(1, 5);
 
       expect(result).toBe(false);
     });

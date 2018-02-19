@@ -120,6 +120,6 @@ Code released under [the MIT license](http://spdx.org/licenses/MIT).
 [david-dev-image]: https://img.shields.io/david/dev/massive-angular/valirator.svg
 [nodei-url]: https://npmjs.com/package/valirator
 [nodei-image]: https://nodei.co/npm/valirator.svg?downloads=true&downloadRank=true&stars=true
-[download-url]: https://github.com/massive-angular/valirator/archive/v1.9.1.zip
+[download-url]: https://github.com/massive-angular/valirator/archive/v2.0.0.zip
 [downloads-url]: https://npmjs.com/package/valirator
 [downloads-image]: https://img.shields.io/npm/dm/valirator.svg

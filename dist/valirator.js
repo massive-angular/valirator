@@ -774,7 +774,7 @@ registerRule('notMatchTo', notMatchToRule, 'should not match to %{expected}');
 registerRule('pattern', patternRule, 'invalid input');
 registerRule('required', requiredRule, 'is required');
 registerRule('type', typeRule, 'must be of %{expected} type');
-registerRule('uniqueItems', uniqueItemsRule, 'must hold a unique set of values');
+registerRule('uniqueItems', uniqueItemsRule, 'must hold an unique set of values');
 
 /**
  *
