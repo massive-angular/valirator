@@ -4,9 +4,15 @@
   "globals": {
     "Promise": true,
     "console": true,
-    "require": true,
     "process": true,
-    "module": true
+    "module": true,
+    "require": true,
+    "setTimeout": true,
+    "describe": true,
+    "expect": true,
+    "beforeEach": true,
+    "afterEach": true,
+    "it": true
   },
   "rules": {
     "no-console": 0

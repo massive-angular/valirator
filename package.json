@@ -1,6 +1,6 @@
 {
   "name": "valirator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Powerful javascript by schema validation tool",
   "main": "dist/valirator.js",
   "module": "dist/valirator.esm.js",

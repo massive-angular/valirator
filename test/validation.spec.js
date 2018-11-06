@@ -1,6 +1,6 @@
 import { formatMessage } from '../lib/utils';
 import { registerRule, hasRule, getRule, overrideRule, overrideRuleMessage } from '../lib/storage';
-import { validate, validateSync, validateRule, validateValue, validateObject, validateArray } from '../lib/core';
+import { validate, validateSync, validateRule, validateValue } from '../lib/core';
 import ValidationSchema from '../lib/validationSchema';
 
 describe('validation', () => {
@@ -799,7 +799,7 @@ describe('validation', () => {
         },
       };
 
-      validate(schema, obj).then(errors => {
+      validate(schema, obj).then(() => {
         console.timeEnd('should be fast');
 
         done();
@@ -932,7 +932,7 @@ describe('validation', () => {
         },
       };
 
-      validate(schema, obj).then(errors => {
+      validate(schema, obj).then(() => {
         console.timeEnd('should be fast with array');
 
         done();
@@ -1293,6 +1293,46 @@ describe('validation', () => {
 
         done();
       });
+    });
+  });
+
+  describe('validate simple array', () => {
+    it('should pass validation', () => {
+      const obj = {
+        categories: [1, 2, 3],
+      };
+
+      const schema = {
+        categories: {
+          rules: {
+            required: true,
+            minItems: 2,
+          },
+        },
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.hasErrors()).toBe(false);
+    });
+
+    it('should faild validation', () => {
+      const obj = {
+        categories: [1, 2, 3],
+      };
+
+      const schema = {
+        categories: {
+          rules: {
+            required: true,
+            maxItems: 2,
+          },
+        },
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.getFirstErrors().categories).toBeDefined();
     });
   });
 });
