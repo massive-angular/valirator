@@ -410,6 +410,9 @@ function divisibleByRule(value, divisibleBy) {
   return (value * multiplier) % (divisibleBy * multiplier) === 0;
 }
 
+divisibleByRule.ruleName = 'divisibleBy';
+divisibleByRule.defaultMessage = 'must be divisible by %{expected}';
+
 /**
  *
  * @param value
@@ -423,6 +426,9 @@ function enumRule(value, e) {
 
   return inArray(e, value);
 }
+
+enumRule.ruleName = 'enum';
+enumRule.defaultMessage = 'must be present in given enumerator';
 
 /* eslint-disable no-control-regex,no-useless-escape */
 
@@ -469,6 +475,9 @@ function formatRule(value, format) {
   return FORMATS[format].test(value);
 }
 
+formatRule.ruleName = 'format';
+formatRule.defaultMessage = 'is not a valid %{expected}';
+
 /**
  *
  * @param name
@@ -496,6 +505,9 @@ function lessThanRule(value, lessThan) {
   return value < lessThan;
 }
 
+lessThanRule.ruleName = 'lessThan';
+lessThanRule.defaultMessage = 'must be less than %{expected}';
+
 /**
  *
  * @param value
@@ -507,6 +519,9 @@ function lessThanPropertyRule(value, lessThanProperty, obj) {
   return value < obj[lessThanProperty];
 }
 
+lessThanPropertyRule.ruleName = 'lessThanProperty';
+lessThanPropertyRule.defaultMessage = 'must be less than %{expected}';
+
 /**
  *
  * @param value
@@ -516,6 +531,9 @@ function lessThanPropertyRule(value, lessThanProperty, obj) {
 function moreThanRule(value, moreThan) {
   return value > moreThan;
 }
+
+moreThanRule.ruleName = 'moreThan';
+moreThanRule.defaultMessage = 'must be greater than %{expected}';
 
 /**
  *
@@ -528,6 +546,9 @@ function moreThanPropertyRule(value, moreThanProperty, obj) {
   return value > obj[moreThanProperty];
 }
 
+moreThanPropertyRule.ruleName = 'moreThanProperty';
+moreThanPropertyRule.defaultMessage = 'must be greater than %{expected}';
+
 /**
  *
  * @param value
@@ -538,6 +559,9 @@ function matchToRule(value, matchTo) {
   return value === matchTo;
 }
 
+matchToRule.ruleName = 'matchTo';
+matchToRule.defaultMessage = 'should match to %{expected}';
+
 /**
  *
  * @param value
@@ -546,8 +570,11 @@ function matchToRule(value, matchTo) {
  * @returns {boolean}
  */
 function matchToPropertyRule(value, matchToProperty, obj) {
-  return value === obj[matchToProperty];
+  return castArray(matchToProperty).every(to => obj[to] === value);
 }
+
+matchToPropertyRule.ruleName = ['matchToProperty', 'matchToProperties'];
+matchToPropertyRule.defaultMessage = 'should match to %{expected}';
 
 /**
  *
@@ -559,16 +586,22 @@ function notMatchToRule(value, notMatchTo) {
   return castArray(notMatchTo).every(not => not !== value);
 }
 
+notMatchToRule.ruleName = 'notMatchTo';
+notMatchToRule.defaultMessage = 'should not match to %{expected}';
+
 /**
  *
  * @param value
- * @param notMatchToProperties
+ * @param notMatchToProperty
  * @param obj
  * @returns {*}
  */
-function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
-  return castArray(notMatchToProperties).every(not => obj[not] !== value);
+function notMatchToPropertyRule(value, notMatchToProperty, obj) {
+  return castArray(notMatchToProperty).every(not => obj[not] !== value);
 }
+
+notMatchToPropertyRule.ruleName = ['notMatchToProperty', 'notMatchToProperties'];
+notMatchToPropertyRule.defaultMessage = 'should not match to %{expected}';
 
 /**
  *
@@ -584,6 +617,9 @@ function maxRule(value, max) {
   return value <= max;
 }
 
+maxRule.ruleName = 'max';
+maxRule.defaultMessage = 'must be less than or equal to %{expected}';
+
 /**
  *
  * @param value
@@ -597,6 +633,9 @@ function maxItemsRule(value, maxItems) {
 
   return isArray(value) && value.length <= maxItems;
 }
+
+maxItemsRule.ruleName = 'maxItems';
+maxItemsRule.defaultMessage = 'must contain less than %{expected} items';
 
 /**
  *
@@ -612,6 +651,9 @@ function maxLengthRule(value, maxLength) {
   return value.length <= maxLength;
 }
 
+maxLengthRule.ruleName = 'maxLength';
+maxLengthRule.defaultMessage = 'is too long (maximum is %{expected} characters)';
+
 /**
  *
  * @param value
@@ -625,6 +667,9 @@ function minRule(value, min) {
 
   return value >= min;
 }
+
+minRule.ruleName = 'min';
+minRule.defaultMessage = 'must be greater than or equal to %{expected}';
 
 /**
  *
@@ -640,6 +685,9 @@ function minItemsRule(value, minItems) {
   return isArray(value) && value.length >= minItems;
 }
 
+minItemsRule.ruleName = 'minItems';
+minItemsRule.defaultMessage = 'must contain more than %{expected} items';
+
 /**
  *
  * @param value
@@ -653,6 +701,9 @@ function minLengthRule(value, minLength) {
 
   return value.length >= minLength;
 }
+
+minLengthRule.ruleName = 'minLength';
+minLengthRule.defaultMessage = 'is too short (minimum is %{expected} characters)';
 
 /**
  *
@@ -669,6 +720,9 @@ function patternRule(value, patterns) {
 
   return patterns.every(pattern => pattern.test(value));
 }
+
+patternRule.ruleName = 'pattern';
+patternRule.defaultMessage = 'invalid input';
 
 /**
  *
@@ -695,6 +749,9 @@ function requiredRule(value, required) {
 
   return !!value && isDefined(value);
 }
+
+requiredRule.ruleName = 'required';
+requiredRule.defaultMessage = 'is required';
 
 function checkValueType(value, type) {
   switch (type) {
@@ -741,6 +798,9 @@ function typeRule(value, type) {
   return types.some(type => checkValueType(value, type));
 }
 
+typeRule.ruleName = 'type';
+typeRule.defaultMessage = 'must be of %{expected} type';
+
 /**
  *
  * @param value
@@ -772,9 +832,12 @@ function uniqueItemsRule(value, uniqueItems) {
   return true;
 }
 
+uniqueItemsRule.ruleName = 'uniqueItems';
+uniqueItemsRule.defaultMessage = 'must hold an unique set of values';
 
 
-var index = /*#__PURE__*/Object.freeze({
+
+var rules = /*#__PURE__*/Object.freeze({
   divisibleByRule: divisibleByRule,
   enumRule: enumRule,
   formatRule: formatRule,
@@ -786,7 +849,7 @@ var index = /*#__PURE__*/Object.freeze({
   matchToRule: matchToRule,
   matchToPropertyRule: matchToPropertyRule,
   notMatchToRule: notMatchToRule,
-  notMatchToPropertiesRule: notMatchToPropertiesRule,
+  notMatchToPropertyRule: notMatchToPropertyRule,
   maxRule: maxRule,
   maxItemsRule: maxItemsRule,
   maxLengthRule: maxLengthRule,
@@ -818,6 +881,23 @@ function registerRule(name, rule, message) {
     message,
     check: rule,
   };
+}
+
+/**
+ * Register batch validation rule
+ *
+ * @param {Array} rules - rules to register
+ */
+function registerRules(rules) {
+  for (const rule of rules) {
+    if (rule && rule.ruleName) {
+      const ruleNames = castArray(rule.ruleName);
+
+      for (const ruleName of ruleNames) {
+        registerRule(ruleName, rule, rule.defaultMessage);
+      }
+    }
+  }
 }
 
 /**
@@ -870,28 +950,7 @@ function overrideRuleMessage(name, message) {
   }
 }
 
-registerRule('divisibleBy', divisibleByRule, 'must be divisible by %{expected}');
-registerRule('enum', enumRule, 'must be present in given enumerator');
-registerRule('format', formatRule, 'is not a valid %{expected}');
-registerRule('lessThanProperty', lessThanPropertyRule, 'must be less than %{expected}');
-registerRule('lessThanRule', lessThanRule, 'must be less than %{expected}');
-registerRule('moreThanProperty', moreThanPropertyRule, 'must be greater than %{expected}');
-registerRule('moreThan', moreThanRule, 'must be greater than %{expected}');
-registerRule('matchToProperty', matchToPropertyRule, 'should match to %{expected}');
-registerRule('matchTo', matchToRule, 'should match to %{expected}');
-registerRule('notMatchToProperty', notMatchToPropertiesRule, 'should not match to %{expected}');
-registerRule('notMatchToProperties', notMatchToPropertiesRule, 'should not match to %{expected}');
-registerRule('notMatchTo', notMatchToRule, 'should not match to %{expected}');
-registerRule('maxItems', maxItemsRule, 'must contain less than %{expected} items');
-registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');
-registerRule('max', maxRule, 'must be less than or equal to %{expected}');
-registerRule('minItems', minItemsRule, 'must contain more than %{expected} items');
-registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');
-registerRule('min', minRule, 'must be greater than or equal to %{expected}');
-registerRule('pattern', patternRule, 'invalid input');
-registerRule('required', requiredRule, 'is required');
-registerRule('type', typeRule, 'must be of %{expected} type');
-registerRule('uniqueItems', uniqueItemsRule, 'must hold an unique set of values');
+registerRules(Object.values(rules));
 
 /**
  * @typedef ValidationResult
@@ -1376,7 +1435,7 @@ function reduxFormAsyncValidator(schema, allErrors) {
 
 
 
-var index$1 = /*#__PURE__*/Object.freeze({
+var index = /*#__PURE__*/Object.freeze({
   ngValidator: ngValidator,
   ngAsyncValidator: ngAsyncValidator,
   reduxFormValidator: reduxFormValidator,
@@ -1399,5 +1458,5 @@ function ValidationSchema(schema) {
 }
 
 export default validate;
-export { index$1 as libs, index as rules, ValidationSchema, ValidationResult, validate, validateSync, validateObject, validateObjectSync, validateArray, validateArraySync, validateProperty, validatePropertySync, validateValue, validateValueSync, validateRule, validateRuleSync, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage };
+export { index as libs, rules, ValidationSchema, ValidationResult, validate, validateSync, validateObject, validateObjectSync, validateArray, validateArraySync, validateProperty, validatePropertySync, validateValue, validateValueSync, validateRule, validateRuleSync, registerRule, registerRules, hasRule, getRule, overrideRule, overrideRuleMessage };
 //# sourceMappingURL=valirator.esm.js.map

@@ -481,6 +481,8 @@
     multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
     return value * multiplier % (divisibleBy * multiplier) === 0;
   }
+  divisibleByRule.ruleName = 'divisibleBy';
+  divisibleByRule.defaultMessage = 'must be divisible by %{expected}';
 
   /**
    *
@@ -496,6 +498,8 @@
 
     return inArray(e, value);
   }
+  enumRule.ruleName = 'enum';
+  enumRule.defaultMessage = 'must be present in given enumerator';
 
   /* eslint-disable no-control-regex,no-useless-escape */
   var FORMATS = {
@@ -540,6 +544,8 @@
 
     return FORMATS[format].test(value);
   }
+  formatRule.ruleName = 'format';
+  formatRule.defaultMessage = 'is not a valid %{expected}';
   /**
    *
    * @param name
@@ -567,6 +573,8 @@
   function lessThanRule(value, lessThan) {
     return value < lessThan;
   }
+  lessThanRule.ruleName = 'lessThan';
+  lessThanRule.defaultMessage = 'must be less than %{expected}';
 
   /**
    *
@@ -578,6 +586,8 @@
   function lessThanPropertyRule(value, lessThanProperty, obj) {
     return value < obj[lessThanProperty];
   }
+  lessThanPropertyRule.ruleName = 'lessThanProperty';
+  lessThanPropertyRule.defaultMessage = 'must be less than %{expected}';
 
   /**
    *
@@ -588,6 +598,8 @@
   function moreThanRule(value, moreThan) {
     return value > moreThan;
   }
+  moreThanRule.ruleName = 'moreThan';
+  moreThanRule.defaultMessage = 'must be greater than %{expected}';
 
   /**
    *
@@ -599,6 +611,8 @@
   function moreThanPropertyRule(value, moreThanProperty, obj) {
     return value > obj[moreThanProperty];
   }
+  moreThanPropertyRule.ruleName = 'moreThanProperty';
+  moreThanPropertyRule.defaultMessage = 'must be greater than %{expected}';
 
   /**
    *
@@ -609,6 +623,8 @@
   function matchToRule(value, matchTo) {
     return value === matchTo;
   }
+  matchToRule.ruleName = 'matchTo';
+  matchToRule.defaultMessage = 'should match to %{expected}';
 
   /**
    *
@@ -617,9 +633,14 @@
    * @param obj
    * @returns {boolean}
    */
+
   function matchToPropertyRule(value, matchToProperty, obj) {
-    return value === obj[matchToProperty];
+    return castArray(matchToProperty).every(function (to) {
+      return obj[to] === value;
+    });
   }
+  matchToPropertyRule.ruleName = ['matchToProperty', 'matchToProperties'];
+  matchToPropertyRule.defaultMessage = 'should match to %{expected}';
 
   /**
    *
@@ -633,20 +654,24 @@
       return not !== value;
     });
   }
+  notMatchToRule.ruleName = 'notMatchTo';
+  notMatchToRule.defaultMessage = 'should not match to %{expected}';
 
   /**
    *
    * @param value
-   * @param notMatchToProperties
+   * @param notMatchToProperty
    * @param obj
    * @returns {*}
    */
 
-  function notMatchToPropertiesRule(value, notMatchToProperties, obj) {
-    return castArray(notMatchToProperties).every(function (not) {
+  function notMatchToPropertyRule(value, notMatchToProperty, obj) {
+    return castArray(notMatchToProperty).every(function (not) {
       return obj[not] !== value;
     });
   }
+  notMatchToPropertyRule.ruleName = ['notMatchToProperty', 'notMatchToProperties'];
+  notMatchToPropertyRule.defaultMessage = 'should not match to %{expected}';
 
   /**
    *
@@ -662,6 +687,8 @@
 
     return value <= max;
   }
+  maxRule.ruleName = 'max';
+  maxRule.defaultMessage = 'must be less than or equal to %{expected}';
 
   /**
    *
@@ -677,6 +704,8 @@
 
     return isArray(value) && value.length <= maxItems;
   }
+  maxItemsRule.ruleName = 'maxItems';
+  maxItemsRule.defaultMessage = 'must contain less than %{expected} items';
 
   /**
    *
@@ -692,6 +721,8 @@
 
     return value.length <= maxLength;
   }
+  maxLengthRule.ruleName = 'maxLength';
+  maxLengthRule.defaultMessage = 'is too long (maximum is %{expected} characters)';
 
   /**
    *
@@ -707,6 +738,8 @@
 
     return value >= min;
   }
+  minRule.ruleName = 'min';
+  minRule.defaultMessage = 'must be greater than or equal to %{expected}';
 
   /**
    *
@@ -722,6 +755,8 @@
 
     return isArray(value) && value.length >= minItems;
   }
+  minItemsRule.ruleName = 'minItems';
+  minItemsRule.defaultMessage = 'must contain more than %{expected} items';
 
   /**
    *
@@ -737,6 +772,8 @@
 
     return value.length >= minLength;
   }
+  minLengthRule.ruleName = 'minLength';
+  minLengthRule.defaultMessage = 'is too short (minimum is %{expected} characters)';
 
   /**
    *
@@ -757,6 +794,8 @@
       return pattern.test(value);
     });
   }
+  patternRule.ruleName = 'pattern';
+  patternRule.defaultMessage = 'invalid input';
 
   /**
    *
@@ -785,6 +824,8 @@
 
     return !!value && isDefined(value);
   }
+  requiredRule.ruleName = 'required';
+  requiredRule.defaultMessage = 'is required';
 
   function checkValueType(value, type) {
     switch (type) {
@@ -833,6 +874,8 @@
       return checkValueType(value, type);
     });
   }
+  typeRule.ruleName = 'type';
+  typeRule.defaultMessage = 'must be of %{expected} type';
 
   /**
    *
@@ -866,10 +909,12 @@
 
     return true;
   }
+  uniqueItemsRule.ruleName = 'uniqueItems';
+  uniqueItemsRule.defaultMessage = 'must hold an unique set of values';
 
 
 
-  var index = /*#__PURE__*/Object.freeze({
+  var rules = /*#__PURE__*/Object.freeze({
     divisibleByRule: divisibleByRule,
     enumRule: enumRule,
     formatRule: formatRule,
@@ -881,7 +926,7 @@
     matchToRule: matchToRule,
     matchToPropertyRule: matchToPropertyRule,
     notMatchToRule: notMatchToRule,
-    notMatchToPropertiesRule: notMatchToPropertiesRule,
+    notMatchToPropertyRule: notMatchToPropertyRule,
     maxRule: maxRule,
     maxItemsRule: maxItemsRule,
     maxLengthRule: maxLengthRule,
@@ -913,6 +958,63 @@
       message: message,
       check: rule
     };
+  }
+  /**
+   * Register batch validation rule
+   *
+   * @param {Array} rules - rules to register
+   */
+
+  function registerRules(rules) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = rules[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var rule = _step.value;
+
+        if (rule && rule.ruleName) {
+          var ruleNames = castArray(rule.ruleName);
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            for (var _iterator2 = ruleNames[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var ruleName = _step2.value;
+              registerRule(ruleName, rule, rule.defaultMessage);
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
   }
   /**
    * Check if rule is registered
@@ -962,28 +1064,7 @@
       defaultRule.message = message;
     }
   }
-  registerRule('divisibleBy', divisibleByRule, 'must be divisible by %{expected}');
-  registerRule('enum', enumRule, 'must be present in given enumerator');
-  registerRule('format', formatRule, 'is not a valid %{expected}');
-  registerRule('lessThanProperty', lessThanPropertyRule, 'must be less than %{expected}');
-  registerRule('lessThanRule', lessThanRule, 'must be less than %{expected}');
-  registerRule('moreThanProperty', moreThanPropertyRule, 'must be greater than %{expected}');
-  registerRule('moreThan', moreThanRule, 'must be greater than %{expected}');
-  registerRule('matchToProperty', matchToPropertyRule, 'should match to %{expected}');
-  registerRule('matchTo', matchToRule, 'should match to %{expected}');
-  registerRule('notMatchToProperty', notMatchToPropertiesRule, 'should not match to %{expected}');
-  registerRule('notMatchToProperties', notMatchToPropertiesRule, 'should not match to %{expected}');
-  registerRule('notMatchTo', notMatchToRule, 'should not match to %{expected}');
-  registerRule('maxItems', maxItemsRule, 'must contain less than %{expected} items');
-  registerRule('maxLength', maxLengthRule, 'is too long (maximum is %{expected} characters)');
-  registerRule('max', maxRule, 'must be less than or equal to %{expected}');
-  registerRule('minItems', minItemsRule, 'must contain more than %{expected} items');
-  registerRule('minLength', minLengthRule, 'is too short (minimum is %{expected} characters)');
-  registerRule('min', minRule, 'must be greater than or equal to %{expected}');
-  registerRule('pattern', patternRule, 'invalid input');
-  registerRule('required', requiredRule, 'is required');
-  registerRule('type', typeRule, 'must be of %{expected} type');
-  registerRule('uniqueItems', uniqueItemsRule, 'must hold an unique set of values');
+  registerRules(Object.values(rules));
 
   /**
    * @typedef ValidationResult
@@ -1468,7 +1549,7 @@
 
 
 
-  var index$1 = /*#__PURE__*/Object.freeze({
+  var index = /*#__PURE__*/Object.freeze({
     ngValidator: ngValidator,
     ngAsyncValidator: ngAsyncValidator,
     reduxFormValidator: reduxFormValidator,
@@ -1502,8 +1583,8 @@
     };
   }
 
-  exports.libs = index$1;
-  exports.rules = index;
+  exports.libs = index;
+  exports.rules = rules;
   exports.default = validate;
   exports.ValidationSchema = ValidationSchema;
   exports.ValidationResult = ValidationResult;
@@ -1520,6 +1601,7 @@
   exports.validateRule = validateRule;
   exports.validateRuleSync = validateRuleSync;
   exports.registerRule = registerRule;
+  exports.registerRules = registerRules;
   exports.hasRule = hasRule;
   exports.getRule = getRule;
   exports.overrideRule = overrideRule;

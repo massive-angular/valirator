@@ -163,6 +163,12 @@ describe('rules', () => {
 
       expect(result).toBe(false);
     });
+
+    it('should accept array', () => {
+      const result = matchToPropertyRule('12345', ['a', 'b'], { a: '12345', b: '12345' });
+
+      expect(result).toBe(true);
+    });
   });
 
   describe('notMatchTo', () => {
@@ -187,23 +193,23 @@ describe('rules', () => {
     });
   });
 
-  describe('notMatchToProperties', () => {
-    const { notMatchToPropertiesRule } = rules;
+  describe('notMatchToProperty', () => {
+    const { notMatchToPropertyRule } = rules;
 
     it('should pass no match to property "a"', () => {
-      const result = notMatchToPropertiesRule('12345', 'a', { a: '1234' });
+      const result = notMatchToPropertyRule('12345', 'a', { a: '1234' });
 
       expect(result).toBe(true);
     });
 
     it('should fail not match to property "a"', () => {
-      const result = notMatchToPropertiesRule('1234', 'a', { a: '1234' });
+      const result = notMatchToPropertyRule('1234', 'a', { a: '1234' });
 
       expect(result).toBe(false);
     });
 
     it('should accept array', () => {
-      const result = notMatchToPropertiesRule('12345', ['a', 'b'], { a: '1234', b: '12345' });
+      const result = notMatchToPropertyRule('12345', ['a', 'b'], { a: '1234', b: '12345' });
 
       expect(result).toBe(false);
     });
