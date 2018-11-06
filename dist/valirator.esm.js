@@ -772,6 +772,33 @@ function uniqueItemsRule(value, uniqueItems) {
   return true;
 }
 
+
+
+var index = /*#__PURE__*/Object.freeze({
+  divisibleByRule: divisibleByRule,
+  enumRule: enumRule,
+  formatRule: formatRule,
+  addFormatToFormatRule: addFormatToFormatRule,
+  lessThanRule: lessThanRule,
+  lessThanPropertyRule: lessThanPropertyRule,
+  moreThanRule: moreThanRule,
+  moreThanPropertyRule: moreThanPropertyRule,
+  matchToRule: matchToRule,
+  matchToPropertyRule: matchToPropertyRule,
+  notMatchToRule: notMatchToRule,
+  notMatchToPropertiesRule: notMatchToPropertiesRule,
+  maxRule: maxRule,
+  maxItemsRule: maxItemsRule,
+  maxLengthRule: maxLengthRule,
+  minRule: minRule,
+  minItemsRule: minItemsRule,
+  minLengthRule: minLengthRule,
+  patternRule: patternRule,
+  requiredRule: requiredRule,
+  typeRule: typeRule,
+  uniqueItemsRule: uniqueItemsRule
+});
+
 const rulesStorage = {};
 
 /**
@@ -1347,6 +1374,15 @@ function reduxFormAsyncValidator(schema, allErrors) {
   };
 }
 
+
+
+var index$1 = /*#__PURE__*/Object.freeze({
+  ngValidator: ngValidator,
+  ngAsyncValidator: ngAsyncValidator,
+  reduxFormValidator: reduxFormValidator,
+  reduxFormAsyncValidator: reduxFormAsyncValidator
+});
+
 /**
  * ValidationSchema is util class that
  *
@@ -1363,5 +1399,5 @@ function ValidationSchema(schema) {
 }
 
 export default validate;
-export { ValidationSchema, ValidationResult, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage, validate, validateSync, validateObject, validateObjectSync, validateArray, validateArraySync, validateProperty, validatePropertySync, validateValue, validateValueSync, validateRule, validateRuleSync, divisibleByRule, enumRule, formatRule, addFormatToFormatRule, lessThanRule, lessThanPropertyRule, moreThanRule, moreThanPropertyRule, matchToRule, matchToPropertyRule, notMatchToRule, notMatchToPropertiesRule, maxRule, maxItemsRule, maxLengthRule, minRule, minItemsRule, minLengthRule, patternRule, requiredRule, typeRule, uniqueItemsRule, ngValidator, ngAsyncValidator, reduxFormValidator, reduxFormAsyncValidator };
+export { index$1 as libs, index as rules, ValidationSchema, ValidationResult, validate, validateSync, validateObject, validateObjectSync, validateArray, validateArraySync, validateProperty, validatePropertySync, validateValue, validateValueSync, validateRule, validateRuleSync, registerRule, hasRule, getRule, overrideRule, overrideRuleMessage };
 //# sourceMappingURL=valirator.esm.js.map

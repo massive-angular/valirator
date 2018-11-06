@@ -867,6 +867,33 @@
     return true;
   }
 
+
+
+  var index = /*#__PURE__*/Object.freeze({
+    divisibleByRule: divisibleByRule,
+    enumRule: enumRule,
+    formatRule: formatRule,
+    addFormatToFormatRule: addFormatToFormatRule,
+    lessThanRule: lessThanRule,
+    lessThanPropertyRule: lessThanPropertyRule,
+    moreThanRule: moreThanRule,
+    moreThanPropertyRule: moreThanPropertyRule,
+    matchToRule: matchToRule,
+    matchToPropertyRule: matchToPropertyRule,
+    notMatchToRule: notMatchToRule,
+    notMatchToPropertiesRule: notMatchToPropertiesRule,
+    maxRule: maxRule,
+    maxItemsRule: maxItemsRule,
+    maxLengthRule: maxLengthRule,
+    minRule: minRule,
+    minItemsRule: minItemsRule,
+    minLengthRule: minLengthRule,
+    patternRule: patternRule,
+    requiredRule: requiredRule,
+    typeRule: typeRule,
+    uniqueItemsRule: uniqueItemsRule
+  });
+
   var rulesStorage = {};
   /**
    * Register validation rule
@@ -1439,6 +1466,15 @@
     };
   }
 
+
+
+  var index$1 = /*#__PURE__*/Object.freeze({
+    ngValidator: ngValidator,
+    ngAsyncValidator: ngAsyncValidator,
+    reduxFormValidator: reduxFormValidator,
+    reduxFormAsyncValidator: reduxFormAsyncValidator
+  });
+
   /**
    * ValidationSchema is util class that
    *
@@ -1466,14 +1502,11 @@
     };
   }
 
+  exports.libs = index$1;
+  exports.rules = index;
   exports.default = validate;
   exports.ValidationSchema = ValidationSchema;
   exports.ValidationResult = ValidationResult;
-  exports.registerRule = registerRule;
-  exports.hasRule = hasRule;
-  exports.getRule = getRule;
-  exports.overrideRule = overrideRule;
-  exports.overrideRuleMessage = overrideRuleMessage;
   exports.validate = validate;
   exports.validateSync = validateSync;
   exports.validateObject = validateObject;
@@ -1486,32 +1519,11 @@
   exports.validateValueSync = validateValueSync;
   exports.validateRule = validateRule;
   exports.validateRuleSync = validateRuleSync;
-  exports.divisibleByRule = divisibleByRule;
-  exports.enumRule = enumRule;
-  exports.formatRule = formatRule;
-  exports.addFormatToFormatRule = addFormatToFormatRule;
-  exports.lessThanRule = lessThanRule;
-  exports.lessThanPropertyRule = lessThanPropertyRule;
-  exports.moreThanRule = moreThanRule;
-  exports.moreThanPropertyRule = moreThanPropertyRule;
-  exports.matchToRule = matchToRule;
-  exports.matchToPropertyRule = matchToPropertyRule;
-  exports.notMatchToRule = notMatchToRule;
-  exports.notMatchToPropertiesRule = notMatchToPropertiesRule;
-  exports.maxRule = maxRule;
-  exports.maxItemsRule = maxItemsRule;
-  exports.maxLengthRule = maxLengthRule;
-  exports.minRule = minRule;
-  exports.minItemsRule = minItemsRule;
-  exports.minLengthRule = minLengthRule;
-  exports.patternRule = patternRule;
-  exports.requiredRule = requiredRule;
-  exports.typeRule = typeRule;
-  exports.uniqueItemsRule = uniqueItemsRule;
-  exports.ngValidator = ngValidator;
-  exports.ngAsyncValidator = ngAsyncValidator;
-  exports.reduxFormValidator = reduxFormValidator;
-  exports.reduxFormAsyncValidator = reduxFormAsyncValidator;
+  exports.registerRule = registerRule;
+  exports.hasRule = hasRule;
+  exports.getRule = getRule;
+  exports.overrideRule = overrideRule;
+  exports.overrideRuleMessage = overrideRuleMessage;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
