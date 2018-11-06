@@ -1335,4 +1335,77 @@ describe('validation', () => {
       expect(errors.getFirstErrors().categories).toBeDefined();
     });
   });
+
+  describe('validate complex array', () => {
+    it('should pass validation', () => {
+      const obj = {
+        categories: [
+          {
+            id: 1,
+          },
+          {
+            id: 2,
+          },
+          {
+            id: 3,
+          },
+        ],
+      };
+
+      const schema = {
+        categories: {
+          rules: {
+            required: true,
+            minItems: 2,
+          },
+          properties: {
+            id: {
+              required: true,
+            },
+          },
+        },
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.hasErrors()).toBe(false);
+    });
+
+    it('should faild validation', () => {
+      const obj = {
+        categories: [
+          {
+            id: 1,
+          },
+          {
+            id: 2,
+          },
+          {
+            id: 3,
+          },
+        ],
+      };
+
+      const schema = {
+        categories: {
+          rules: {
+            required: true,
+            minItems: 2,
+          },
+          properties: {
+            id: {
+              required: true,
+            },
+            name: {
+              required: true,
+            },
+          },
+        },
+      };
+
+      const errors = validateSync(schema, obj);
+
+      expect(errors.getFirstErrors().categories).toBeDefined();
+    });
+  });
 });
