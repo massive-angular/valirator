@@ -42,12 +42,28 @@
     return _arrayWithHoles(arr) || _iterableToArray(arr) || _nonIterableRest();
   }
 
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    }
+  }
+
   function _arrayWithHoles(arr) {
     if (Array.isArray(arr)) return arr;
   }
 
   function _iterableToArray(iter) {
     if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
   function _nonIterableRest() {
@@ -960,8 +976,11 @@
 
   function ValidationResult() {
     var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var protoOfErrors = getPrototypeOf(errors);
 
-    var that = _objectSpread({}, getPrototypeOf(errors), errors);
+    var that = _objectSpread({}, protoOfErrors, errors);
+
+    var keys = _toConsumableArray(Object.keys(errors)).concat(_toConsumableArray(Object.keys(protoOfErrors)));
 
     Object.defineProperties(that, {
       isValid: {
@@ -971,7 +990,6 @@
       },
       hasErrors: {
         value: function hasErrors() {
-          var keys = Object.keys(that);
           return keys.some(function (key) {
             if (that[key].hasErrors) {
               return that[key].hasErrors();
@@ -987,7 +1005,6 @@
             types[_key] = arguments[_key];
           }
 
-          var keys = Object.keys(that);
           return keys.some(function (key) {
             if (types.indexOf(key) !== -1) {
               return true;
@@ -1005,7 +1022,6 @@
       },
       getErrors: {
         value: function getErrors(includeEmptyErrors) {
-          var keys = Object.keys(that);
           return keys.reduce(function (result, key) {
             var subErrors = that[key].getErrors ? that[key].getErrors(includeEmptyErrors) : that[key];
 
@@ -1019,7 +1035,6 @@
       },
       getFirstErrors: {
         value: function getFirstErrors(includeEmptyErrors) {
-          var keys = Object.keys(that);
           return keys.reduce(function (result, key, index) {
             var subErrors = that[key].getFirstErrors ? that[key].getFirstErrors(includeEmptyErrors) : that[key];
 
@@ -1033,7 +1048,6 @@
       },
       getErrorsAsArray: {
         value: function getErrorsAsArray(includeEmptyErrors) {
-          var keys = Object.keys(that);
           return keys.map(function (key) {
             var subErrors = that[key].getErrorsAsArray ? that[key].getErrorsAsArray(includeEmptyErrors) : that[key];
 
@@ -1043,7 +1057,7 @@
 
             return null;
           }, {}).filter(function (error) {
-            return !!error;
+            return isDefined(error);
           });
         }
       },

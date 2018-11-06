@@ -882,10 +882,12 @@ registerRule('uniqueItems', uniqueItemsRule, 'must hold an unique set of values'
  * @returns {ValidationResult}
  */
 function ValidationResult(errors = {}) {
+  const protoOfErrors = getPrototypeOf(errors);
   const that = {
-    ...getPrototypeOf(errors),
+    ...protoOfErrors,
     ...errors,
   };
+  const keys = [...Object.keys(errors), ...Object.keys(protoOfErrors)];
 
   Object.defineProperties(that, {
     isValid: {
@@ -895,8 +897,6 @@ function ValidationResult(errors = {}) {
     },
     hasErrors: {
       value: function hasErrors() {
-        const keys = Object.keys(that);
-
         return keys.some(key => {
           if (that[key].hasErrors) {
             return that[key].hasErrors();
@@ -908,8 +908,6 @@ function ValidationResult(errors = {}) {
     },
     hasErrorsOfTypes: {
       value: function hasErrorsOfTypes(...types) {
-        const keys = Object.keys(that);
-
         return keys.some(key => {
           if (types.indexOf(key) !== -1) {
             return true;
@@ -925,8 +923,6 @@ function ValidationResult(errors = {}) {
     },
     getErrors: {
       value: function getErrors(includeEmptyErrors) {
-        const keys = Object.keys(that);
-
         return keys.reduce((result, key) => {
           const subErrors = that[key].getErrors ? that[key].getErrors(includeEmptyErrors) : that[key];
 
@@ -943,8 +939,6 @@ function ValidationResult(errors = {}) {
     },
     getFirstErrors: {
       value: function getFirstErrors(includeEmptyErrors) {
-        const keys = Object.keys(that);
-
         return keys.reduce((result, key, index) => {
           const subErrors = that[key].getFirstErrors ? that[key].getFirstErrors(includeEmptyErrors) : that[key];
 
@@ -961,8 +955,6 @@ function ValidationResult(errors = {}) {
     },
     getErrorsAsArray: {
       value: function getErrorsAsArray(includeEmptyErrors) {
-        const keys = Object.keys(that);
-
         return keys
           .map(key => {
             const subErrors = that[key].getErrorsAsArray ? that[key].getErrorsAsArray(includeEmptyErrors) : that[key];
@@ -973,7 +965,7 @@ function ValidationResult(errors = {}) {
 
             return null;
           }, {})
-          .filter(error => !!error);
+          .filter(error => isDefined(error));
       },
     },
     getFirstError: {
