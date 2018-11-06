@@ -1,4 +1,4 @@
-import * as rules from '../lib/rules';
+import * as rules from '../lib/rules/index';
 
 describe('rules', () => {
   describe('divisibleByRule', () => {
@@ -105,13 +105,13 @@ describe('rules', () => {
     const { moreThanPropertyRule } = rules;
 
     it('should pass more than property "a"', () => {
-      const result = moreThanPropertyRule (12345, 'a', { a: 1234 });
+      const result = moreThanPropertyRule(12345, 'a', { a: 1234 });
 
       expect(result).toBe(true);
     });
 
     it('should fail more than property "a"', () => {
-      const result = moreThanPropertyRule (1234, 'a', { a: 12345 });
+      const result = moreThanPropertyRule(1234, 'a', { a: 12345 });
 
       expect(result).toBe(false);
     });
@@ -308,13 +308,13 @@ describe('rules', () => {
   describe('patternRule', () => {
     const { patternRule } = rules;
 
-    it('should match pattern \d+', () => {
+    it('should match pattern d+', () => {
       const result = patternRule('1234', /\d+/);
 
       expect(result).toBe(true);
     });
 
-    it('should not match pattern \d+', () => {
+    it('should not match pattern d+', () => {
       const result = patternRule('abc', /\d+/);
 
       expect(result).toBe(false);
@@ -338,7 +338,7 @@ describe('rules', () => {
 
     it('should allow empty', () => {
       const result = requiredRule('', {
-        allowEmpty: true
+        allowEmpty: true,
       });
 
       expect(result).toBe(true);
@@ -346,7 +346,7 @@ describe('rules', () => {
 
     it('should not allow empty', () => {
       const result = requiredRule('', {
-        allowEmpty: false
+        allowEmpty: false,
       });
 
       expect(result).toBe(false);
@@ -354,7 +354,7 @@ describe('rules', () => {
 
     it('should allow zero', () => {
       const result = requiredRule(0, {
-        allowZero: true
+        allowZero: true,
       });
 
       expect(result).toBe(true);
@@ -362,7 +362,7 @@ describe('rules', () => {
 
     it('should not allow zero', () => {
       const result = requiredRule(0, {
-        allowZero: false
+        allowZero: false,
       });
 
       expect(result).toBe(false);
@@ -455,19 +455,19 @@ describe('rules', () => {
     const { uniqueItemsRule } = rules;
 
     it('should has only unique items', () => {
-      const result = uniqueItemsRule([{ a: 1 }, { a: 2}, { a: 1 }], true);
+      const result = uniqueItemsRule([{ a: 1 }, { a: 2 }, { a: 1 }], true);
 
       expect(result).toBe(false);
     });
 
     it('should not only uniq items', () => {
-      const result = uniqueItemsRule([{ a: 1 }, { a: 2}, { a: 1 }], false);
+      const result = uniqueItemsRule([{ a: 1 }, { a: 2 }, { a: 1 }], false);
 
       expect(result).toBe(true);
     });
 
     it('should pass validation', () => {
-      const result = uniqueItemsRule([{ a: 1 }, { a: 2}, { a: 3 }], true);
+      const result = uniqueItemsRule([{ a: 1 }, { a: 2 }, { a: 3 }], true);
 
       expect(result).toBe(true);
     });

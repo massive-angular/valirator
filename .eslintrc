@@ -2,7 +2,11 @@
   "parser": "babel-eslint",
   "extends": "eslint:recommended",
   "globals": {
-    "console": true
+    "Promise": true,
+    "console": true,
+    "require": true,
+    "process": true,
+    "module": true
   },
   "rules": {
     "no-console": 0

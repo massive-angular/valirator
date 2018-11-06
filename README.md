@@ -1,4 +1,5 @@
 # valirator
+
 Powerful javascript by schema validation tool
 
 [![npm version][npm-image]][npm-url] [![Bower version][bower-image]][bower-url] [![Downloads][downloads-image]][downloads-url]
@@ -10,17 +11,20 @@ Powerful javascript by schema validation tool
 [![Summary status][nodei-image]][nodei-url]
 
 ## Quick start
+
 Several quick start options are available:
 
-* [Download the latest release][download-url]
-* Clone the repo: `git clone https://github.com/massive-angular/valirator.git`
-* Install with [npm][npm-url]: `npm install valirator --save`
-* Install with [bower][bower-url]: `bower install valirator --save`
+- [Download the latest release][download-url]
+- Clone the repo: `git clone https://github.com/massive-angular/valirator.git`
+- Install with [npm][npm-url]: `npm install valirator --save`
+- Install with [bower][bower-url]: `bower install valirator --save`
 
 ## Documentation
+
 For documentation please follow: https://massive-angular.github.io/valirator/
 
 ## Usage
+
 ```javascript
 import { validate } from 'valirator';
 
@@ -30,6 +34,7 @@ const validationResult = await validate(schema, obj);
 ## Schema Examples
 
 ### Simple schema
+
 ```javascript
 const schema = {
   Email: {
@@ -46,6 +51,7 @@ const schema = {
 ```
 
 ### Nested schema
+
 ```javascript
 const schema = {
   Person: {
@@ -60,12 +66,13 @@ const schema = {
     Email: {
       required: true,
       format: 'email',
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 ### Array schema
+
 ```javascript
 const schema = {
   Employees: {
@@ -89,19 +96,23 @@ const schema = {
     },
     messages: {
       required: 'Please fill %{property}',
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 ## Creators
+
 **Alexandr Dascal**
-* [https://github.com/adascal](https://github.com/adascal)
+
+- [https://github.com/adascal](https://github.com/adascal)
 
 **Slava Matvienco**
-* [https://github.com/wfm-slava](https://github.com/wfm-slava)
+
+- [https://github.com/wfm-slava](https://github.com/wfm-slava)
 
 ## License
+
 Code released under [the MIT license](http://spdx.org/licenses/MIT).
 
 [npm-url]: https://npmjs.com/package/valirator
@@ -120,6 +131,6 @@ Code released under [the MIT license](http://spdx.org/licenses/MIT).
 [david-dev-image]: https://img.shields.io/david/dev/massive-angular/valirator.svg
 [nodei-url]: https://npmjs.com/package/valirator
 [nodei-image]: https://nodei.co/npm/valirator.svg?downloads=true&downloadRank=true&stars=true
-[download-url]: https://github.com/massive-angular/valirator/archive/v2.0.0.zip
+[download-url]: https://github.com/massive-angular/valirator/archive/v2.0.1.zip
 [downloads-url]: https://npmjs.com/package/valirator
 [downloads-image]: https://img.shields.io/npm/dm/valirator.svg
