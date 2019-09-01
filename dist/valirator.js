@@ -452,6 +452,7 @@ const FORMATS = {
   regex: {
     test: function test(value) {
       try {
+        new RegExp(value);
       } catch (e) {
         return false;
       }
@@ -1123,9 +1124,9 @@ function validateSync(schema, anything) {
  * @param overrides
  * @returns {Promise<ValidationResult>}
  */
-function validateObject(obj, schema, overrides = {}) {
+function validateObject(obj, schema, overrides = {}, initial = obj) {
   const keys = Object.keys(schema);
-  const promises = keys.map(property => validateProperty(property, obj, schema, overrides));
+  const promises = keys.map(property => validateProperty(property, obj, schema, overrides, initial));
 
   return handlePromises(promises).then(results => {
     let errors = {};
@@ -1145,8 +1146,8 @@ function validateObject(obj, schema, overrides = {}) {
  * @param overrides
  * @returns {ValidationResult}
  */
-function validateObjectSync(obj, schema, overrides) {
-  const promise = validateObject(obj, schema, overrides);
+function validateObjectSync(obj, schema, overrides, initial = obj) {
+  const promise = validateObject(obj, schema, overrides, initial);
 
   return promise && promise.value;
 }
@@ -1158,8 +1159,8 @@ function validateObjectSync(obj, schema, overrides) {
  * @param overrides
  * @returns {Promise<ValidationResult>}
  */
-function validateArray(array, schema, overrides = {}) {
-  const promises = (array || []).map(item => validateObject(item, schema, overrides));
+function validateArray(array, schema, overrides = {}, initial = array) {
+  const promises = (array || []).map(item => validateObject(item, schema, overrides, initial));
 
   return handlePromises(promises).then(results => {
     let errors = {};
@@ -1179,8 +1180,8 @@ function validateArray(array, schema, overrides = {}) {
  * @param overrides
  * @returns {ValidationResult}
  */
-function validateArraySync(array, schema, overrides) {
-  const promise = validateArray(array, schema, overrides);
+function validateArraySync(array, schema, overrides, initial = array) {
+  const promise = validateArray(array, schema, overrides, initial);
 
   return promise && promise.value;
 }
@@ -1193,7 +1194,7 @@ function validateArraySync(array, schema, overrides) {
  * @param overrides
  * @returns {Promise<ValidationResult>}
  */
-function validateProperty(property, obj, schema = {}, overrides = {}) {
+function validateProperty(property, obj, schema = {}, overrides = {}, initial = obj) {
   const propertyValue = getProperty(schema, property, {});
   let {
     __isArray__,
@@ -1234,23 +1235,25 @@ function validateProperty(property, obj, schema = {}, overrides = {}) {
 
   const value = getProperty(obj, property);
 
-  return validateValue(value, propertyRules, propertyMessages, obj, property, schema).then(valueValidationResult => {
-    if (propertyProperties) {
-      const subValidationCallback = subValidationResult => {
-        setPrototypeOf(valueValidationResult, subValidationResult);
+  return validateValue(value, propertyRules, propertyMessages, obj, property, schema, initial).then(
+    valueValidationResult => {
+      if (propertyProperties) {
+        const subValidationCallback = subValidationResult => {
+          setPrototypeOf(valueValidationResult, subValidationResult);
 
-        return new ValidationResult(valueValidationResult);
-      };
+          return new ValidationResult(valueValidationResult);
+        };
 
-      if (isArray(value) || __isArray__) {
-        return validateArray(value, propertyProperties, propertyOverrides).then(subValidationCallback);
-      } else {
-        return validateObject(value, propertyProperties, propertyOverrides).then(subValidationCallback);
+        if (isArray(value) || __isArray__) {
+          return validateArray(value, propertyProperties, propertyOverrides, initial).then(subValidationCallback);
+        } else {
+          return validateObject(value, propertyProperties, propertyOverrides, initial).then(subValidationCallback);
+        }
       }
-    }
 
-    return new ValidationResult(valueValidationResult);
-  });
+      return new ValidationResult(valueValidationResult);
+    },
+  );
 }
 
 /**
@@ -1277,13 +1280,13 @@ function validatePropertySync(property, obj, schema, overrides) {
  * @param schema
  * @returns {Promise<ValidationResult>}
  */
-function validateValue(value, rules = {}, messages = {}, obj, property, schema) {
+function validateValue(value, rules = {}, messages = {}, obj, property, schema, initial = obj) {
   const keys = Object.keys(rules);
   const promises = keys.map(rule => {
     const expected = rules[rule];
     const message = messages[rule];
 
-    return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+    return validateRule(rule, expected, value, message, rules, messages, obj, property, schema, initial);
   });
 
   return handlePromises(promises).then(results => {
@@ -1328,7 +1331,7 @@ function validateValueSync(value, rules, messages, obj, property, schema) {
  * @param schema
  * @returns {Promise<boolean>}
  */
-function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
+function validateRule(rule, expected, value, message, rules, messages, obj, property, schema, initial = obj) {
   const { check: defaultRule = noop, message: defaultMessage } = getRule(rule);
 
   const overriddenRule = rules && (getPropertyOverride(rules, rule) || rules[rule]);
@@ -1338,7 +1341,9 @@ function validateRule(rule, expected, value, message, rules, messages, obj, prop
   const ruleMsg = overriddenMessage || message || defaultMessage;
 
   const expects = castArray(expected);
-  const validations = expects.map(exp => handlePromise(ruleFn(value, exp, obj, property, schema, defaultRule)));
+  const validations = expects.map(exp =>
+    handlePromise(ruleFn(value, exp, obj, property, schema, defaultRule, initial)),
+  );
 
   return handlePromises(validations).then(results => {
     const hasValidResult = results.some(result => result === true);
@@ -1461,27 +1466,27 @@ function ValidationSchema(schema) {
   this.validatePropertySync = (property, obj) => validatePropertySync(property, obj);
 }
 
-exports.libs = index;
-exports.rules = rules;
-exports.default = validate;
-exports.ValidationSchema = ValidationSchema;
 exports.ValidationResult = ValidationResult;
-exports.validate = validate;
-exports.validateSync = validateSync;
-exports.validateObject = validateObject;
-exports.validateObjectSync = validateObjectSync;
-exports.validateArray = validateArray;
-exports.validateArraySync = validateArraySync;
-exports.validateProperty = validateProperty;
-exports.validatePropertySync = validatePropertySync;
-exports.validateValue = validateValue;
-exports.validateValueSync = validateValueSync;
-exports.validateRule = validateRule;
-exports.validateRuleSync = validateRuleSync;
-exports.registerRule = registerRule;
-exports.registerRules = registerRules;
-exports.hasRule = hasRule;
+exports.ValidationSchema = ValidationSchema;
+exports.default = validate;
 exports.getRule = getRule;
+exports.hasRule = hasRule;
+exports.libs = index;
 exports.overrideRule = overrideRule;
 exports.overrideRuleMessage = overrideRuleMessage;
+exports.registerRule = registerRule;
+exports.registerRules = registerRules;
+exports.rules = rules;
+exports.validate = validate;
+exports.validateArray = validateArray;
+exports.validateArraySync = validateArraySync;
+exports.validateObject = validateObject;
+exports.validateObjectSync = validateObjectSync;
+exports.validateProperty = validateProperty;
+exports.validatePropertySync = validatePropertySync;
+exports.validateRule = validateRule;
+exports.validateRuleSync = validateRuleSync;
+exports.validateSync = validateSync;
+exports.validateValue = validateValue;
+exports.validateValueSync = validateValueSync;
 //# sourceMappingURL=valirator.js.map

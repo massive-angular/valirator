@@ -215,6 +215,7 @@ describe('validation', () => {
               FirstName: {
                 rules: {
                   required: true,
+                  hasPersonObj: (value, exp, obj, property, schema, defaultRule, initial) => !!initial.Person,
                 },
               },
             },
@@ -227,6 +228,7 @@ describe('validation', () => {
         expect(errors.Person.hasErrors()).toBe(true);
         expect(errors.Person.FirstName.hasErrors()).toBe(true);
         expect(errors.Person.FirstName.required).toBeDefined();
+        expect(errors.Person.FirstName.hasPersonObj).not.toBeDefined();
 
         done();
       });

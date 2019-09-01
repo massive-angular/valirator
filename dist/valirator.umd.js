@@ -1,8 +1,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.valirator = {})));
-}(this, (function (exports) { 'use strict';
+  (global = global || self, factory(global.valirator = {}));
+}(this, function (exports) { 'use strict';
 
   function _defineProperty(obj, key, value) {
     if (key in obj) {
@@ -19,20 +19,35 @@
     return obj;
   }
 
-  function _objectSpread(target) {
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
 
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
+      if (i % 2) {
+        ownKeys(source, true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(source).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
       }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
     }
 
     return target;
@@ -518,6 +533,7 @@
     regex: {
       test: function test(value) {
         try {
+          new RegExp(value);
         } catch (e) {
           return false;
         }
@@ -1086,10 +1102,9 @@
     var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var protoOfErrors = getPrototypeOf(errors);
 
-    var that = _objectSpread({}, protoOfErrors, errors);
+    var that = _objectSpread2({}, protoOfErrors, {}, errors);
 
-    var keys = _toConsumableArray(Object.keys(errors)).concat(_toConsumableArray(Object.keys(protoOfErrors)));
-
+    var keys = [].concat(_toConsumableArray(Object.keys(errors)), _toConsumableArray(Object.keys(protoOfErrors)));
     Object.defineProperties(that, {
       isValid: {
         value: function isValid() {
@@ -1134,7 +1149,7 @@
             var subErrors = that[key].getErrors ? that[key].getErrors(includeEmptyErrors) : that[key];
 
             if (Object.keys(subErrors).length || includeEmptyErrors) {
-              return _objectSpread({}, result, _defineProperty({}, key, subErrors));
+              return _objectSpread2({}, result, _defineProperty({}, key, subErrors));
             }
 
             return result;
@@ -1147,7 +1162,7 @@
             var subErrors = that[key].getFirstErrors ? that[key].getFirstErrors(includeEmptyErrors) : that[key];
 
             if (!isString(result) && isObject(that[key]) && (Object.keys(subErrors).length || includeEmptyErrors)) {
-              return _objectSpread({}, result, _defineProperty({}, key, subErrors));
+              return _objectSpread2({}, result, _defineProperty({}, key, subErrors));
             }
 
             return index === 0 ? subErrors : result;
@@ -1239,9 +1254,10 @@
 
   function validateObject(obj, schema) {
     var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var initial = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : obj;
     var keys = Object.keys(schema);
     var promises = keys.map(function (property) {
-      return validateProperty(property, obj, schema, overrides);
+      return validateProperty(property, obj, schema, overrides, initial);
     });
     return handlePromises(promises).then(function (results) {
       var errors = {};
@@ -1260,7 +1276,8 @@
    */
 
   function validateObjectSync(obj, schema, overrides) {
-    var promise = validateObject(obj, schema, overrides);
+    var initial = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : obj;
+    var promise = validateObject(obj, schema, overrides, initial);
     return promise && promise.value;
   }
   /**
@@ -1273,8 +1290,9 @@
 
   function validateArray(array, schema) {
     var overrides = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var initial = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : array;
     var promises = (array || []).map(function (item) {
-      return validateObject(item, schema, overrides);
+      return validateObject(item, schema, overrides, initial);
     });
     return handlePromises(promises).then(function (results) {
       var errors = {};
@@ -1293,7 +1311,8 @@
    */
 
   function validateArraySync(array, schema, overrides) {
-    var promise = validateArray(array, schema, overrides);
+    var initial = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : array;
+    var promise = validateArray(array, schema, overrides, initial);
     return promise && promise.value;
   }
   /**
@@ -1308,6 +1327,7 @@
   function validateProperty(property, obj) {
     var schema = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var overrides = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+    var initial = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : obj;
     var propertyValue = getProperty(schema, property, {});
     var __isArray__ = propertyValue.__isArray__,
         propertyRules = propertyValue.rules,
@@ -1348,7 +1368,7 @@
     setPrototypeOf(propertyRules, overriddenRules);
     setPrototypeOf(propertyMessages, overriddenMessages);
     var value = getProperty(obj, property);
-    return validateValue(value, propertyRules, propertyMessages, obj, property, schema).then(function (valueValidationResult) {
+    return validateValue(value, propertyRules, propertyMessages, obj, property, schema, initial).then(function (valueValidationResult) {
       if (propertyProperties) {
         var subValidationCallback = function subValidationCallback(subValidationResult) {
           setPrototypeOf(valueValidationResult, subValidationResult);
@@ -1356,9 +1376,9 @@
         };
 
         if (isArray(value) || __isArray__) {
-          return validateArray(value, propertyProperties, propertyOverrides).then(subValidationCallback);
+          return validateArray(value, propertyProperties, propertyOverrides, initial).then(subValidationCallback);
         } else {
-          return validateObject(value, propertyProperties, propertyOverrides).then(subValidationCallback);
+          return validateObject(value, propertyProperties, propertyOverrides, initial).then(subValidationCallback);
         }
       }
 
@@ -1395,11 +1415,12 @@
     var obj = arguments.length > 3 ? arguments[3] : undefined;
     var property = arguments.length > 4 ? arguments[4] : undefined;
     var schema = arguments.length > 5 ? arguments[5] : undefined;
+    var initial = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : obj;
     var keys = Object.keys(rules);
     var promises = keys.map(function (rule) {
       var expected = rules[rule];
       var message = messages[rule];
-      return validateRule(rule, expected, value, message, rules, messages, obj, property, schema);
+      return validateRule(rule, expected, value, message, rules, messages, obj, property, schema, initial);
     });
     return handlePromises(promises).then(function (results) {
       var errors = {};
@@ -1441,6 +1462,8 @@
    */
 
   function validateRule(rule, expected, value, message, rules, messages, obj, property, schema) {
+    var initial = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : obj;
+
     var _getRule = getRule(rule),
         _getRule$check = _getRule.check,
         defaultRule = _getRule$check === void 0 ? noop : _getRule$check,
@@ -1452,7 +1475,7 @@
     var ruleMsg = overriddenMessage || message || defaultMessage;
     var expects = castArray(expected);
     var validations = expects.map(function (exp) {
-      return handlePromise(ruleFn(value, exp, obj, property, schema, defaultRule));
+      return handlePromise(ruleFn(value, exp, obj, property, schema, defaultRule, initial));
     });
     return handlePromises(validations).then(function (results) {
       var hasValidResult = results.some(function (result) {
@@ -1583,31 +1606,31 @@
     };
   }
 
-  exports.libs = index;
-  exports.rules = rules;
-  exports.default = validate;
-  exports.ValidationSchema = ValidationSchema;
   exports.ValidationResult = ValidationResult;
-  exports.validate = validate;
-  exports.validateSync = validateSync;
-  exports.validateObject = validateObject;
-  exports.validateObjectSync = validateObjectSync;
-  exports.validateArray = validateArray;
-  exports.validateArraySync = validateArraySync;
-  exports.validateProperty = validateProperty;
-  exports.validatePropertySync = validatePropertySync;
-  exports.validateValue = validateValue;
-  exports.validateValueSync = validateValueSync;
-  exports.validateRule = validateRule;
-  exports.validateRuleSync = validateRuleSync;
-  exports.registerRule = registerRule;
-  exports.registerRules = registerRules;
-  exports.hasRule = hasRule;
+  exports.ValidationSchema = ValidationSchema;
+  exports.default = validate;
   exports.getRule = getRule;
+  exports.hasRule = hasRule;
+  exports.libs = index;
   exports.overrideRule = overrideRule;
   exports.overrideRuleMessage = overrideRuleMessage;
+  exports.registerRule = registerRule;
+  exports.registerRules = registerRules;
+  exports.rules = rules;
+  exports.validate = validate;
+  exports.validateArray = validateArray;
+  exports.validateArraySync = validateArraySync;
+  exports.validateObject = validateObject;
+  exports.validateObjectSync = validateObjectSync;
+  exports.validateProperty = validateProperty;
+  exports.validatePropertySync = validatePropertySync;
+  exports.validateRule = validateRule;
+  exports.validateRuleSync = validateRuleSync;
+  exports.validateSync = validateSync;
+  exports.validateValue = validateValue;
+  exports.validateValueSync = validateValueSync;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
 //# sourceMappingURL=valirator.umd.js.map
