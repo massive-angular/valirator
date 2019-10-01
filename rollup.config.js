@@ -15,7 +15,7 @@ const plugins = [
 module.exports = [
   // browser-friendly UMD build
   {
-    input: 'lib/index.js',
+    input: 'src/index.ts',
     output: {
       name: pkg.name,
       file: pkg.browser,
@@ -33,7 +33,7 @@ module.exports = [
   // an array for the `output` option, where we can specify
   // `file` and `format` for each target)
   {
-    input: 'lib/index.js',
+    input: 'src/index.ts',
     output: [
       {
         file: pkg.main,

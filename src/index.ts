@@ -1,5 +1,5 @@
-import * as libs from './libs/index';
-import * as rules from './rules/index';
+import * as libs from './libs';
+import * as rules from './rules';
 
 export * from './core';
 export * from './storage';

@@ -33,20 +33,19 @@
   },
   "homepage": "https://github.com/massive-angular/valirator#readme",
   "scripts": {
-    "lint": "eslint lib",
+    "lint": "eslint src",
     "test": "karma start",
     "build": "rollup --config rollup.config.js",
     "start": "concurrently 'npm run build -- -w' 'npm run test'",
-    "docs": "documentation build lib/ -f html -c documentation.yml -o docs",
+    "docs": "documentation build src/ -f html -c documentation.yml -o docs",
     "prepublish": "npm run lint && rm -rf dist && npm run build && npm run test -- --single-run"
   },
   "devDependencies": {
     "@babel/core": "7.6.2",
     "@babel/polyfill": "7.6.0",
     "@babel/preset-env": "7.6.2",
+    "@babel/preset-typescript": "7.6.0",
     "@babel/register": "7.6.2",
-    "acorn": "7.1.0",
-    "acorn-jsx": "5.0.2",
     "babel-eslint": "10.0.3",
     "concurrently": "4.1.2",
     "documentation": "12.1.2",
