@@ -931,6 +931,7 @@
 
 
   var rules = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     divisibleByRule: divisibleByRule,
     enumRule: enumRule,
     formatRule: formatRule,
@@ -1573,6 +1574,7 @@
 
 
   var index = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     ngValidator: ngValidator,
     ngAsyncValidator: ngAsyncValidator,
     reduxFormValidator: reduxFormValidator,

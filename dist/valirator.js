@@ -843,6 +843,7 @@ uniqueItemsRule.defaultMessage = 'must hold an unique set of values';
 
 
 var rules = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   divisibleByRule: divisibleByRule,
   enumRule: enumRule,
   formatRule: formatRule,
@@ -1445,6 +1446,7 @@ function reduxFormAsyncValidator(schema, allErrors) {
 
 
 var index = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   ngValidator: ngValidator,
   ngAsyncValidator: ngAsyncValidator,
   reduxFormValidator: reduxFormValidator,
