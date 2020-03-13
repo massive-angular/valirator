@@ -45,7 +45,7 @@
     "@babel/polyfill": "7.4.4",
     "@babel/preset-env": "7.5.5",
     "@babel/register": "7.5.5",
-    "acorn": "7.0.0",
+    "acorn": "7.1.1",
     "acorn-jsx": "5.0.2",
     "babel-eslint": "10.0.3",
     "concurrently": "4.1.2",
